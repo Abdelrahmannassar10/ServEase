@@ -1,0 +1,23 @@
+import { AuthService } from "@modules/auth/auth.service";
+import { Strategy } from "passport-local";
+declare const LocalStrategy_base: new (...args: [] | [options: import("passport-local").IStrategyOptionsWithRequest] | [options: import("passport-local").IStrategyOptions]) => Strategy & {
+    validate(...args: any[]): unknown;
+};
+export declare class LocalStrategy extends LocalStrategy_base {
+    private authService;
+    constructor(authService: AuthService);
+    validate(email: string, password: string): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("../../models").User, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").User & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    } & {
+        id: string;
+    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, import("../../models").User, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").User & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    } & {
+        id: string;
+    }>;
+}
+export {};
