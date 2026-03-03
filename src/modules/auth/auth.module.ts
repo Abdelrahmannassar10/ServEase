@@ -37,5 +37,6 @@ import { CloudinaryService } from '@common/cloudinary';
     TokenRepository,
     CloudinaryService
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}

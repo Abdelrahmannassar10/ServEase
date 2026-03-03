@@ -23,6 +23,9 @@ const modules_1 = require("./shared/modules");
 const customer_module_1 = require("./modules/customer/customer.module");
 const provider_module_1 = require("./modules/provider/provider.module");
 const common_module_1 = require("./modules/common/common.module");
+const category_module_1 = require("./modules/category/category.module");
+const service_module_1 = require("./modules/service/service.module");
+const admin_module_1 = require("./modules/admin/admin.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -44,7 +47,10 @@ exports.AppModule = AppModule = __decorate([
             modules_1.UserMongooseModule,
             customer_module_1.CustomerModule,
             provider_module_1.ProviderModule,
-            common_module_1.CommonModule
+            common_module_1.CommonModule,
+            admin_module_1.AdminModule,
+            service_module_1.ServiceModule,
+            category_module_1.CategoryModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, cron_job_helper_1.TasksService],

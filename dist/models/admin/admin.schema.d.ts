@@ -1,4 +1,4 @@
-import { City, Role } from '@common/types/enum';
+import { Role } from '@common/types/enum';
 import { HydratedDocument, Types } from 'mongoose';
 export declare class Admin {
     readonly _id: Types.ObjectId;
@@ -6,21 +6,12 @@ export declare class Admin {
     lastName: string;
     userName: string;
     email: string;
-    mobileNumber: string;
     password: string;
     otp: string;
     otpExpiry: Date;
-    isVerified: boolean;
     role: Role;
-    state: string;
-    city: City;
-    dob: Date;
-    age: number;
-    changeCredentialTimestamp: Date;
     isDeleted: boolean;
     deletedAt: Date;
-    profileURL: string;
-    backgroundURL: string;
     pendingApprovals: Types.ObjectId[];
 }
 export declare const adminSchema: import("mongoose").Schema<Admin, import("mongoose").Model<Admin, any, any, any, (import("mongoose").Document<unknown, any, Admin, any, import("mongoose").DefaultSchemaOptions> & Admin & Required<{
@@ -87,15 +78,6 @@ export declare const adminSchema: import("mongoose").Schema<Admin, import("mongo
     }, "id"> & {
         id: string;
     }> | undefined;
-    mobileNumber?: import("mongoose").SchemaDefinitionProperty<string, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
     password?: import("mongoose").SchemaDefinitionProperty<string, Admin, import("mongoose").Document<unknown, {}, Admin, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
@@ -123,61 +105,7 @@ export declare const adminSchema: import("mongoose").Schema<Admin, import("mongo
     }, "id"> & {
         id: string;
     }> | undefined;
-    isVerified?: import("mongoose").SchemaDefinitionProperty<boolean, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
     role?: import("mongoose").SchemaDefinitionProperty<Role, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    state?: import("mongoose").SchemaDefinitionProperty<string, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    city?: import("mongoose").SchemaDefinitionProperty<City, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    dob?: import("mongoose").SchemaDefinitionProperty<Date, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    age?: import("mongoose").SchemaDefinitionProperty<number, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    changeCredentialTimestamp?: import("mongoose").SchemaDefinitionProperty<Date, Admin, import("mongoose").Document<unknown, {}, Admin, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
         _id: Types.ObjectId;
@@ -196,24 +124,6 @@ export declare const adminSchema: import("mongoose").Schema<Admin, import("mongo
         id: string;
     }> | undefined;
     deletedAt?: import("mongoose").SchemaDefinitionProperty<Date, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    profileURL?: import("mongoose").SchemaDefinitionProperty<string, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    backgroundURL?: import("mongoose").SchemaDefinitionProperty<string, Admin, import("mongoose").Document<unknown, {}, Admin, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
         _id: Types.ObjectId;

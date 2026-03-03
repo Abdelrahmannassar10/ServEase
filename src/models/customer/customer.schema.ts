@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { User } from '../common/user.schema';
 import { HydratedDocument, Types } from 'mongoose';
 import { City, Role, UserAgent } from '@common/types/enum';
 
@@ -16,7 +15,7 @@ export class Customer {
   userName: string;
 
   email: string;
-
+  @Prop({ type: String, required: true, unique: true })
   mobileNumber: string;
 
   password: string;
@@ -27,9 +26,9 @@ export class Customer {
 
   isVerified: boolean;
 
-
+  @Prop({ type: String, required: true })
   state: string;
-
+  @Prop({ type: String, required: true, enum: City })
   city: City;
 
   dob: Date;

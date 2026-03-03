@@ -49,6 +49,7 @@ exports.AuthModule = AuthModule = __decorate([
             token_repository_1.TokenRepository,
             cloudinary_1.CloudinaryService
         ],
+        exports: [auth_service_1.AuthService],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

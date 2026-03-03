@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { AdminFactoryService } from './factory';
@@ -20,9 +20,10 @@ export class AdminController {
     return this.adminService.createAdmin(admin);
   }
 
-  @Post("login")
-  login() {
-    return { message: 'Admin login endpoint' };
+  @Post('login')
+  @UseGuards(AuthGuard('admin-local'))
+  adminLogin(@Req() req) {
+    return this.adminService.login(req.user);
   }
 
   @Get('pending-providers')

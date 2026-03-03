@@ -31,14 +31,6 @@ export declare class CustomerController {
     }): Promise<{
         message: string;
     }>;
-    uploadPhoto(req: any, photo?: Express.Multer.File): Promise<{
-        message: string;
-        profileURL: string;
-    }>;
-    uploadBackGroundPhoto(req: any, photo?: Express.Multer.File): Promise<{
-        message: string;
-        backgroundURL: string;
-    }>;
     softDeleteAccount(req: any): Promise<{
         message: string;
     }>;

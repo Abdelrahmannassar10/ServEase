@@ -38,14 +38,18 @@ let ProviderController = class ProviderController {
     async getAnotherProfile(id) {
         return await this.providerService.searchProfile(id);
     }
-    findAll() {
-        return this.providerService.findAll();
+    async updatePassword(req, body) {
+        const { oldPassword, newPassword } = body;
+        if (!oldPassword || !newPassword) {
+            throw new common_1.UnauthorizedException('Old password and new password are required');
+        }
+        if (oldPassword === newPassword) {
+            throw new common_1.UnauthorizedException('New password must be different from old password');
+        }
+        return await this.providerService.updatePassword(req.user._id, oldPassword, newPassword);
     }
-    findOne(id) {
-        return this.providerService.findOne(+id);
-    }
-    remove(id) {
-        return this.providerService.remove(+id);
+    async softDeleteAccount(req) {
+        return await this.providerService.softDeleteAccount(req.user._id);
     }
 };
 exports.ProviderController = ProviderController;
@@ -76,25 +80,24 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProviderController.prototype, "getAnotherProfile", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Post)("update-password"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
+    (0, decorators_1.Roles)(enum_1.Role.PROVIDER),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], ProviderController.prototype, "findAll", null);
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProviderController.prototype, "updatePassword", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Delete)('soft-delete'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
+    (0, decorators_1.Roles)(enum_1.Role.PROVIDER),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ProviderController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ProviderController.prototype, "remove", null);
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProviderController.prototype, "softDeleteAccount", null);
 exports.ProviderController = ProviderController = __decorate([
     (0, common_1.Controller)('provider'),
     __metadata("design:paramtypes", [provider_service_1.ProviderService,

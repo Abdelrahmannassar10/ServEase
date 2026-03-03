@@ -46,17 +46,6 @@ export declare class CustomerService {
     updatePassword(userid: string, oldPassword: string, newPassword: string): Promise<{
         message: string;
     }>;
-    uploadPhoto(userid: string, photo: Express.Multer.File): Promise<{
-        message: string;
-        profileURL: string;
-    }>;
-    uploadBackgroundPhoto(userid: string, photo: Express.Multer.File): Promise<{
-        message: string;
-        backgroundURL: string;
-    }>;
-    deletePhoto(userid: string, type: 'profile' | 'background'): Promise<{
-        result: string;
-    }>;
     softDeleteAccount(userid: string): Promise<{
         message: string;
     }>;

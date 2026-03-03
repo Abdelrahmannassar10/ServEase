@@ -56,16 +56,14 @@ let AuthService = class AuthService {
     userRepository;
     customerRepository;
     providerRepository;
-    adminRepository;
     tokenRepository;
     configService;
     jwtService;
     cloudinaryService;
-    constructor(userRepository, customerRepository, providerRepository, adminRepository, tokenRepository, configService, jwtService, cloudinaryService) {
+    constructor(userRepository, customerRepository, providerRepository, tokenRepository, configService, jwtService, cloudinaryService) {
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
         this.providerRepository = providerRepository;
-        this.adminRepository = adminRepository;
         this.tokenRepository = tokenRepository;
         this.configService = configService;
         this.jwtService = jwtService;
@@ -154,7 +152,6 @@ let AuthService = class AuthService {
             subject: 'Confirmation Email',
             html: this.configService.get('OTP_Body').body(provider.otp),
         });
-        await this.adminRepository.findOneAndUpdate({ role: enum_1.Role.ADMIN }, { $push: { pendingApprovals: provider._id } });
         const { password, otp, otpExpiry, ...createdObj } = JSON.parse(JSON.stringify(provider));
         const payload = {
             email: provider.email,
@@ -274,6 +271,23 @@ let AuthService = class AuthService {
         await this.tokenRepository.add(token, new Date(Date.now() + 1000 * 60 * 60));
         return { message: 'Logged out successfully' };
     }
+    async validateAdmin(email, password) {
+        const admin = await this.userRepository.findOne({
+            email,
+            role: enum_1.Role.ADMIN,
+            isDeleted: false,
+        });
+        console.log(admin);
+        if (!admin) {
+            return null;
+        }
+        const isPasswordValid = await bcrypt.compare(password, admin.password);
+        if (!isPasswordValid) {
+            return null;
+        }
+        const { password: _, ...result } = admin.toObject();
+        return result;
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
@@ -281,7 +295,6 @@ exports.AuthService = AuthService = __decorate([
     __metadata("design:paramtypes", [index_1.UserRepository,
         index_1.CustomerRepository,
         index_1.ProviderRepository,
-        index_1.AdminRepository,
         token_repository_1.TokenRepository,
         config_1.ConfigService,
         jwt_1.JwtService,

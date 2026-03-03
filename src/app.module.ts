@@ -13,7 +13,8 @@ import { UserMongooseModule } from '@shared/modules';
 import { CustomerModule } from './modules/customer/customer.module';
 import { ProviderModule } from './modules/provider/provider.module';
 import { CommonModule } from './modules/common/common.module';
-import { AdminModule } from './modules/admin/admin.module';
+import { CategoryModule } from './modules/category/category.module';
+import { ServiceModule } from './modules/service/service.module';
 import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
@@ -35,7 +36,9 @@ import { AdminModule } from './modules/admin/admin.module';
     CustomerModule,
     ProviderModule,
     CommonModule,
-    AdminModule
+    AdminModule,
+    ServiceModule,
+    CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService,TasksService],

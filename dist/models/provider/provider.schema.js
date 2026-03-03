@@ -42,6 +42,18 @@ let Provider = class Provider {
 };
 exports.Provider = Provider;
 __decorate([
+    (0, mongoose_1.Prop)({ type: String, required: true, unique: true }),
+    __metadata("design:type", String)
+], Provider.prototype, "mobileNumber", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: String, required: true }),
+    __metadata("design:type", String)
+], Provider.prototype, "state", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: String, required: true, enum: enum_1.City }),
+    __metadata("design:type", String)
+], Provider.prototype, "city", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ type: String }),
     __metadata("design:type", String)
 ], Provider.prototype, "writtenCv", void 0);

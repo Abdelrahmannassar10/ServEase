@@ -28,7 +28,6 @@ export class User {
   @Prop({ type: String, required: true, unique: true })
   email: string;
 
-  @Prop({ type: String, required: true, unique: true })
   mobileNumber: string;
 
   @Prop({
@@ -52,10 +51,8 @@ export class User {
   @Prop({ type: String, enum: UserAgent, default: UserAgent.SYSTEM })
   userAgent: UserAgent;
 
-  @Prop({ type: String, required: true })
   state: string;
 
-  @Prop({ type: String, required: true, enum: City })
   city: City;
 
   @Prop({ type: Date })

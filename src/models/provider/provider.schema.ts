@@ -15,7 +15,7 @@ export class Provider {
   userName: string;
 
   email: string;
-
+  @Prop({ type: String, required: true, unique: true })
   mobileNumber: string;
 
   password: string;
@@ -26,9 +26,9 @@ export class Provider {
 
   isVerified: boolean;
   role: Role;
-
+  @Prop({ type: String, required: true })
   state: string;
-
+  @Prop({ type: String, required: true, enum: City })
   city: City;
 
   dob: Date;
@@ -46,7 +46,7 @@ export class Provider {
   @Prop({ type: String })
   writtenCv: string;
 
-  @Prop({ type: String ,unique: true, required: true, match: /^\d{6,20}$/})
+  @Prop({ type: String, unique: true, required: true, match: /^\d{6,20}$/ })
   nationalNumber: string;
 
   @Prop({ type: Boolean, default: false })

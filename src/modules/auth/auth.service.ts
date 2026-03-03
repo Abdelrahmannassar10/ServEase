@@ -20,6 +20,7 @@ import { ConfirmOTPDto } from './dto/confirmOTP.dto';
 import { ResendOTPDto } from './dto/resendOTP';
 import { TokenRepository } from '@models/token/token.repository';
 import { CloudinaryService } from '@common/cloudinary';
+import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -301,10 +302,12 @@ export class AuthService {
   async validateAdmin(email: string, password: string) {
   const admin = await this.userRepository.findOne({
     email,
-    role: 'ADMIN',
+    role: Role.ADMIN,
     isDeleted: false,
   });
 
+  console.log(admin);
+  
   if (!admin) {
     return null;
   }

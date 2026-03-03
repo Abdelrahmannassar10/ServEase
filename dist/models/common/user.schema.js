@@ -64,10 +64,6 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true, unique: true }),
-    __metadata("design:type", String)
-], User.prototype, "mobileNumber", void 0);
-__decorate([
     (0, mongoose_1.Prop)({
         type: String,
         required: function () {
@@ -96,14 +92,6 @@ __decorate([
     (0, mongoose_1.Prop)({ type: String, enum: enum_1.UserAgent, default: enum_1.UserAgent.SYSTEM }),
     __metadata("design:type", String)
 ], User.prototype, "userAgent", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true }),
-    __metadata("design:type", String)
-], User.prototype, "state", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true, enum: enum_1.City }),
-    __metadata("design:type", String)
-], User.prototype, "city", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: Date }),
     __metadata("design:type", Date)

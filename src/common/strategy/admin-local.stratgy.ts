@@ -14,7 +14,11 @@ export class AdminLocalStrategy extends PassportStrategy(
   }
 
   async validate(email: string, password: string) {
+    console.log(email,password);
+    
     const user = await this.authService.validateAdmin(email, password);
+    console.log(user);
+    
 
     if (!user || user.role !== Role.ADMIN) {
       throw new UnauthorizedException('Admin access only');

@@ -89,32 +89,9 @@ let CustomerService = class CustomerService {
         }
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
         customer.password = hashedNewPassword;
+        customer.changeCredentialTimestamp = new Date();
         await this.customerRepository.updateById(customer.id, customer);
         return { message: 'Password updated successfully' };
-    }
-    async uploadPhoto(userid, photo) {
-        const customer = await this.customerRepository.findById(userid);
-        if (!customer) {
-            throw new common_1.NotFoundException('Customer not found');
-        }
-        const upload = await this.cloudService.uploadImage(photo, `ServEase/Customers/${customer.email}/profile`, `profile_${customer._id}`);
-        customer.profileURL = upload.secure_url;
-        await this.customerRepository.updateById(customer.id, customer);
-        return { message: 'Profile photo updated successfully', profileURL: upload.secure_url, };
-    }
-    async uploadBackgroundPhoto(userid, photo) {
-        const customer = await this.customerRepository.findById(userid);
-        if (!customer) {
-            throw new common_1.NotFoundException('Customer not found');
-        }
-        const upload = await this.cloudService.uploadImage(photo, `ServEase/Customers/${customer.email}/background`, `background_${customer._id}`);
-        console.log("gdgdgdgd");
-        customer.backgroundURL = upload.secure_url;
-        await this.customerRepository.updateById(customer.id, customer);
-        return { message: 'Background photo updated successfully', backgroundURL: upload.secure_url };
-    }
-    deletePhoto(userid, type) {
-        return this.cloudService.deleteImage(`ServEase/Customers/${userid}/${type}_${userid}`);
     }
     async softDeleteAccount(userid) {
         const customer = await this.customerRepository.findById(userid);

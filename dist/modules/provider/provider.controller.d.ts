@@ -43,7 +43,13 @@ export declare class ProviderController {
         profileURL: any;
         backgroundURL: any;
     }>;
-    findAll(): string;
-    findOne(id: string): string;
-    remove(id: string): string;
+    updatePassword(req: any, body: {
+        oldPassword: string;
+        newPassword: string;
+    }): Promise<{
+        message: string;
+    }>;
+    softDeleteAccount(req: any): Promise<{
+        message: string;
+    }>;
 }
