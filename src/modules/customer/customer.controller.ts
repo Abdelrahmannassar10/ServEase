@@ -7,9 +7,6 @@ import {
   UseGuards,
   Get,
   UnauthorizedException,
-  UseInterceptors,
-  UploadedFile,
-  BadRequestException,
 } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -18,8 +15,7 @@ import { CustomerFactoryService } from './factory';
 import { RolesGuard } from '@common/guard';
 import { Roles } from '@common/decorators';
 import { Role } from '@common/types/enum';
-import { FileInterceptor } from '@nestjs/platform-express';
-import * as multer from 'multer';
+
 
 @Controller('customer')
 export class CustomerController {

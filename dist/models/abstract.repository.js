@@ -21,6 +21,9 @@ class AbstractRepository {
             isDeleted: false,
         }, projection, options);
     }
+    findAll(filter, projection, options) {
+        return this.model.find(filter, projection, options);
+    }
     count(filter) {
         return this.model.countDocuments(filter);
     }
@@ -47,6 +50,7 @@ class AbstractRepository {
             $set: {
                 isDeleted: true,
                 deletedAt: new Date(),
+                changeCredentialTimestamp: new Date(),
             },
         }, { new: true });
     }

@@ -28,8 +28,8 @@ export class AdminController {
 
   @Get('pending-providers')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.CUSTOMER)
-  getPendingProviders() {
-    return this.adminService.getPendingProviders();
+  @Roles(Role.ADMIN)
+  async getPendingProviders() {
+    return await this.adminService.getPendingProviders();
   }
 }

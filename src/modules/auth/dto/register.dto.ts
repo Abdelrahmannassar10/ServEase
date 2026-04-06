@@ -109,7 +109,6 @@ export class CustomerRegisterDto {
   @IsDate()
   dob: Date;
 
-  @IsString()
   @IsNotEmpty()
   @IsEnum(City)
   city: City;

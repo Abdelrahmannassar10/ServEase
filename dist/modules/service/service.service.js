@@ -25,6 +25,10 @@ let ServiceService = class ServiceService {
         await this.categoryRepository.updateById(createServiceDto.categoryId, { $push: { services: service._id } });
         return { message: 'Service created successfully', service: service.name };
     }
+    async getServices() {
+        const service = await this.serviceRepository.findAll({}, { select: { name: true } });
+        return;
+    }
 };
 exports.ServiceService = ServiceService;
 exports.ServiceService = ServiceService = __decorate([

@@ -28,10 +28,13 @@ let ServiceController = class ServiceController {
     create(createServiceDto) {
         return this.serviceService.create(createServiceDto);
     }
+    async getServices() {
+        return await this.serviceService.getServices();
+    }
 };
 exports.ServiceController = ServiceController;
 __decorate([
-    (0, common_1.Post)("add"),
+    (0, common_1.Post)('add'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
     (0, decorators_1.Roles)(enum_1.Role.ADMIN),
     __param(0, (0, common_1.Body)()),
@@ -39,6 +42,12 @@ __decorate([
     __metadata("design:paramtypes", [create_service_dto_1.CreateServiceDto]),
     __metadata("design:returntype", void 0)
 ], ServiceController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('all'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ServiceController.prototype, "getServices", null);
 exports.ServiceController = ServiceController = __decorate([
     (0, common_1.Controller)('service'),
     __metadata("design:paramtypes", [service_service_1.ServiceService])

@@ -16,4 +16,9 @@ export class CategoryController {
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
+
+  @Get()
+  async getCategories(){
+    return await this.categoryService.getCategories();
+  }
 }

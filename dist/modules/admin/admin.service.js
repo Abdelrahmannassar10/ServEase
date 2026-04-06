@@ -47,11 +47,14 @@ const common_1 = require("@nestjs/common");
 const index_1 = require("../../models/index");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcrypt"));
+const enum_1 = require("../../common/types/enum");
 let AdminService = class AdminService {
     adminRepository;
+    providerRepository;
     jwtService;
-    constructor(adminRepository, jwtService) {
+    constructor(adminRepository, providerRepository, jwtService) {
         this.adminRepository = adminRepository;
+        this.providerRepository = providerRepository;
         this.jwtService = jwtService;
     }
     async createAdmin(admin) {
@@ -83,8 +86,12 @@ let AdminService = class AdminService {
             access_token: this.jwtService.sign(payload),
         };
     }
-    getPendingProviders() {
-        return this.adminRepository.find({ where: { isDeleted: false, role: 'PROVIDER', isApproved: false } }, {
+    async getPendingProviders() {
+        const allProviders = await this.providerRepository.find({});
+        console.log('ALL PROVIDERS:', allProviders);
+        const pendingProviders = await this.providerRepository.find({
+            where: { isDeleted: false, role: enum_1.Role.PROVIDER, adminApproved: false },
+        }, {
             select: {
                 _id: true,
                 firstName: true,
@@ -103,12 +110,15 @@ let AdminService = class AdminService {
                 writtenCv: true,
             },
         });
+        console.log('PENDING PROVIDERS:', pendingProviders);
+        return pendingProviders;
     }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [index_1.AdminRepository,
+        index_1.ProviderRepository,
         jwt_1.JwtService])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

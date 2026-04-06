@@ -276,7 +276,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email');
     }
     if (user.isVerified) {
-      throw new UnauthorizedException('Email already verified');
+      throw new ConflictException('Email already verified');
     }
     const otp = Math.floor(100000 + Math.random() * 900000);
     const otpExpiry = new Date(Date.now() + 30 * 1000);

@@ -17,4 +17,12 @@ export class ServiceService {
     );
     return { message: 'Service created successfully', service: service.name };
   }
+  async getServices() {
+     const service =  await this.serviceRepository.findAll(
+      {},
+      {select:{name:true}},
+      
+    );
+    return 
+  }
 }

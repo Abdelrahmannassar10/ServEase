@@ -12,4 +12,24 @@ export class CategoryService {
       category: category.name,
     };
   }
+  async getCategories() {
+     const categories=  await this.categoryRepository.findAll(
+      {},
+      {},
+      {
+        populate: {
+          path:"services",
+          select: {name: 1}
+        },
+        
+      },
+    );
+    return categories.map((category) => ({
+    category: {
+      id: category._id,
+      name: category.name,
+    },
+    services: category.services,
+  }));
+  }
 }

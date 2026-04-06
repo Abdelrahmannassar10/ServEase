@@ -1,14 +1,15 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Admin } from './entities/admin.entity';
-import { AdminRepository } from '@models/index';
+import { AdminRepository, ProviderRepository } from '@models/index';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-
+import { Role } from '@common/types/enum';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly adminRepository: AdminRepository,
+    private readonly providerRepository: ProviderRepository,
     private readonly jwtService: JwtService,
   ) {}
   async createAdmin(admin: Admin) {
@@ -19,11 +20,11 @@ export class AdminService {
     if (existingAdmin) {
       throw new ConflictException('Admin already exists');
     }
-    admin.password= await bcrypt.hash(admin.password, 10);
+    admin.password = await bcrypt.hash(admin.password, 10);
     try {
       await this.adminRepository.create(admin);
       return { message: 'Admin created successfully' };
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 11000) {
         throw new ConflictException('Admin email already exists');
       }
@@ -42,9 +43,13 @@ export class AdminService {
       access_token: this.jwtService.sign(payload),
     };
   }
-  getPendingProviders() {
-    return this.adminRepository.find(
-      { where: { isDeleted: false, role: 'PROVIDER', isApproved: false } },
+  async getPendingProviders() {
+    const allProviders = await this.providerRepository.find({});
+    console.log('ALL PROVIDERS:', allProviders);
+    const pendingProviders = await this.providerRepository.find(
+      {
+        where: { isDeleted: false, role: Role.PROVIDER, adminApproved: false },
+      },
       {
         select: {
           _id: true,
@@ -65,5 +70,7 @@ export class AdminService {
         },
       },
     );
+    console.log('PENDING PROVIDERS:', pendingProviders);
+    return pendingProviders;
   }
 }

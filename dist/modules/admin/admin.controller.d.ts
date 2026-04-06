@@ -11,35 +11,17 @@ export declare class AdminController {
     adminLogin(req: any): Promise<{
         access_token: string;
     }>;
-    getPendingProviders(): import("mongoose").Query<(import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("../../models").Admin, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Admin & Required<{
+    getPendingProviders(): Promise<(import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("../../models").Provider, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Provider & Required<{
         _id: import("mongoose").Types.ObjectId;
     }> & {
         __v: number;
     } & {
         id: string;
-    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, import("../../models").Admin, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Admin & Required<{
+    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, import("../../models").Provider, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Provider & Required<{
         _id: import("mongoose").Types.ObjectId;
     }> & {
         __v: number;
     } & {
         id: string;
-    })[], import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("../../models").Admin, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Admin & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, import("../../models").Admin, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Admin & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, {}, import("mongoose").Document<unknown, {}, import("../../models").Admin, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Admin & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, "find", {}>;
+    })[]>;
 }

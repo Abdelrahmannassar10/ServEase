@@ -18,6 +18,11 @@ export declare class AbstractRepository<T> {
     } & import("mongoose").AddDefaultId<T, {}, import("mongoose").DefaultSchemaOptions>>[], import("mongoose").IfAny<T, any, import("mongoose").Document<unknown, {}, T, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Require_id<T> & {
         __v: number;
     } & import("mongoose").AddDefaultId<T, {}, import("mongoose").DefaultSchemaOptions>>, {}, T, "find", {}>;
+    findAll(filter: QueryFilter<T>, projection?: ProjectionType<T>, options?: QueryOptions<T>): import("mongoose").Query<import("mongoose").IfAny<T, any, import("mongoose").Document<unknown, {}, T, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Require_id<T> & {
+        __v: number;
+    } & import("mongoose").AddDefaultId<T, {}, import("mongoose").DefaultSchemaOptions>>[], import("mongoose").IfAny<T, any, import("mongoose").Document<unknown, {}, T, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Require_id<T> & {
+        __v: number;
+    } & import("mongoose").AddDefaultId<T, {}, import("mongoose").DefaultSchemaOptions>>, {}, T, "find", {}>;
     count(filter: QueryFilter<T>): import("mongoose").Query<number, import("mongoose").IfAny<T, any, import("mongoose").Document<unknown, {}, T, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Require_id<T> & {
         __v: number;
     } & import("mongoose").AddDefaultId<T, {}, import("mongoose").DefaultSchemaOptions>>, {}, T, "countDocuments", {}>;

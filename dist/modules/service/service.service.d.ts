@@ -9,4 +9,5 @@ export declare class ServiceService {
         message: string;
         service: string;
     }>;
+    getServices(): Promise<void>;
 }

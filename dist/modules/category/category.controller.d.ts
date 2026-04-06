@@ -7,4 +7,11 @@ export declare class CategoryController {
         message: string;
         category: string;
     }>;
+    getCategories(): Promise<{
+        category: {
+            id: import("mongoose").Types.ObjectId;
+            name: string;
+        };
+        services: import("mongoose").Types.ObjectId[];
+    }[]>;
 }

@@ -15,10 +15,10 @@ export class User {
   @Prop({ type: String, required: true })
   lastName: string;
   @Virtual({
-    get() {
+    get(this : User) {
       return `${this.firstName} ${this.lastName}`;
     },
-    set(value: string) {
+    set(this : User , value: string) {
       this.firstName = value.split(' ')[0];
       this.lastName = value.split(' ')[1];
     },
@@ -59,13 +59,13 @@ export class User {
   dob: Date;
   adminApproved: boolean;
   @Virtual({
-    get() {
+    get(this : User) {
       if (!this.dob) return null;
       const ageDifMs = Date.now() - this.dob.getTime();
       const ageDate = new Date(ageDifMs);
       return Math.abs(ageDate.getUTCFullYear() - 1970);
     },
-    set(value: number) {
+    set(this : User , value: number) {
       const currentDate = new Date();
       const birthYear = currentDate.getFullYear() - value;
       this.dob = new Date(

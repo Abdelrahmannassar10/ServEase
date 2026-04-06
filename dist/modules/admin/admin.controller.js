@@ -35,8 +35,8 @@ let AdminController = class AdminController {
     adminLogin(req) {
         return this.adminService.login(req.user);
     }
-    getPendingProviders() {
-        return this.adminService.getPendingProviders();
+    async getPendingProviders() {
+        return await this.adminService.getPendingProviders();
     }
 };
 exports.AdminController = AdminController;
@@ -58,10 +58,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)('pending-providers'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
-    (0, decorators_1.Roles)(enum_1.Role.CUSTOMER),
+    (0, decorators_1.Roles)(enum_1.Role.ADMIN),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AdminController.prototype, "getPendingProviders", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)('admin'),

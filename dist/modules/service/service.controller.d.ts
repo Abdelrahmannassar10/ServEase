@@ -7,4 +7,5 @@ export declare class ServiceController {
         message: string;
         service: string;
     }>;
+    getServices(): Promise<void>;
 }

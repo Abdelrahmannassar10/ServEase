@@ -28,6 +28,9 @@ let CategoryController = class CategoryController {
     create(createCategoryDto) {
         return this.categoryService.create(createCategoryDto);
     }
+    async getCategories() {
+        return await this.categoryService.getCategories();
+    }
 };
 exports.CategoryController = CategoryController;
 __decorate([
@@ -39,6 +42,12 @@ __decorate([
     __metadata("design:paramtypes", [create_category_dto_1.CreateCategoryDto]),
     __metadata("design:returntype", void 0)
 ], CategoryController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CategoryController.prototype, "getCategories", null);
 exports.CategoryController = CategoryController = __decorate([
     (0, common_1.Controller)('category'),
     __metadata("design:paramtypes", [category_service_1.CategoryService])

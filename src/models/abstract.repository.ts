@@ -46,7 +46,17 @@ export class AbstractRepository<T> {
       options,
     );
   }
-
+  findAll(
+    filter: QueryFilter<T>,
+    projection?: ProjectionType<T>,
+    options?: QueryOptions<T>,
+  ) {
+    return this.model.find(
+      filter,
+      projection,
+      options,
+    );
+  }
   count(filter: QueryFilter<T>) {
     return this.model.countDocuments(filter);
   }
@@ -88,6 +98,7 @@ export class AbstractRepository<T> {
         $set: {
           isDeleted: true,
           deletedAt: new Date(),
+          changeCredentialTimestamp: new Date(),
         },
       },
       { new: true },
