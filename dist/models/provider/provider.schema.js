@@ -42,15 +42,24 @@ let Provider = class Provider {
 };
 exports.Provider = Provider;
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true, unique: true }),
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: true
+    }),
     __metadata("design:type", String)
 ], Provider.prototype, "mobileNumber", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true }),
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: true
+    }),
     __metadata("design:type", String)
 ], Provider.prototype, "state", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true, enum: enum_1.City }),
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: true
+    }),
     __metadata("design:type", String)
 ], Provider.prototype, "city", void 0);
 __decorate([
@@ -81,6 +90,7 @@ exports.Provider = Provider = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true,
         toJSON: { virtuals: true },
+        toObject: { virtuals: true },
         discriminatorKey: 'role',
     })
 ], Provider);

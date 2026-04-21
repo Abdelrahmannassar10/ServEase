@@ -8,9 +8,8 @@ import { promisify } from 'node:util';
 
 const scryptAsync = promisify(scrypt);
 
-// ⚠️ Move this to env variable in real project
 const PASSWORD = process.env.ENCRYPTION_SECRET || 'super-secret-key';
-const SALT = 'secure-salt-value'; // store safely as well
+const SALT = 'secure-salt-value'; 
 
 let key: Buffer;
 
@@ -27,7 +26,7 @@ export async function encrypt(plainText: string): Promise<string> {
   }
 
   const key = await getKey();
-  const iv = randomBytes(12); // 12 bytes recommended for GCM
+  const iv = randomBytes(12); 
 
   const cipher = createCipheriv('aes-256-gcm', key, iv);
 
@@ -38,7 +37,6 @@ export async function encrypt(plainText: string): Promise<string> {
 
   const authTag = cipher.getAuthTag();
 
-  // Final format: iv:authTag:ciphertext
   return [
     iv.toString('hex'),
     authTag.toString('hex'),
@@ -68,4 +66,11 @@ export async function decrypt(encryptedData: string): Promise<string> {
   ]);
 
   return decrypted.toString('utf8');
+}
+
+
+export function isEncrypted(value: string): boolean {
+  return typeof value === 'string' &&
+         value.includes(':') &&
+         value.split(':').length === 3;
 }

@@ -15,7 +15,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { City, ServiceCategory } from '@common/types/enum';
 
 export class ProviderRegisterDto {
@@ -40,8 +40,8 @@ export class ProviderRegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(8)
-  @MaxLength(20)
+  @MinLength(11)
+  @MaxLength(11)
   password: string;
 
   @IsOptional()
@@ -98,12 +98,14 @@ export class CustomerRegisterDto {
   @MaxLength(20)
   mobileNumber: string;
 
+
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
   @MaxLength(20)
   password: string;
 
+ 
   @IsOptional()
   @Transform(({ value }) => new Date(value))
   @IsDate()

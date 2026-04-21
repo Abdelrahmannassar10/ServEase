@@ -5,6 +5,7 @@ import { City, Role, UserAgent } from '@common/types/enum';
 @Schema({
   timestamps: true,
   toJSON: { virtuals: true },
+   toObject: { virtuals: true },
   discriminatorKey: 'role',
 })
 export class Customer {
@@ -15,7 +16,12 @@ export class Customer {
   userName: string;
 
   email: string;
-  @Prop({ type: String, required: true, unique: true })
+  @Prop({
+    type: String,
+    required: function (this: Customer) {
+      return this.userAgent === 'SYSTEM';
+    },
+  })
   mobileNumber: string;
 
   password: string;
@@ -26,9 +32,21 @@ export class Customer {
 
   isVerified: boolean;
 
-  @Prop({ type: String, required: true })
+  @Prop({
+      type: String,
+      required: function (this: Customer) {
+        return this.userAgent === 'SYSTEM';
+      },
+    })
   state: string;
-  @Prop({ type: String, required: true, enum: City })
+
+  @Prop({
+    type: String,
+    required: function (this: Customer) {
+      return this.userAgent === 'SYSTEM';
+    },
+    enum: City,
+  })
   city: City;
 
   dob: Date;

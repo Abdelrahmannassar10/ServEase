@@ -16,6 +16,7 @@ import { CommonModule } from './modules/common/common.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ServiceModule } from './modules/service/service.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { ReviewModule } from './modules/review/review.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { AdminModule } from './modules/admin/admin.module';
     CommonModule,
     AdminModule,
     ServiceModule,
-    CategoryModule
+    CategoryModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService,TasksService],

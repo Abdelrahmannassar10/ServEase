@@ -6,6 +6,7 @@ import { BadRequestException } from '@nestjs/common';
 export class AuthFactoryService {
   async createCustomer(customerDTO: CustomerRegisterDto) {
     const customer = new Customer();
+
     customer.firstName = customerDTO.firstName;
     customer.lastName = customerDTO.lastName;
     customer.email = customerDTO.email;

@@ -4,6 +4,7 @@ import { AdminRepository, ProviderRepository } from '@models/index';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Role } from '@common/types/enum';
+import { profile } from 'console';
 
 @Injectable()
 export class AdminService {
@@ -46,31 +47,26 @@ export class AdminService {
   async getPendingProviders() {
     const allProviders = await this.providerRepository.find({});
     console.log('ALL PROVIDERS:', allProviders);
-    const pendingProviders = await this.providerRepository.find(
-      {
-        where: { isDeleted: false, role: Role.PROVIDER, adminApproved: false },
-      },
-      {
-        select: {
-          _id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          userName: true,
-          mobileNumber: true,
-          state: true,
-          city: true,
-          age: true,
-          profileURL: true,
-          backgroundURL: true,
-          service: true,
-          specialization: true,
-          nationalNumber: true,
-          writtenCv: true,
-        },
-      },
-    );
-    console.log('PENDING PROVIDERS:', pendingProviders);
-    return pendingProviders;
+    const pendingProviders = await this.providerRepository.find({
+      adminApproved: false,
+    });
+    
+
+    return pendingProviders.map((p) => ({
+      id: p._id,
+      userName: p.userName,
+      specialization: p.specialization,
+      service: p.service,
+      nationalNumber: p.nationalNumber,
+      writtenCv: p.writtenCv,
+      state: p.state,
+      city: p.city,
+      email: p.email,
+      mobileNumber: p.mobileNumber,
+      age: p.age,
+      profileURL: p.profileURL,
+      backgroundURL: p.backgroundURL,
+      cvUrl: p.cvUrl,
+    }));
   }
 }

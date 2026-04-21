@@ -8,6 +8,7 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
+  Response,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CustomerRegisterDto, ProviderRegisterDto } from './dto/register.dto';
@@ -29,19 +30,20 @@ export class AuthController {
   ) {}
 
   @Post('register/customer')
-  async register(@Body() customerRegisterDto: CustomerRegisterDto) {
+  async customerRegister(@Body() customerRegisterDto: CustomerRegisterDto) {
     const customer =
       await this.authFactoryService.createCustomer(customerRegisterDto);
+
     const { access_token, user } =
       await this.authService.customerRegister(customer);
     return { access_token, user };
   }
   @Post('register/provider')
   @UseInterceptors(
-  FileInterceptor('cvFile', {
-    storage: multer.memoryStorage(),
-  }),
-)
+    FileInterceptor('cvFile', {
+      storage: multer.memoryStorage(),
+    }),
+  )
   async registerProvider(
     @Body() providerRegisterDto: ProviderRegisterDto,
     @UploadedFile() cvFile?: Express.Multer.File,
@@ -61,8 +63,8 @@ export class AuthController {
   async login(@Req() req: any) {
     return this.authService.login(req.user);
   }
-  @Get('google')
   @UseGuards(GoogleAuthGuard)
+  @Get('google')
   async googleAuth() {
     // redirects to Google login
   }

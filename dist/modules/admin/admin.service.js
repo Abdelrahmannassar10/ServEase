@@ -47,7 +47,6 @@ const common_1 = require("@nestjs/common");
 const index_1 = require("../../models/index");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcrypt"));
-const enum_1 = require("../../common/types/enum");
 let AdminService = class AdminService {
     adminRepository;
     providerRepository;
@@ -90,28 +89,24 @@ let AdminService = class AdminService {
         const allProviders = await this.providerRepository.find({});
         console.log('ALL PROVIDERS:', allProviders);
         const pendingProviders = await this.providerRepository.find({
-            where: { isDeleted: false, role: enum_1.Role.PROVIDER, adminApproved: false },
-        }, {
-            select: {
-                _id: true,
-                firstName: true,
-                lastName: true,
-                email: true,
-                userName: true,
-                mobileNumber: true,
-                state: true,
-                city: true,
-                age: true,
-                profileURL: true,
-                backgroundURL: true,
-                service: true,
-                specialization: true,
-                nationalNumber: true,
-                writtenCv: true,
-            },
+            adminApproved: false,
         });
-        console.log('PENDING PROVIDERS:', pendingProviders);
-        return pendingProviders;
+        return pendingProviders.map((p) => ({
+            id: p._id,
+            userName: p.userName,
+            specialization: p.specialization,
+            service: p.service,
+            nationalNumber: p.nationalNumber,
+            writtenCv: p.writtenCv,
+            state: p.state,
+            city: p.city,
+            email: p.email,
+            mobileNumber: p.mobileNumber,
+            age: p.age,
+            profileURL: p.profileURL,
+            backgroundURL: p.backgroundURL,
+            cvUrl: p.cvUrl,
+        }));
     }
 };
 exports.AdminService = AdminService;

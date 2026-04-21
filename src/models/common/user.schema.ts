@@ -1,10 +1,10 @@
 import { City, Role, UserAgent } from '@common/types/enum';
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-@Schema()
 @Schema({
   timestamps: true,
   toJSON: { virtuals: true },
+   toObject: { virtuals: true },
   discriminatorKey: 'role',
 })
 export class User {
@@ -15,16 +15,16 @@ export class User {
   @Prop({ type: String, required: true })
   lastName: string;
   @Virtual({
-    get(this : User) {
-      return `${this.firstName} ${this.lastName}`;
+    get(this: User) {
+      return `${this.firstName ?? ''} ${this.lastName ?? ''}`.trim();
     },
-    set(this : User , value: string) {
-      this.firstName = value.split(' ')[0];
-      this.lastName = value.split(' ')[1];
+    set(this: User, value: string) {
+      const parts = value.trim().split(' ');
+      this.firstName = parts[0];
+      this.lastName = parts.slice(1).join(' ') || '';
     },
   })
   userName: string;
-
   @Prop({ type: String, required: true, unique: true })
   email: string;
 
@@ -59,13 +59,13 @@ export class User {
   dob: Date;
   adminApproved: boolean;
   @Virtual({
-    get(this : User) {
+    get(this: User) {
       if (!this.dob) return null;
       const ageDifMs = Date.now() - this.dob.getTime();
       const ageDate = new Date(ageDifMs);
       return Math.abs(ageDate.getUTCFullYear() - 1970);
     },
-    set(this : User , value: number) {
+    set(this: User, value: number) {
       const currentDate = new Date();
       const birthYear = currentDate.getFullYear() - value;
       this.dob = new Date(

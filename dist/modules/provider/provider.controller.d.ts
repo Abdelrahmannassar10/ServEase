@@ -38,7 +38,8 @@ export declare class ProviderController {
     }, "findOneAndUpdate", {}>;
     getMyProfile(req: any): Promise<any>;
     getAnotherProfile(id: string): Promise<{
-        mobileNumber: string;
+        id: any;
+        mobileNumber: any;
         userName: any;
         profileURL: any;
         backgroundURL: any;

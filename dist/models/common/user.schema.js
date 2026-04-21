@@ -50,11 +50,12 @@ __decorate([
 __decorate([
     (0, mongoose_1.Virtual)({
         get() {
-            return `${this.firstName} ${this.lastName}`;
+            return `${this.firstName ?? ''} ${this.lastName ?? ''}`.trim();
         },
         set(value) {
-            this.firstName = value.split(' ')[0];
-            this.lastName = value.split(' ')[1];
+            const parts = value.trim().split(' ');
+            this.firstName = parts[0];
+            this.lastName = parts.slice(1).join(' ') || '';
         },
     }),
     __metadata("design:type", String)
@@ -142,10 +143,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "backgroundPublicId", void 0);
 exports.User = User = __decorate([
-    (0, mongoose_1.Schema)(),
     (0, mongoose_1.Schema)({
         timestamps: true,
         toJSON: { virtuals: true },
+        toObject: { virtuals: true },
         discriminatorKey: 'role',
     })
 ], User);

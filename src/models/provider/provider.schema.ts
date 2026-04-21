@@ -5,6 +5,7 @@ import { City, Role, ServiceCategory, UserAgent } from '@common/types/enum';
 @Schema({
   timestamps: true,
   toJSON: { virtuals: true },
+   toObject: { virtuals: true },
   discriminatorKey: 'role',
 })
 export class Provider {
@@ -15,7 +16,11 @@ export class Provider {
   userName: string;
 
   email: string;
-  @Prop({ type: String, required: true, unique: true })
+
+  @Prop({
+      type: String,
+      required: true
+    })
   mobileNumber: string;
 
   password: string;
@@ -26,9 +31,17 @@ export class Provider {
 
   isVerified: boolean;
   role: Role;
-  @Prop({ type: String, required: true })
+
+  @Prop({
+    type: String,
+    required: true
+  })
   state: string;
-  @Prop({ type: String, required: true, enum: City })
+
+  @Prop({
+      type: String,
+      required:true
+    })
   city: City;
 
   dob: Date;

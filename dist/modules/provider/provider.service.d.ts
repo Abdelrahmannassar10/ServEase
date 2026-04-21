@@ -36,7 +36,8 @@ export declare class ProviderService {
     }, "findOneAndUpdate", {}>;
     getProfile(userid: string): Promise<any>;
     searchProfile(id: string): Promise<{
-        mobileNumber: string;
+        id: any;
+        mobileNumber: any;
         userName: any;
         profileURL: any;
         backgroundURL: any;

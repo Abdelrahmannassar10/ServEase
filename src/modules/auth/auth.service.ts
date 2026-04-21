@@ -20,7 +20,7 @@ import { ConfirmOTPDto } from './dto/confirmOTP.dto';
 import { ResendOTPDto } from './dto/resendOTP';
 import { TokenRepository } from '@models/token/token.repository';
 import { CloudinaryService } from '@common/cloudinary';
-import { log } from 'console';
+import { Customer } from './entities/auth.entity';
 
 @Injectable()
 export class AuthService {
@@ -46,13 +46,18 @@ export class AuthService {
       throw new UnauthorizedException('Please verify your email first');
     }
 
-    // if (user.role == Role.PROVIDER) {
-    //   if (user.adminApproved == false) {
-    //     throw new UnauthorizedException(
-    //       'Admin did`t approve for your email yet',
-    //     );
-    //   }
-    // }
+    if (user.role == Role.PROVIDER) {
+      if (user.adminApproved == false) {
+        throw new UnauthorizedException(
+          'Admin did`t approve for your email yet',
+        );
+      }
+    }
+
+    if(user.isDeleted){
+      user.isDeleted = false;
+      await this.userRepository.updateById(user._id as unknown as string , { isDeleted: false , deletedAt: null });
+    }
 
     return user;
   }
@@ -63,7 +68,7 @@ export class AuthService {
       role: user.role,
       userName: user.userName,
     };
-    console.log(this.configService.get('JWT_SECRET'));
+    // console.log(this.configService.get('JWT_SECRET'));
 
     return {
       access_token: this.jwtService.sign(payload, {
@@ -75,27 +80,27 @@ export class AuthService {
       email: user.email,
     };
   }
-  async customerRegister(customerRegisterDTO: CustomerRegisterDto) {
+  async customerRegister(customer: Customer) {
     const userExists = await this.userRepository.findOne({
-      email: customerRegisterDTO.email,
+      email: customer.email,
     });
     if (userExists) {
       throw new ConflictException('User already exists');
     }
-    const customer = await this.customerRepository.create(customerRegisterDTO);
-    sendMail({
-      to: customer.email,
-      subject: 'Confirmation Email',
-      html: this.configService.get('OTP_Body').body(customer.otp),
-    });
+    const customerExist = await this.customerRepository.create(customer);
+    // sendMail({
+    //   to: customerExist.email,
+    //   subject: 'Confirmation Email',
+    //   html: this.configService.get('OTP_Body').body(customerExist.otp),
+    // });
     const { password, otp, otpExpiry, ...createdObj } = JSON.parse(
-      JSON.stringify(customer),
+      JSON.stringify(customerExist),
     );
     const payload = {
-      email: customer.email,
-      _id: customer._id,
-      role: customer.role,
-      userName: customer.userName,
+      email: customerExist.email,
+      _id: customerExist._id,
+      role: customerExist.role,
+      userName: customerExist.userName,
     };
     return {
       access_token: this.jwtService.sign(

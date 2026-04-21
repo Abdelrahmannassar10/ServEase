@@ -79,6 +79,15 @@ let AuthService = class AuthService {
         if (user.isVerified == false) {
             throw new common_1.UnauthorizedException('Please verify your email first');
         }
+        if (user.role == enum_1.Role.PROVIDER) {
+            if (user.adminApproved == false) {
+                throw new common_1.UnauthorizedException('Admin did`t approve for your email yet');
+            }
+        }
+        if (user.isDeleted) {
+            user.isDeleted = false;
+            await this.userRepository.updateById(user._id, { isDeleted: false, deletedAt: null });
+        }
         return user;
     }
     async login(user) {
@@ -88,7 +97,6 @@ let AuthService = class AuthService {
             role: user.role,
             userName: user.userName,
         };
-        console.log(this.configService.get('JWT_SECRET'));
         return {
             access_token: this.jwtService.sign(payload, {
                 secret: this.configService.get('JWT_SECRET'),
@@ -99,25 +107,20 @@ let AuthService = class AuthService {
             email: user.email,
         };
     }
-    async customerRegister(customerRegisterDTO) {
+    async customerRegister(customer) {
         const userExists = await this.userRepository.findOne({
-            email: customerRegisterDTO.email,
+            email: customer.email,
         });
         if (userExists) {
             throw new common_1.ConflictException('User already exists');
         }
-        const customer = await this.customerRepository.create(customerRegisterDTO);
-        (0, helper_1.sendMail)({
-            to: customer.email,
-            subject: 'Confirmation Email',
-            html: this.configService.get('OTP_Body').body(customer.otp),
-        });
-        const { password, otp, otpExpiry, ...createdObj } = JSON.parse(JSON.stringify(customer));
+        const customerExist = await this.customerRepository.create(customer);
+        const { password, otp, otpExpiry, ...createdObj } = JSON.parse(JSON.stringify(customerExist));
         const payload = {
-            email: customer.email,
-            _id: customer._id,
-            role: customer.role,
-            userName: customer.userName,
+            email: customerExist.email,
+            _id: customerExist._id,
+            role: customerExist.role,
+            userName: customerExist.userName,
         };
         return {
             access_token: this.jwtService.sign({ payload }, {

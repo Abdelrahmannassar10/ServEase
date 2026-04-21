@@ -60,8 +60,13 @@ let ProviderService = class ProviderService {
         if (!provider) {
             throw new common_1.NotFoundException('Provider not found');
         }
-        const { password, isVerified, id, otpExpiry, otp, __v, userAgent, role, _id, updatedAt, createdAt, adminApproved, ...providerData } = JSON.parse(JSON.stringify(provider));
-        providerData.mobileNumber = await (0, helper_1.decrypt)(provider.mobileNumber);
+        const { password, isVerified, otpExpiry, otp, __v, userAgent, role, _id, updatedAt, createdAt, adminApproved, ...providerData } = JSON.parse(JSON.stringify(provider));
+        if (provider.mobileNumber && (0, helper_1.isEncrypted)(provider.mobileNumber)) {
+            providerData.mobileNumber = await (0, helper_1.decrypt)(provider.mobileNumber);
+        }
+        else {
+            providerData.mobileNumber = provider.mobileNumber;
+        }
         return providerData;
     }
     async searchProfile(id) {
@@ -69,9 +74,24 @@ let ProviderService = class ProviderService {
         if (!provider) {
             throw new common_1.NotFoundException('Provider not found');
         }
-        const { mobileNumber, userName, profileURL, backgroundURL, ...providerData } = JSON.parse(JSON.stringify(provider));
-        const decryptedMobileNumber = await (0, helper_1.decrypt)(mobileNumber);
-        return { mobileNumber: decryptedMobileNumber, userName, profileURL, backgroundURL };
+        const { _id, mobileNumber, userName, profileURL, backgroundURL } = JSON.parse(JSON.stringify(provider));
+        let finalMobileNumber = mobileNumber;
+        if (mobileNumber && (0, helper_1.isEncrypted)(mobileNumber)) {
+            try {
+                finalMobileNumber = await (0, helper_1.decrypt)(mobileNumber);
+            }
+            catch (error) {
+                console.error('Decryption failed:', error);
+                finalMobileNumber = null;
+            }
+        }
+        return {
+            id: _id,
+            mobileNumber: finalMobileNumber,
+            userName,
+            profileURL,
+            backgroundURL,
+        };
     }
     async updatePassword(userid, oldPassword, newPassword) {
         const provider = await this.providerRepository.findById(userid);

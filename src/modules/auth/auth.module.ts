@@ -5,7 +5,7 @@ import { UserMongooseModule } from '@shared/modules';
 import { AuthFactoryService } from './factory';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from '@common/strategy/google.strategy';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LocalStrategy } from '@common/strategy';
 import { JwtStrategy } from '@common/strategy/jwt.strategy';

@@ -69,3 +69,8 @@ export enum City {
   NORTH_SINAI = "North Sinai",
   SOHAG = "Sohag"
 }
+
+export enum ReviewType {
+    GLOBAL = "GLOBAL" ,
+    REQUEST = "REQUEST"
+}

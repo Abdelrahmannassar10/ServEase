@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.encrypt = encrypt;
 exports.decrypt = decrypt;
+exports.isEncrypted = isEncrypted;
 const node_crypto_1 = require("node:crypto");
 const node_util_1 = require("node:util");
 const scryptAsync = (0, node_util_1.promisify)(node_crypto_1.scrypt);
@@ -48,5 +49,10 @@ async function decrypt(encryptedData) {
         decipher.final(),
     ]);
     return decrypted.toString('utf8');
+}
+function isEncrypted(value) {
+    return typeof value === 'string' &&
+        value.includes(':') &&
+        value.split(':').length === 3;
 }
 //# sourceMappingURL=encrypt&decrypt.helper.js.map

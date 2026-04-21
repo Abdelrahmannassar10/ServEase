@@ -66,7 +66,7 @@ let AuthController = class AuthController {
         this.authService = authService;
         this.authFactoryService = authFactoryService;
     }
-    async register(customerRegisterDto) {
+    async customerRegister(customerRegisterDto) {
         const customer = await this.authFactoryService.createCustomer(customerRegisterDto);
         const { access_token, user } = await this.authService.customerRegister(customer);
         return { access_token, user };
@@ -109,7 +109,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.CustomerRegisterDto]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "register", null);
+], AuthController.prototype, "customerRegister", null);
 __decorate([
     (0, common_1.Post)('register/provider'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('cvFile', {
@@ -130,8 +130,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Get)('google'),
     (0, common_1.UseGuards)(google_guard_1.GoogleAuthGuard),
+    (0, common_1.Get)('google'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

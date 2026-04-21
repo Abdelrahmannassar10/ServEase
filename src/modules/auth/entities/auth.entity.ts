@@ -33,7 +33,6 @@ export class Provider {
   city: City;
   state: string;
   writtenCv: string;
-
   adminApproved: boolean;
   nationalNumber: string;
   service:ServiceCategory;

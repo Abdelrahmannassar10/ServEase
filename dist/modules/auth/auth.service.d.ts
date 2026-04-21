@@ -1,4 +1,4 @@
-import { CustomerRegisterDto, ProviderRegisterDto } from './dto/register.dto';
+import { ProviderRegisterDto } from './dto/register.dto';
 import { CustomerRepository, ProviderRepository, UserRepository } from '@models/index';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -7,6 +7,7 @@ import { ConfirmOTPDto } from './dto/confirmOTP.dto';
 import { ResendOTPDto } from './dto/resendOTP';
 import { TokenRepository } from '@models/token/token.repository';
 import { CloudinaryService } from '@common/cloudinary';
+import { Customer } from './entities/auth.entity';
 export declare class AuthService {
     private readonly userRepository;
     private readonly customerRepository;
@@ -35,7 +36,7 @@ export declare class AuthService {
         userName: any;
         email: any;
     }>;
-    customerRegister(customerRegisterDTO: CustomerRegisterDto): Promise<{
+    customerRegister(customer: Customer): Promise<{
         access_token: string;
         user: any;
     }>;

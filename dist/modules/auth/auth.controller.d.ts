@@ -7,7 +7,7 @@ export declare class AuthController {
     private readonly authService;
     private readonly authFactoryService;
     constructor(authService: AuthService, authFactoryService: AuthFactoryService);
-    register(customerRegisterDto: CustomerRegisterDto): Promise<{
+    customerRegister(customerRegisterDto: CustomerRegisterDto): Promise<{
         access_token: string;
         user: any;
     }>;

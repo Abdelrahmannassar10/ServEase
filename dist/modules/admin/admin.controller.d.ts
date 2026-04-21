@@ -11,17 +11,20 @@ export declare class AdminController {
     adminLogin(req: any): Promise<{
         access_token: string;
     }>;
-    getPendingProviders(): Promise<(import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("../../models").Provider, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Provider & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, import("../../models").Provider, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Provider & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
+    getPendingProviders(): Promise<{
+        id: import("mongoose").Types.ObjectId;
+        userName: string;
+        specialization: string;
+        service: import("@common/types/enum").ServiceCategory;
+        nationalNumber: string;
+        writtenCv: string;
+        state: string;
+        city: import("@common/types/enum").City;
+        email: string;
+        mobileNumber: string;
+        age: number;
+        profileURL: string;
+        backgroundURL: string;
+        cvUrl: string;
+    }[]>;
 }

@@ -35,6 +35,7 @@ exports.Admin = Admin = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true,
         toJSON: { virtuals: true },
+        toObject: { virtuals: true },
         discriminatorKey: 'role',
     })
 ], Admin);

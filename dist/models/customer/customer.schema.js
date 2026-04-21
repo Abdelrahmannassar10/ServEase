@@ -38,15 +38,31 @@ let Customer = class Customer {
 };
 exports.Customer = Customer;
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true, unique: true }),
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: function () {
+            return this.userAgent === 'SYSTEM';
+        },
+    }),
     __metadata("design:type", String)
 ], Customer.prototype, "mobileNumber", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true }),
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: function () {
+            return this.userAgent === 'SYSTEM';
+        },
+    }),
     __metadata("design:type", String)
 ], Customer.prototype, "state", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, required: true, enum: enum_1.City }),
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: function () {
+            return this.userAgent === 'SYSTEM';
+        },
+        enum: enum_1.City,
+    }),
     __metadata("design:type", String)
 ], Customer.prototype, "city", void 0);
 __decorate([
@@ -57,6 +73,7 @@ exports.Customer = Customer = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true,
         toJSON: { virtuals: true },
+        toObject: { virtuals: true },
         discriminatorKey: 'role',
     })
 ], Customer);

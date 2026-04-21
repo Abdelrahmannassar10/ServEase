@@ -20,9 +20,9 @@ export class ServiceService {
   async getServices() {
      const service =  await this.serviceRepository.findAll(
       {},
-      {select:{name:true}},
+     
       
     );
-    return 
+    return service;
   }
 }

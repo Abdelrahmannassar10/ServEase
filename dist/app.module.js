@@ -50,7 +50,7 @@ exports.AppModule = AppModule = __decorate([
             common_module_1.CommonModule,
             admin_module_1.AdminModule,
             service_module_1.ServiceModule,
-            category_module_1.CategoryModule
+            category_module_1.CategoryModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, cron_job_helper_1.TasksService],
