@@ -12,7 +12,6 @@ export declare class Admin {
     role: Role;
     isDeleted: boolean;
     deletedAt: Date;
-    pendingApprovals: Types.ObjectId[];
 }
 export declare const adminSchema: import("mongoose").Schema<Admin, import("mongoose").Model<Admin, any, any, any, (import("mongoose").Document<unknown, any, Admin, any, import("mongoose").DefaultSchemaOptions> & Admin & Required<{
     _id: Types.ObjectId;
@@ -124,15 +123,6 @@ export declare const adminSchema: import("mongoose").Schema<Admin, import("mongo
         id: string;
     }> | undefined;
     deletedAt?: import("mongoose").SchemaDefinitionProperty<Date, Admin, import("mongoose").Document<unknown, {}, Admin, {
-        id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    pendingApprovals?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId[], Admin, import("mongoose").Document<unknown, {}, Admin, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Admin & Required<{
         _id: Types.ObjectId;

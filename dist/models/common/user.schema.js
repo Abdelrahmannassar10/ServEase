@@ -52,11 +52,6 @@ __decorate([
         get() {
             return `${this.firstName ?? ''} ${this.lastName ?? ''}`.trim();
         },
-        set(value) {
-            const parts = value.trim().split(' ');
-            this.firstName = parts[0];
-            this.lastName = parts.slice(1).join(' ') || '';
-        },
     }),
     __metadata("design:type", String)
 ], User.prototype, "userName", void 0);

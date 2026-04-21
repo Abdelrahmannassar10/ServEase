@@ -1,14 +1,11 @@
-import { IsMongoId, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
+import { IsMongoId, IsNumber, IsString, Max, Min } from "class-validator";
 import { Types } from "mongoose";
 
 export class globalReviewDto {
     @IsNumber()
     @Max(5)
     @Min(0)
-    rate :number ;
-
-    @IsMongoId()
-    userId :Types.ObjectId ;
+    rate :Number ;
 
     @IsString()
     content :string ;

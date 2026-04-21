@@ -40,7 +40,6 @@ export class AbstractRepository<T> {
     return this.model.find(
       {
         ...filter,
-        isDeleted: false,
       },
       projection,
       options,

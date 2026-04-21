@@ -18,11 +18,7 @@ export class User {
     get(this: User) {
       return `${this.firstName ?? ''} ${this.lastName ?? ''}`.trim();
     },
-    set(this: User, value: string) {
-      const parts = value.trim().split(' ');
-      this.firstName = parts[0];
-      this.lastName = parts.slice(1).join(' ') || '';
-    },
+
   })
   userName: string;
   @Prop({ type: String, required: true, unique: true })

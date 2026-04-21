@@ -28,9 +28,6 @@ export class Admin {
   isDeleted: boolean;
 
   deletedAt: Date;
-
-  @Prop({ type: [Types.ObjectId], ref: 'Provider' })
-  pendingApprovals: Types.ObjectId[];
 }
 export const adminSchema = SchemaFactory.createForClass(Admin);
 export type HAdminDocument = HydratedDocument<Admin>;

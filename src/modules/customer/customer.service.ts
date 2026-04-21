@@ -44,9 +44,12 @@ export class CustomerService {
       isDeleted,
       updatedAt,
       dob,
+      deletedAt,
+      changeCredentialTimestamp,
       createdAt,
       ...customerData
     } = JSON.parse(JSON.stringify(customer));
+    customerData.mobileNumber =await decrypt(customerData.mobileNumber);
     return customerData;
   }
 

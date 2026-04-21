@@ -67,7 +67,8 @@ let CustomerService = class CustomerService {
         if (!customer) {
             throw new common_1.NotFoundException('Customer not found');
         }
-        const { password, isVerified, id, otpExpiry, otp, __v, userAgent, role, _id, isDeleted, updatedAt, dob, createdAt, ...customerData } = JSON.parse(JSON.stringify(customer));
+        const { password, isVerified, id, otpExpiry, otp, __v, userAgent, role, _id, isDeleted, updatedAt, dob, deletedAt, changeCredentialTimestamp, createdAt, ...customerData } = JSON.parse(JSON.stringify(customer));
+        customerData.mobileNumber = await (0, helper_1.decrypt)(customerData.mobileNumber);
         return customerData;
     }
     async getAnotherProfile(userid) {

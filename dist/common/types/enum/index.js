@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.City = exports.Role = exports.Gender = exports.PaymentMethod = exports.PaymentStatus = exports.ServiceStatus = exports.ServiceCategory = exports.UserAgent = void 0;
+exports.ReviewType = exports.City = exports.Role = exports.Gender = exports.PaymentMethod = exports.PaymentStatus = exports.ServiceStatus = exports.ServiceCategory = exports.UserAgent = void 0;
 var UserAgent;
 (function (UserAgent) {
     UserAgent["SYSTEM"] = "SYSTEM";
@@ -76,4 +76,9 @@ var City;
     City["NORTH_SINAI"] = "North Sinai";
     City["SOHAG"] = "Sohag";
 })(City || (exports.City = City = {}));
+var ReviewType;
+(function (ReviewType) {
+    ReviewType["GLOBAL"] = "GLOBAL";
+    ReviewType["REQUEST"] = "REQUEST";
+})(ReviewType || (exports.ReviewType = ReviewType = {}));
 //# sourceMappingURL=index.js.map

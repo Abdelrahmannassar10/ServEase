@@ -18,7 +18,6 @@ class AbstractRepository {
     find(filter, projection, options) {
         return this.model.find({
             ...filter,
-            isDeleted: false,
         }, projection, options);
     }
     findAll(filter, projection, options) {
