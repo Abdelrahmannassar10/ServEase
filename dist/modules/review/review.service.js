@@ -13,22 +13,46 @@ exports.ReviewService = void 0;
 const common_1 = require("@nestjs/common");
 const reviews_repository_1 = require("../../models/reviews/reviews.repository");
 const enum_1 = require("../../common/types/enum");
+const index_1 = require("../../models/index");
 let ReviewService = class ReviewService {
     reviewRepository;
-    constructor(reviewRepository) {
+    providerRepository;
+    constructor(reviewRepository, providerRepository) {
         this.reviewRepository = reviewRepository;
+        this.providerRepository = providerRepository;
     }
     async globalReview(review) {
         const result = await this.reviewRepository.create(review);
         return result;
     }
     async getGlobalReviews() {
-        return await this.reviewRepository.find({ status: enum_1.ReviewType.GLOBAL }).populate('userId', 'firstName lastName userName dob age profileUrl');
+        return await this.reviewRepository
+            .find({ status: enum_1.ReviewType.GLOBAL })
+            .populate('userId', 'firstName lastName userName dob age profileUrl');
+    }
+    async requestReview(review) {
+        const providerExist = await this.providerRepository.findById(review.ProviderId);
+        if (!providerExist) {
+            throw new Error('Provider not found');
+        }
+        const result = await this.reviewRepository.create(review);
+        return result;
+    }
+    async getProviderReviews(providerId) {
+        return await this.reviewRepository
+            .find({ ProviderId: providerId, status: enum_1.ReviewType.REQUEST })
+            .populate('userId', 'firstName lastName userName dob age profileUrl');
+    }
+    async getRequestReviews() {
+        return await this.reviewRepository
+            .find({ status: enum_1.ReviewType.REQUEST })
+            .populate('userId', 'firstName lastName userName dob age profileUrl')
+            .populate('ProviderId', 'name profileUrl');
     }
 };
 exports.ReviewService = ReviewService;
 exports.ReviewService = ReviewService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [reviews_repository_1.ReviewRepository])
+    __metadata("design:paramtypes", [reviews_repository_1.ReviewRepository, index_1.ProviderRepository])
 ], ReviewService);
 //# sourceMappingURL=review.service.js.map

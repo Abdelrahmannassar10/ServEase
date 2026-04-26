@@ -15,6 +15,9 @@ export class Review {
 
     ProviderId: Types.ObjectId;
 
+    @Prop({ type: Types.ObjectId, ref: "Request" ,default:undefined   })
+    requestId: Types.ObjectId;
+
     @Prop({type:Number , maxLength:5 ,minlength:1,required:true})
     rate: Number;
 

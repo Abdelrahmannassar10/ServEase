@@ -14,6 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const review_schema_1 = require("../../models/reviews/review.schema");
 const reviews_repository_1 = require("../../models/reviews/reviews.repository");
 const factory_1 = require("./factory");
+const modules_1 = require("../../shared/modules");
 let ReviewModule = class ReviewModule {
 };
 exports.ReviewModule = ReviewModule;
@@ -21,7 +22,7 @@ exports.ReviewModule = ReviewModule = __decorate([
     (0, common_1.Module)({
         imports: [mongoose_1.MongooseModule.forFeature([
                 { name: review_schema_1.Review.name, schema: review_schema_1.reviewSchema }
-            ])],
+            ]), modules_1.UserMongooseModule],
         controllers: [review_controller_1.ReviewController],
         providers: [review_service_1.ReviewService, reviews_repository_1.ReviewRepository, factory_1.ReviewFactoryService],
     })

@@ -7,4 +7,5 @@ export declare class RequestReviewDto {
     rate: number;
     content: string;
     providerId: Types.ObjectId;
+    orderId: Types.ObjectId;
 }

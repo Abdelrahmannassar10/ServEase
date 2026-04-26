@@ -18,6 +18,7 @@ let Review = class Review {
     userId;
     customerId;
     ProviderId;
+    requestId;
     rate;
     content;
     status;
@@ -35,6 +36,10 @@ __decorate([
     (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: "Provider", default: undefined }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], Review.prototype, "ProviderId", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: "Request", default: undefined }),
+    __metadata("design:type", mongoose_2.Types.ObjectId)
+], Review.prototype, "requestId", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: Number, maxLength: 5, minlength: 1, required: true }),
     __metadata("design:type", Number)

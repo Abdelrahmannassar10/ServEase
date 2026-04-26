@@ -22,4 +22,8 @@ export class RequestReviewDto {
 
     @IsMongoId()
     providerId :Types.ObjectId ;
+
+    @IsMongoId()
+    orderId :Types.ObjectId ;
+
 }

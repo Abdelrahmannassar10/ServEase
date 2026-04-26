@@ -6,6 +6,7 @@ class Review {
     userId;
     customerId;
     ProviderId;
+    requestId;
     rate;
     content;
     status;

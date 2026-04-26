@@ -6,6 +6,7 @@ export class Review {
   userId :Types.ObjectId
   customerId: Types.ObjectId;
   ProviderId: Types.ObjectId;
+  requestId: Types.ObjectId;
   rate: Number;
   content: string;
   status: ReviewType;

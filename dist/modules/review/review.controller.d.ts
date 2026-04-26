@@ -1,6 +1,6 @@
 import { ReviewService } from './review.service';
 import { ReviewFactoryService } from './factory';
-import { globalReviewDto } from './dto/create-review.dto';
+import { globalReviewDto, RequestReviewDto } from './dto/create-review.dto';
 export declare class ReviewController {
     private readonly reviewService;
     private readonly reviewFactoryService;
@@ -11,6 +11,21 @@ export declare class ReviewController {
         __v: number;
     }>;
     getGlobalReviews(): Promise<(import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    })[]>;
+    requestReview(requestReviewDto: RequestReviewDto, req: any): Promise<import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
+    getProviderReviews(providerId: any): Promise<(import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    })[]>;
+    getRequestReviews(): Promise<(import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;

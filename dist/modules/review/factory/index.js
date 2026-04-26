@@ -12,6 +12,16 @@ class ReviewFactoryService {
         review.status = enum_1.ReviewType.GLOBAL;
         return review;
     }
+    requestReview(requestReviewDto, userId) {
+        const review = new review_entity_1.Review();
+        review.userId = userId;
+        review.rate = requestReviewDto.rate;
+        review.content = requestReviewDto.content;
+        review.ProviderId = requestReviewDto.providerId;
+        review.requestId = requestReviewDto.orderId;
+        review.status = enum_1.ReviewType.REQUEST;
+        return review;
+    }
 }
 exports.ReviewFactoryService = ReviewFactoryService;
 //# sourceMappingURL=index.js.map

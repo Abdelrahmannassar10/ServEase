@@ -31,6 +31,7 @@ class RequestReviewDto {
     rate;
     content;
     providerId;
+    orderId;
 }
 exports.RequestReviewDto = RequestReviewDto;
 __decorate([
@@ -47,4 +48,8 @@ __decorate([
     (0, class_validator_1.IsMongoId)(),
     __metadata("design:type", mongoose_1.Types.ObjectId)
 ], RequestReviewDto.prototype, "providerId", void 0);
+__decorate([
+    (0, class_validator_1.IsMongoId)(),
+    __metadata("design:type", mongoose_1.Types.ObjectId)
+], RequestReviewDto.prototype, "orderId", void 0);
 //# sourceMappingURL=create-review.dto.js.map

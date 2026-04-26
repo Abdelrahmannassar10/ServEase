@@ -37,6 +37,19 @@ let ReviewController = class ReviewController {
         const result = await this.reviewService.getGlobalReviews();
         return result;
     }
+    async requestReview(requestReviewDto, req) {
+        const review = this.reviewFactoryService.requestReview(requestReviewDto, req.user._id);
+        const result = await this.reviewService.requestReview(review);
+        return result;
+    }
+    async getProviderReviews(providerId) {
+        const result = await this.reviewService.getProviderReviews(providerId);
+        return result;
+    }
+    async getRequestReviews() {
+        const result = await this.reviewService.getRequestReviews();
+        return result;
+    }
 };
 exports.ReviewController = ReviewController;
 __decorate([
@@ -55,6 +68,33 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ReviewController.prototype, "getGlobalReviews", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
+    (0, decorators_1.Roles)(enum_1.Role.CUSTOMER),
+    (0, common_1.Post)("request-review"),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_review_dto_1.RequestReviewDto, Object]),
+    __metadata("design:returntype", Promise)
+], ReviewController.prototype, "requestReview", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
+    (0, decorators_1.Roles)(enum_1.Role.PROVIDER, enum_1.Role.ADMIN, enum_1.Role.CUSTOMER),
+    (0, common_1.Get)("/provider-reviews/:providerId"),
+    __param(0, (0, common_1.Param)("providerId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ReviewController.prototype, "getProviderReviews", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
+    (0, decorators_1.Roles)(enum_1.Role.ADMIN),
+    (0, common_1.Get)("request-reviews"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ReviewController.prototype, "getRequestReviews", null);
 exports.ReviewController = ReviewController = __decorate([
     (0, common_1.Controller)('review'),
     __metadata("design:paramtypes", [review_service_1.ReviewService, factory_1.ReviewFactoryService])

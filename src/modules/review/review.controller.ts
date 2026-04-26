@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { Role } from '@common/types/enum';
 import { Roles } from '@common/decorators';
 import { ReviewFactoryService } from './factory';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '@common/guard';
-import { globalReviewDto } from './dto/create-review.dto';
+import { globalReviewDto, RequestReviewDto } from './dto/create-review.dto';
 
 
 @Controller('review')
@@ -28,4 +28,28 @@ export class ReviewController {
     return result;
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.CUSTOMER)
+  @Post("request-review")
+  async requestReview(@Body() requestReviewDto:RequestReviewDto ,@Request() req: any) {
+    const review = this.reviewFactoryService.requestReview(requestReviewDto ,req.user._id);
+    const result = await this.reviewService.requestReview(review);
+    return result;
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.PROVIDER, Role.ADMIN, Role.CUSTOMER)
+  @Get("/provider-reviews/:providerId")
+  async  getProviderReviews(@Param("providerId") providerId:any) {
+    const result = await this.reviewService.getProviderReviews(providerId);
+    return result;
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get("request-reviews")
+  async getRequestReviews() {
+    const result = await this.reviewService.getRequestReviews();
+    return result;
+  }
 }

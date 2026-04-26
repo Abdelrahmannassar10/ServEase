@@ -5,6 +5,7 @@ export declare class Review {
     userId: Types.ObjectId;
     customerId: Types.ObjectId;
     ProviderId: Types.ObjectId;
+    requestId: Types.ObjectId;
     rate: Number;
     content: string;
     status: ReviewType;
@@ -34,6 +35,11 @@ export declare const reviewSchema: import("mongoose").Schema<Review, import("mon
         __v: number;
     }> | undefined;
     ProviderId?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, Review, import("mongoose").Document<unknown, {}, Review, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Review & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }> | undefined;
+    requestId?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, Review, import("mongoose").Document<unknown, {}, Review, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Review & {
         _id: Types.ObjectId;
     } & {
         __v: number;
