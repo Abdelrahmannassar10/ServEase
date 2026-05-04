@@ -20,6 +20,10 @@ export class ReviewController {
     const review = this.reviewFactoryService.globalReview(globalReviewDto, req.user._id);
     const result = await this.reviewService.globalReview(review);
     return result;
+
+
+
+    
   }
 
   @Get("/global-reviews")
