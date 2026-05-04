@@ -75,6 +75,16 @@ export class CloudinaryService {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
 async deletePdf(publicId: string): Promise<{ result: string }> {
   try {
     const result = await cloudinary.uploader.destroy(publicId, {
