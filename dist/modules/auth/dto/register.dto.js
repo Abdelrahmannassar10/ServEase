@@ -47,19 +47,18 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.MinLength)(8),
-    (0, class_validator_1.MaxLength)(20),
+    (0, class_validator_1.MinLength)(11),
+    (0, class_validator_1.MaxLength)(11),
     __metadata("design:type", String)
 ], ProviderRegisterDto.prototype, "mobileNumber", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.MinLength)(11),
-    (0, class_validator_1.MaxLength)(11),
+    (0, class_validator_1.MaxLength)(8),
     __metadata("design:type", String)
 ], ProviderRegisterDto.prototype, "password", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_transformer_1.Transform)(({ value }) => new Date(value)),
     (0, class_validator_1.IsDate)(),
     __metadata("design:type", Date)
@@ -79,7 +78,6 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(6),
-    (0, class_validator_1.MaxLength)(500),
     __metadata("design:type", String)
 ], ProviderRegisterDto.prototype, "writtenCv", void 0);
 __decorate([
@@ -127,19 +125,18 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.MinLength)(8),
-    (0, class_validator_1.MaxLength)(20),
+    (0, class_validator_1.MinLength)(11),
+    (0, class_validator_1.MaxLength)(11),
     __metadata("design:type", String)
 ], CustomerRegisterDto.prototype, "mobileNumber", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(8),
-    (0, class_validator_1.MaxLength)(20),
     __metadata("design:type", String)
 ], CustomerRegisterDto.prototype, "password", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_transformer_1.Transform)(({ value }) => new Date(value)),
     (0, class_validator_1.IsDate)(),
     __metadata("design:type", Date)

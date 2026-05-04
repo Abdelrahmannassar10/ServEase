@@ -67,6 +67,15 @@ __decorate([
         },
     }),
     __metadata("design:type", String)
+], User.prototype, "mobileNumber", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: function () {
+            return this.userAgent === 'SYSTEM';
+        },
+    }),
+    __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: String }),
@@ -88,6 +97,25 @@ __decorate([
     (0, mongoose_1.Prop)({ type: String, enum: enum_1.UserAgent, default: enum_1.UserAgent.SYSTEM }),
     __metadata("design:type", String)
 ], User.prototype, "userAgent", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: function () {
+            return this.userAgent === 'SYSTEM';
+        },
+    }),
+    __metadata("design:type", String)
+], User.prototype, "state", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: function () {
+            return this.userAgent === 'SYSTEM';
+        },
+        enum: enum_1.City,
+    }),
+    __metadata("design:type", String)
+], User.prototype, "city", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: Date }),
     __metadata("design:type", Date)

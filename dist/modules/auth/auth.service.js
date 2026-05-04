@@ -72,10 +72,10 @@ let AuthService = class AuthService {
     async validateUser(email, pass) {
         const user = await this.userRepository.findOne({ email });
         if (!user)
-            throw new common_1.UnauthorizedException("Invalid email or password");
+            throw new common_1.UnauthorizedException('Invalid email or password');
         const match = await bcrypt.compare(pass, user.password);
         if (!match)
-            throw new common_1.UnauthorizedException("Invalid email or password");
+            throw new common_1.UnauthorizedException('Invalid email or password');
         if (user.isVerified == false) {
             throw new common_1.UnauthorizedException('Please verify your email first');
         }
@@ -86,7 +86,10 @@ let AuthService = class AuthService {
         }
         if (user.isDeleted) {
             user.isDeleted = false;
-            await this.userRepository.updateById(user._id, { isDeleted: false, deletedAt: null });
+            await this.userRepository.updateById(user._id, {
+                isDeleted: false,
+                deletedAt: null,
+            });
         }
         return user;
     }

@@ -18,4 +18,5 @@ __exportStar(require("./otp"), exports);
 __exportStar(require("./email.helper"), exports);
 __exportStar(require("./encrypt&decrypt.helper"), exports);
 __exportStar(require("./cron-job.helper"), exports);
+__exportStar(require("./completionCode"), exports);
 //# sourceMappingURL=index.js.map

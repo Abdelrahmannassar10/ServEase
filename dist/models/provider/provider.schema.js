@@ -17,6 +17,7 @@ let Provider = class Provider {
     firstName;
     lastName;
     userName;
+    userAgent;
     email;
     mobileNumber;
     password;
@@ -39,6 +40,9 @@ let Provider = class Provider {
     service;
     specialization;
     cvUrl;
+    providerCancelCount;
+    providerCancelFees;
+    debt;
 };
 exports.Provider = Provider;
 __decorate([
@@ -86,6 +90,18 @@ __decorate([
     (0, mongoose_1.Prop)({ type: String }),
     __metadata("design:type", String)
 ], Provider.prototype, "cvUrl", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: 0, min: 0 }),
+    __metadata("design:type", Number)
+], Provider.prototype, "providerCancelCount", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: 0, min: 0 }),
+    __metadata("design:type", Number)
+], Provider.prototype, "providerCancelFees", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: Number, default: 0, min: 0 }),
+    __metadata("design:type", Number)
+], Provider.prototype, "debt", void 0);
 exports.Provider = Provider = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true,

@@ -5,27 +5,27 @@ export declare class ReviewService {
     private readonly reviewRepository;
     private readonly providerRepository;
     constructor(reviewRepository: ReviewRepository, providerRepository: ProviderRepository);
-    globalReview(review: Review): Promise<import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
+    globalReview(review: Review): Promise<import("mongoose").Document<unknown, {}, import("@models/index").Review, {}, import("mongoose").DefaultSchemaOptions> & import("@models/index").Review & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     }>;
-    getGlobalReviews(): Promise<(import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
+    getGlobalReviews(): Promise<(import("mongoose").Document<unknown, {}, import("@models/index").Review, {}, import("mongoose").DefaultSchemaOptions> & import("@models/index").Review & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     })[]>;
-    requestReview(review: Review): Promise<import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
+    requestReview(review: Review): Promise<import("mongoose").Document<unknown, {}, import("@models/index").Review, {}, import("mongoose").DefaultSchemaOptions> & import("@models/index").Review & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     }>;
-    getProviderReviews(providerId: any): Promise<(import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
+    getProviderReviews(providerId: any): Promise<(import("mongoose").Document<unknown, {}, import("@models/index").Review, {}, import("mongoose").DefaultSchemaOptions> & import("@models/index").Review & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     })[]>;
-    getRequestReviews(): Promise<(import("mongoose").Document<unknown, {}, import("../../models/reviews/review.schema").Review, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/reviews/review.schema").Review & {
+    getRequestReviews(): Promise<(import("mongoose").Document<unknown, {}, import("@models/index").Review, {}, import("mongoose").DefaultSchemaOptions> & import("@models/index").Review & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;

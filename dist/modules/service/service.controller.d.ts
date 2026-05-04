@@ -7,13 +7,13 @@ export declare class ServiceController {
         message: string;
         service: string;
     }>;
-    getServices(): Promise<(import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("../../models/service/service.schema").Service, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/service/service.schema").Service & {
+    getServices(): Promise<(import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("../../models").Service, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Service & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     } & {
         id: string;
-    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, import("../../models/service/service.schema").Service, {}, import("mongoose").DefaultSchemaOptions> & import("../../models/service/service.schema").Service & {
+    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, import("../../models").Service, {}, import("mongoose").DefaultSchemaOptions> & import("../../models").Service & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;

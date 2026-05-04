@@ -27,6 +27,7 @@ const category_module_1 = require("./modules/category/category.module");
 const service_module_1 = require("./modules/service/service.module");
 const admin_module_1 = require("./modules/admin/admin.module");
 const review_module_1 = require("./modules/review/review.module");
+const service_request_module_1 = require("./modules/service-request/service-request.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -53,6 +54,7 @@ exports.AppModule = AppModule = __decorate([
             service_module_1.ServiceModule,
             category_module_1.CategoryModule,
             review_module_1.ReviewModule,
+            service_request_module_1.ServiceRequestModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, cron_job_helper_1.TasksService],

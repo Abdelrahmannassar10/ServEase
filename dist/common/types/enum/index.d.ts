@@ -10,12 +10,6 @@ export declare enum ServiceCategory {
     PAINTING = "PAINTING",
     OTHER = "OTHER"
 }
-export declare enum ServiceStatus {
-    PENDING = "PENDING",
-    ACCEPTED = "ACCEPTED",
-    REJECTED = "REJECTED",
-    COMPLETED = "COMPLETED"
-}
 export declare enum PaymentStatus {
     PENDING = "PENDING",
     COMPLETED = "COMPLETED",
@@ -64,6 +58,15 @@ export declare enum City {
     QENA = "Qena",
     NORTH_SINAI = "North Sinai",
     SOHAG = "Sohag"
+}
+export declare enum ServiceStatus {
+    WAITING = "WAITING",
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    REFUSED = "REFUSED",
+    COMPLETED = "COMPLETED",
+    IN_PROGRESS = "IN_PROGRESS",
+    OUTDATED = "OUTDATED"
 }
 export declare enum ReviewType {
     GLOBAL = "GLOBAL",

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReviewType = exports.City = exports.Role = exports.Gender = exports.PaymentMethod = exports.PaymentStatus = exports.ServiceStatus = exports.ServiceCategory = exports.UserAgent = void 0;
+exports.ReviewType = exports.ServiceStatus = exports.City = exports.Role = exports.Gender = exports.PaymentMethod = exports.PaymentStatus = exports.ServiceCategory = exports.UserAgent = void 0;
 var UserAgent;
 (function (UserAgent) {
     UserAgent["SYSTEM"] = "SYSTEM";
@@ -15,13 +15,6 @@ var ServiceCategory;
     ServiceCategory["PAINTING"] = "PAINTING";
     ServiceCategory["OTHER"] = "OTHER";
 })(ServiceCategory || (exports.ServiceCategory = ServiceCategory = {}));
-var ServiceStatus;
-(function (ServiceStatus) {
-    ServiceStatus["PENDING"] = "PENDING";
-    ServiceStatus["ACCEPTED"] = "ACCEPTED";
-    ServiceStatus["REJECTED"] = "REJECTED";
-    ServiceStatus["COMPLETED"] = "COMPLETED";
-})(ServiceStatus || (exports.ServiceStatus = ServiceStatus = {}));
 var PaymentStatus;
 (function (PaymentStatus) {
     PaymentStatus["PENDING"] = "PENDING";
@@ -76,6 +69,16 @@ var City;
     City["NORTH_SINAI"] = "North Sinai";
     City["SOHAG"] = "Sohag";
 })(City || (exports.City = City = {}));
+var ServiceStatus;
+(function (ServiceStatus) {
+    ServiceStatus["WAITING"] = "WAITING";
+    ServiceStatus["PENDING"] = "PENDING";
+    ServiceStatus["CONFIRMED"] = "CONFIRMED";
+    ServiceStatus["REFUSED"] = "REFUSED";
+    ServiceStatus["COMPLETED"] = "COMPLETED";
+    ServiceStatus["IN_PROGRESS"] = "IN_PROGRESS";
+    ServiceStatus["OUTDATED"] = "OUTDATED";
+})(ServiceStatus || (exports.ServiceStatus = ServiceStatus = {}));
 var ReviewType;
 (function (ReviewType) {
     ReviewType["GLOBAL"] = "GLOBAL";

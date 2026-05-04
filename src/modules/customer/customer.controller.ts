@@ -42,19 +42,12 @@ export class CustomerController {
     return updatedCustomer;
   }
 
-
-
-
-
-
-
-
-  // @UseGuards(AuthGuard('jwt'), RolesGuard)
-  // @Roles(Role.CUSTOMER)
-  // @Get('')
-  // async getMyProfile(@Request() req: any) {
-  //   return await this.customerService.getProfile(req.user._id);
-  // }
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.CUSTOMER)
+  @Get('')
+  async getMyProfile(@Request() req: any) {
+    return await this.customerService.getProfile(req.user._id);
+  }
 
   @Get(':id')
   async getAnotherProfile(@Param('id') id: string) {

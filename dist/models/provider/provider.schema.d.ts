@@ -1,10 +1,11 @@
 import { HydratedDocument, Types } from 'mongoose';
-import { City, Role, ServiceCategory } from '@common/types/enum';
+import { City, Role, ServiceCategory, UserAgent } from '@common/types/enum';
 export declare class Provider {
     readonly _id: Types.ObjectId;
     firstName: string;
     lastName: string;
     userName: string;
+    userAgent: UserAgent;
     email: string;
     mobileNumber: string;
     password: string;
@@ -27,6 +28,9 @@ export declare class Provider {
     service: ServiceCategory;
     specialization: string;
     cvUrl: string;
+    providerCancelCount: number;
+    providerCancelFees: number;
+    debt: number;
 }
 export declare const providerSchema: import("mongoose").Schema<Provider, import("mongoose").Model<Provider, any, any, any, (import("mongoose").Document<unknown, any, Provider, any, import("mongoose").DefaultSchemaOptions> & Provider & Required<{
     _id: Types.ObjectId;
@@ -75,6 +79,15 @@ export declare const providerSchema: import("mongoose").Schema<Provider, import(
         id: string;
     }> | undefined;
     userName?: import("mongoose").SchemaDefinitionProperty<string, Provider, import("mongoose").Document<unknown, {}, Provider, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Provider & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    userAgent?: import("mongoose").SchemaDefinitionProperty<UserAgent, Provider, import("mongoose").Document<unknown, {}, Provider, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Provider & Required<{
         _id: Types.ObjectId;
@@ -273,6 +286,33 @@ export declare const providerSchema: import("mongoose").Schema<Provider, import(
         id: string;
     }> | undefined;
     cvUrl?: import("mongoose").SchemaDefinitionProperty<string, Provider, import("mongoose").Document<unknown, {}, Provider, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Provider & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    providerCancelCount?: import("mongoose").SchemaDefinitionProperty<number, Provider, import("mongoose").Document<unknown, {}, Provider, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Provider & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    providerCancelFees?: import("mongoose").SchemaDefinitionProperty<number, Provider, import("mongoose").Document<unknown, {}, Provider, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Provider & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    debt?: import("mongoose").SchemaDefinitionProperty<number, Provider, import("mongoose").Document<unknown, {}, Provider, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<Provider & Required<{
         _id: Types.ObjectId;

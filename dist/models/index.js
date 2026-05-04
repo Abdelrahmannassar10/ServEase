@@ -25,4 +25,14 @@ __exportStar(require("./customer/customer.repository"), exports);
 __exportStar(require("./customer/customer.schema"), exports);
 __exportStar(require("./provider/provider.repository"), exports);
 __exportStar(require("./provider/provider.schema"), exports);
+__exportStar(require("./service/service.repository"), exports);
+__exportStar(require("./service/service.schema"), exports);
+__exportStar(require("./reviews/reviews.repository"), exports);
+__exportStar(require("./reviews/review.schema"), exports);
+__exportStar(require("./category/category.repository"), exports);
+__exportStar(require("./category/category.schema"), exports);
+__exportStar(require("./service-request/service-request.repository"), exports);
+__exportStar(require("./service-request/service-request.schema"), exports);
+__exportStar(require("./token/token.repository"), exports);
+__exportStar(require("./token/token.schema"), exports);
 //# sourceMappingURL=index.js.map
