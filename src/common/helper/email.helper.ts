@@ -7,6 +7,10 @@ export async function sendMail(mailOptions:nodemailer.SendMailOptions) {
   auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
+
+
+
+      
     },
 });
   await transporter.sendMail(mailOptions)
