@@ -10,15 +10,20 @@ export class TasksService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  @Cron('* * 6 * * *')
-  async handleCron() {
-    this.logger.debug('Called when the current second is 45');
-    log('Called when the current second is 45');
-    await this.userRepository.updateMany(
-      { otpExpiry: { $lte: new Date() } },
-      { $unset:{otp:"",otpExpiry:""}},
-    );
-  }
+
+
+
+
+
+  // @Cron('* * 6 * * *')
+  // async handleCron() {
+  //   this.logger.debug('Called when the current second is 45');
+  //   log('Called when the current second is 45');
+  //   await this.userRepository.updateMany(
+  //     { otpExpiry: { $lte: new Date() } },
+  //     { $unset:{otp:"",otpExpiry:""}},
+  //   );
+  // }
 
   @Cron('* * 6 * * *')
   async softDeleteCron() {
