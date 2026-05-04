@@ -19,15 +19,29 @@ export class Admin {
 
   password: string;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   otp: string;
 
   otpExpiry: Date;
 
   role: Role;
 
-  isDeleted: boolean;
+  // isDeleted: boolean;
 
-  deletedAt: Date;
+  // deletedAt: Date;
 }
 export const adminSchema = SchemaFactory.createForClass(Admin);
 export type HAdminDocument = HydratedDocument<Admin>;
