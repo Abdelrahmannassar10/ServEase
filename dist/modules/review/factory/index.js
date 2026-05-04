@@ -18,7 +18,7 @@ class ReviewFactoryService {
         review.rate = requestReviewDto.rate;
         review.content = requestReviewDto.content;
         review.ProviderId = requestReviewDto.providerId;
-        review.requestId = requestReviewDto.orderId;
+        review.requestId = requestReviewDto.requestId;
         review.status = enum_1.ReviewType.REQUEST;
         return review;
     }

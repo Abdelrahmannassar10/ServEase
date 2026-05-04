@@ -61,6 +61,9 @@ class AbstractRepository {
             },
         }, { new: true });
     }
+    async deleteById(id) {
+        return this.model.deleteOne({ _id: id });
+    }
 }
 exports.AbstractRepository = AbstractRepository;
 //# sourceMappingURL=abstract.repository.js.map

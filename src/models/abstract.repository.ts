@@ -115,4 +115,9 @@ export class AbstractRepository<T> {
       { new: true },
     );
   }
+
+async deleteById(id: string): Promise<DeleteResult | null> {
+  return this.model.deleteOne({ _id: id } as QueryFilter<T>);
+}
+
 }

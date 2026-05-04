@@ -42,4 +42,5 @@ export declare class AbstractRepository<T> {
     deleteMany(filter: QueryFilter<T>): Promise<DeleteResult>;
     softDeleteById(id: string): Promise<HydratedDocument<T> | null>;
     restoreById(id: string): Promise<HydratedDocument<T> | null>;
+    deleteById(id: string): Promise<DeleteResult | null>;
 }

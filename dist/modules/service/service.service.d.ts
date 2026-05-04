@@ -24,4 +24,7 @@ export declare class ServiceService {
     } & Required<{
         _id: import("mongoose").Types.ObjectId;
     }>)[]>;
+    deleteService(serviceId: string): Promise<{
+        message: string;
+    }>;
 }

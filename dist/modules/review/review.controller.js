@@ -54,7 +54,7 @@ let ReviewController = class ReviewController {
 exports.ReviewController = ReviewController;
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
-    (0, decorators_1.Roles)(enum_1.Role.CUSTOMER, enum_1.Role.PROVIDER),
+    (0, decorators_1.Roles)(enum_1.Role.CUSTOMER, enum_1.Role.PROVIDER, enum_1.Role.ADMIN),
     (0, common_1.Post)("global-review"),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),

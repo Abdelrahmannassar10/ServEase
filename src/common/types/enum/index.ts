@@ -11,12 +11,6 @@ export enum ServiceCategory{
     PAINTING="PAINTING",
     OTHER="OTHER"
 }
-export enum ServiceStatus{
-    PENDING="PENDING",
-    ACCEPTED="ACCEPTED",
-    REJECTED="REJECTED",
-    COMPLETED="COMPLETED"
-}
 export enum PaymentStatus{
     PENDING="PENDING",
     COMPLETED="COMPLETED",
@@ -43,7 +37,6 @@ export enum City {
   CAIRO = "Cairo",
   GIZA = "Giza",
   ALEXANDRIA = "Alexandria",
-
   DAKAHLIA = "Dakahlia",
   RED_SEA = "Red Sea",
   BEHEIRA = "Beheira",
@@ -68,6 +61,15 @@ export enum City {
   QENA = "Qena",
   NORTH_SINAI = "North Sinai",
   SOHAG = "Sohag"
+}
+export enum ServiceStatus {
+  WAITING = 'WAITING',
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  REFUSED = 'REFUSED',
+  COMPLETED = 'COMPLETED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  OUTDATED = 'OUTDATED'
 }
 
 export enum ReviewType {

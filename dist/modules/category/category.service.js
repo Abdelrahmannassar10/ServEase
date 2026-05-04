@@ -18,6 +18,12 @@ let CategoryService = class CategoryService {
         this.categoryRepository = categoryRepository;
     }
     async create(createCategoryDto) {
+        const categoryExist = await this.categoryRepository.findOne({
+            name: createCategoryDto.name,
+        });
+        if (categoryExist) {
+            throw new common_1.ConflictException('Category already exists');
+        }
         const category = await this.categoryRepository.create(createCategoryDto);
         return {
             message: 'Category created successfully',
@@ -27,8 +33,8 @@ let CategoryService = class CategoryService {
     async getCategories() {
         const categories = await this.categoryRepository.findAll({}, {}, {
             populate: {
-                path: "services",
-                select: { name: 1 }
+                path: 'services',
+                select: { name: 1 },
             },
         });
         return categories.map((category) => ({
@@ -38,6 +44,14 @@ let CategoryService = class CategoryService {
             },
             services: category.services,
         }));
+    }
+    async deleteCategory(categoryId) {
+        const category = await this.categoryRepository.findById(categoryId);
+        if (!category) {
+            throw new common_1.ConflictException('Category not found');
+        }
+        await this.categoryRepository.deleteById(categoryId);
+        return { message: 'Category deleted successfully' };
     }
 };
 exports.CategoryService = CategoryService;

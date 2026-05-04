@@ -21,4 +21,11 @@ export class CategoryController {
   async getCategories(){
     return await this.categoryService.getCategories();
   }
+  
+  @Delete(':id')
+  @UseGuards(AuthGuard('jwt'),RolesGuard)
+  @Roles(Role.ADMIN)
+  async deleteCategory(@Param('id') categoryId: string) {
+    return await this.categoryService.deleteCategory(categoryId);
+  }
 }

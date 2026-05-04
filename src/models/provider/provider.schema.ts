@@ -14,6 +14,7 @@ export class Provider {
   firstName: string;
   lastName: string;
   userName: string;
+  userAgent: UserAgent;
 
   email: string;
 
@@ -73,6 +74,12 @@ export class Provider {
 
   @Prop({ type: String })
   cvUrl: string;
+   @Prop({ default: 0, min: 0 })
+  providerCancelCount: number;
+  @Prop({ default: 0, min: 0 })
+  providerCancelFees: number;
+  @Prop({ type: Number, default: 0, min: 0 })
+  debt: number;
 }
 export const providerSchema = SchemaFactory.createForClass(Provider);
 export type HProviderDocument = HydratedDocument<Provider>;

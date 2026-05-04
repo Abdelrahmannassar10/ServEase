@@ -31,6 +31,9 @@ let ServiceController = class ServiceController {
     async getServices() {
         return await this.serviceService.getServices();
     }
+    async deleteService(serviceId) {
+        return await this.serviceService.deleteService(serviceId);
+    }
 };
 exports.ServiceController = ServiceController;
 __decorate([
@@ -48,6 +51,15 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ServiceController.prototype, "getServices", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
+    (0, decorators_1.Roles)(enum_1.Role.ADMIN),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ServiceController.prototype, "deleteService", null);
 exports.ServiceController = ServiceController = __decorate([
     (0, common_1.Controller)('service'),
     __metadata("design:paramtypes", [service_service_1.ServiceService])

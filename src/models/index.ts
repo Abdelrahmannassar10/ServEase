@@ -15,3 +15,18 @@ export * from './customer/customer.schema';
 
 export * from './provider/provider.repository';
 export * from './provider/provider.schema';
+
+export * from './service/service.repository';
+export * from './service/service.schema';
+
+export * from './reviews/reviews.repository';
+export * from './reviews/review.schema';
+
+export * from './category/category.repository';
+export * from './category/category.schema';
+
+export * from './service-request/service-request.repository';
+export * from './service-request/service-request.schema';
+
+export * from './token/token.repository';
+export * from './token/token.schema';

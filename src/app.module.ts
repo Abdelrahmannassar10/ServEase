@@ -5,8 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import devConfig from './config/env/dev.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
-import { Admin, adminSchema, Customer, customerSchema, Provider, providerSchema, User, userSchema } from './models';
-import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksService } from '@common/helper/cron-job.helper';
 import { UserMongooseModule } from '@shared/modules';
@@ -17,6 +15,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { ServiceModule } from './modules/service/service.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ReviewModule } from './modules/review/review.module';
+import { ServiceRequestModule } from '@modules/service-request/service-request.module';
 
 @Module({
   imports: [
@@ -41,6 +40,7 @@ import { ReviewModule } from './modules/review/review.module';
     ServiceModule,
     CategoryModule,
     ReviewModule,
+    ServiceRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService,TasksService],

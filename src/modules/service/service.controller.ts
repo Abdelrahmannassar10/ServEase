@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Delete, Param } from '@nestjs/common';
 import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,5 +20,12 @@ export class ServiceController {
   @Get('all')
   async getServices() {
     return await this.serviceService.getServices();
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  async deleteService(@Param('id') serviceId: string) {
+    return await this.serviceService.deleteService(serviceId);
   }
 }

@@ -31,6 +31,9 @@ let CategoryController = class CategoryController {
     async getCategories() {
         return await this.categoryService.getCategories();
     }
+    async deleteCategory(categoryId) {
+        return await this.categoryService.deleteCategory(categoryId);
+    }
 };
 exports.CategoryController = CategoryController;
 __decorate([
@@ -48,6 +51,15 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CategoryController.prototype, "getCategories", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), guard_1.RolesGuard),
+    (0, decorators_1.Roles)(enum_1.Role.ADMIN),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], CategoryController.prototype, "deleteCategory", null);
 exports.CategoryController = CategoryController = __decorate([
     (0, common_1.Controller)('category'),
     __metadata("design:paramtypes", [category_service_1.CategoryService])

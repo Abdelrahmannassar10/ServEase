@@ -37,11 +37,11 @@ export class AuthService {
   async validateUser(email: string, pass: string) {
     const user = await this.userRepository.findOne({ email });
 
-    if (!user) throw new UnauthorizedException("Invalid email or password");
+    if (!user) throw new UnauthorizedException('Invalid email or password');
 
     const match = await bcrypt.compare(pass, user.password);
 
-    if (!match) throw new UnauthorizedException("Invalid email or password");
+    if (!match) throw new UnauthorizedException('Invalid email or password');
     if (user.isVerified == false) {
       throw new UnauthorizedException('Please verify your email first');
     }
@@ -54,9 +54,12 @@ export class AuthService {
       }
     }
 
-    if(user.isDeleted){
+    if (user.isDeleted) {
       user.isDeleted = false;
-      await this.userRepository.updateById(user._id as unknown as string , { isDeleted: false , deletedAt: null });
+      await this.userRepository.updateById(user._id as unknown as string, {
+        isDeleted: false,
+        deletedAt: null,
+      });
     }
 
     return user;
@@ -117,7 +120,6 @@ export class AuthService {
     providerRegisterDTO: ProviderRegisterDto,
     cvFile?: Express.Multer.File,
   ) {
-
     if (!providerRegisterDTO.writtenCv && !cvFile) {
       throw new BadRequestException(
         'Provider must provide CV text or upload a CV file.',
@@ -140,7 +142,6 @@ export class AuthService {
       );
 
       cvUrl = upload.secure_url;
-
     }
 
     const provider = await this.providerRepository.create({
@@ -305,28 +306,25 @@ export class AuthService {
   }
 
   async validateAdmin(email: string, password: string) {
-  const admin = await this.userRepository.findOne({
-    email,
-    role: Role.ADMIN,
-    isDeleted: false,
-  });
+    const admin = await this.userRepository.findOne({
+      email,
+      role: Role.ADMIN,
+      isDeleted: false,
+    });
 
-  console.log(admin);
-  
-  if (!admin) {
-    return null;
+    console.log(admin);
+
+    if (!admin) {
+      return null;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    const { password: _, ...result } = admin.toObject();
+    return result;
   }
-
-  const isPasswordValid = await bcrypt.compare(
-    password,
-    admin.password,
-  );
-
-  if (!isPasswordValid) {
-    return null;
-  }
-
-  const { password: _, ...result } = admin.toObject();
-  return result;
-}
 }

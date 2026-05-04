@@ -3,17 +3,12 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
-  IsObject,
   IsOptional,
   IsString,
   Length,
   Matches,
-  Max,
   MaxLength,
-  Min,
   MinLength,
-  ValidateNested,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { City, ServiceCategory } from '@common/types/enum';
@@ -34,17 +29,16 @@ export class ProviderRegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(8)
-  @MaxLength(20)
+  @MinLength(11)
+  @MaxLength(11)
   mobileNumber: string;
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(11)
-  @MaxLength(11)
+  @MaxLength(8)
   password: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @Transform(({ value }) => new Date(value))
   @IsDate()
   dob: Date;
@@ -61,7 +55,6 @@ export class ProviderRegisterDto {
   @IsOptional()
   @IsString()
   @MinLength(6)
-  @MaxLength(500)
   writtenCv: string;
 
   @IsString()
@@ -94,19 +87,18 @@ export class CustomerRegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(8)
-  @MaxLength(20)
+  @MinLength(11)
+  @MaxLength(11)
   mobileNumber: string;
 
 
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
-  @MaxLength(20)
   password: string;
 
  
-  @IsOptional()
+  @IsNotEmpty()
   @Transform(({ value }) => new Date(value))
   @IsDate()
   dob: Date;

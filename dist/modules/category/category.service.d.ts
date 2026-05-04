@@ -14,4 +14,7 @@ export declare class CategoryService {
         };
         services: import("mongoose").Types.ObjectId[];
     }[]>;
+    deleteCategory(categoryId: string): Promise<{
+        message: string;
+    }>;
 }

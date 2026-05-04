@@ -14,7 +14,7 @@ export class ReviewController {
 
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.CUSTOMER, Role.PROVIDER)
+  @Roles(Role.CUSTOMER, Role.PROVIDER , Role.ADMIN)
   @Post("global-review")
   async globalReview(@Body() globalReviewDto: globalReviewDto, @Request() req: any) {
     const review = this.reviewFactoryService.globalReview(globalReviewDto, req.user._id);
