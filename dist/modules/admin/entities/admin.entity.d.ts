@@ -1,4 +1,4 @@
-import { Role } from "@common/types/enum";
+import { Role } from "../../../common/types/enum";
 import { Types } from "mongoose";
 export declare class Admin {
     readonly _id: Types.ObjectId;

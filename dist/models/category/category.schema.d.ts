@@ -3,19 +3,9 @@ export declare class Category {
     name: string;
     services: mongoose.Types.ObjectId[];
 }
-export declare const categorySchema: mongoose.Schema<Category, mongoose.Model<Category, any, any, any, (mongoose.Document<unknown, any, Category, any, mongoose.DefaultSchemaOptions> & Category & {
-    _id: mongoose.Types.ObjectId;
-} & {
-    __v: number;
-} & {
+export declare const categorySchema: mongoose.Schema<Category, mongoose.Model<Category, any, any, any, any, any, Category>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, Category, mongoose.Document<unknown, {}, Category, {
     id: string;
-}) | (mongoose.Document<unknown, any, Category, any, mongoose.DefaultSchemaOptions> & Category & {
-    _id: mongoose.Types.ObjectId;
-} & {
-    __v: number;
-}), any, Category>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, Category, mongoose.Document<unknown, {}, Category, {
-    id: string;
-}, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<Category & {
+}, mongoose.DefaultSchemaOptions> & Omit<Category & {
     _id: mongoose.Types.ObjectId;
 } & {
     __v: number;
@@ -24,7 +14,7 @@ export declare const categorySchema: mongoose.Schema<Category, mongoose.Model<Ca
 }, {
     name?: mongoose.SchemaDefinitionProperty<string, Category, mongoose.Document<unknown, {}, Category, {
         id: string;
-    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<Category & {
+    }, mongoose.DefaultSchemaOptions> & Omit<Category & {
         _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
@@ -33,7 +23,7 @@ export declare const categorySchema: mongoose.Schema<Category, mongoose.Model<Ca
     }> | undefined;
     services?: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId[], Category, mongoose.Document<unknown, {}, Category, {
         id: string;
-    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<Category & {
+    }, mongoose.DefaultSchemaOptions> & Omit<Category & {
         _id: mongoose.Types.ObjectId;
     } & {
         __v: number;

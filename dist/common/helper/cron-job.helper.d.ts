@@ -1,4 +1,4 @@
-import { UserRepository } from '@models/index';
+import { UserRepository } from "../../models/index";
 export declare class TasksService {
     private readonly userRepository;
     private readonly logger;

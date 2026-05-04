@@ -1,5 +1,5 @@
 import { Admin } from './entities/admin.entity';
-import { AdminRepository, ProviderRepository } from '@models/index';
+import { AdminRepository, ProviderRepository } from "../../models/index";
 import { JwtService } from '@nestjs/jwt';
 export declare class AdminService {
     private readonly adminRepository;

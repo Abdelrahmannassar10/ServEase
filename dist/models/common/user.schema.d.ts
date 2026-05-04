@@ -1,4 +1,4 @@
-import { City, Role, UserAgent } from '@common/types/enum';
+import { City, Role, UserAgent } from "../../common/types/enum";
 import { HydratedDocument, Types } from 'mongoose';
 export declare class User {
     readonly _id: Types.ObjectId;
@@ -26,19 +26,9 @@ export declare class User {
     backgroundURL: string;
     backgroundPublicId: string;
 }
-export declare const userSchema: import("mongoose").Schema<User, import("mongoose").Model<User, any, any, any, (import("mongoose").Document<unknown, any, User, any, import("mongoose").DefaultSchemaOptions> & User & Required<{
-    _id: Types.ObjectId;
-}> & {
-    __v: number;
-} & {
+export declare const userSchema: import("mongoose").Schema<User, import("mongoose").Model<User, any, any, any, any, any, User>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, User, import("mongoose").Document<unknown, {}, User, {
     id: string;
-}) | (import("mongoose").Document<unknown, any, User, any, import("mongoose").DefaultSchemaOptions> & User & Required<{
-    _id: Types.ObjectId;
-}> & {
-    __v: number;
-}), any, User>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, User, import("mongoose").Document<unknown, {}, User, {
-    id: string;
-}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+}, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
     _id: Types.ObjectId;
 }> & {
     __v: number;
@@ -47,7 +37,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
 }, {
     readonly _id?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -56,7 +46,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     firstName?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -65,7 +55,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     lastName?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -74,7 +64,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     userName?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -83,7 +73,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     email?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -92,7 +82,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     mobileNumber?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -101,7 +91,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     password?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -110,7 +100,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     otp?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -119,7 +109,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     otpExpiry?: import("mongoose").SchemaDefinitionProperty<Date, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -128,7 +118,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     isVerified?: import("mongoose").SchemaDefinitionProperty<boolean, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -137,7 +127,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     role?: import("mongoose").SchemaDefinitionProperty<Role, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -146,7 +136,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     userAgent?: import("mongoose").SchemaDefinitionProperty<UserAgent, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -155,7 +145,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     state?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -164,7 +154,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     city?: import("mongoose").SchemaDefinitionProperty<City, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -173,7 +163,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     dob?: import("mongoose").SchemaDefinitionProperty<Date, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -182,7 +172,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     adminApproved?: import("mongoose").SchemaDefinitionProperty<boolean, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -191,7 +181,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     age?: import("mongoose").SchemaDefinitionProperty<number, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -200,7 +190,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     changeCredentialTimestamp?: import("mongoose").SchemaDefinitionProperty<Date, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -209,7 +199,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     isDeleted?: import("mongoose").SchemaDefinitionProperty<boolean, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -218,7 +208,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     deletedAt?: import("mongoose").SchemaDefinitionProperty<Date, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -227,7 +217,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     profileURL?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -236,7 +226,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     profilePublicId?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -245,7 +235,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     backgroundURL?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -254,7 +244,7 @@ export declare const userSchema: import("mongoose").Schema<User, import("mongoos
     }> | undefined;
     backgroundPublicId?: import("mongoose").SchemaDefinitionProperty<string, User, import("mongoose").Document<unknown, {}, User, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<User & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<User & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;

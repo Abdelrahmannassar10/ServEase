@@ -1,5 +1,5 @@
 import { UpdateProviderDto } from './dto/update-provider.dto';
-import { ProviderRepository } from '@models/index';
+import { ProviderRepository } from "../../models/index";
 export declare class ProviderService {
     private readonly providerRepository;
     constructor(providerRepository: ProviderRepository);

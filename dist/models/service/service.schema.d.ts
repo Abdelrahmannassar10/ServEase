@@ -3,19 +3,9 @@ export declare class Service {
     name: string;
     categoryId: mongoose.Types.ObjectId;
 }
-export declare const serviceSchema: mongoose.Schema<Service, mongoose.Model<Service, any, any, any, (mongoose.Document<unknown, any, Service, any, mongoose.DefaultSchemaOptions> & Service & {
-    _id: mongoose.Types.ObjectId;
-} & {
-    __v: number;
-} & {
+export declare const serviceSchema: mongoose.Schema<Service, mongoose.Model<Service, any, any, any, any, any, Service>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, Service, mongoose.Document<unknown, {}, Service, {
     id: string;
-}) | (mongoose.Document<unknown, any, Service, any, mongoose.DefaultSchemaOptions> & Service & {
-    _id: mongoose.Types.ObjectId;
-} & {
-    __v: number;
-}), any, Service>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, Service, mongoose.Document<unknown, {}, Service, {
-    id: string;
-}, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<Service & {
+}, mongoose.DefaultSchemaOptions> & Omit<Service & {
     _id: mongoose.Types.ObjectId;
 } & {
     __v: number;
@@ -24,7 +14,7 @@ export declare const serviceSchema: mongoose.Schema<Service, mongoose.Model<Serv
 }, {
     name?: mongoose.SchemaDefinitionProperty<string, Service, mongoose.Document<unknown, {}, Service, {
         id: string;
-    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<Service & {
+    }, mongoose.DefaultSchemaOptions> & Omit<Service & {
         _id: mongoose.Types.ObjectId;
     } & {
         __v: number;
@@ -33,7 +23,7 @@ export declare const serviceSchema: mongoose.Schema<Service, mongoose.Model<Serv
     }> | undefined;
     categoryId?: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId, Service, mongoose.Document<unknown, {}, Service, {
         id: string;
-    }, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & Omit<Service & {
+    }, mongoose.DefaultSchemaOptions> & Omit<Service & {
         _id: mongoose.Types.ObjectId;
     } & {
         __v: number;

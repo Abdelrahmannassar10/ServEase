@@ -1,6 +1,6 @@
 import { Customer } from './entities/customer.entity';
-import { CustomerRepository } from '@models/index';
-import { CloudinaryService } from '@common/cloudinary';
+import { CustomerRepository } from "../../models/index";
+import { CloudinaryService } from "../../common/cloudinary";
 export declare class CustomerService {
     private readonly customerRepository;
     private readonly cloudService;

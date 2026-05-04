@@ -1,4 +1,4 @@
-import { City, ServiceCategory } from '@common/types/enum';
+import { City, ServiceCategory } from "../../../common/types/enum";
 import { Types } from 'mongoose';
 export declare class Customer {
     readonly _id: Types.ObjectId;

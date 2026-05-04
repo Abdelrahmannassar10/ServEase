@@ -1,4 +1,4 @@
-import { City } from '@common/types/enum';
+import { City } from "../../../common/types/enum";
 export declare class UpdateCustomerDto {
     firstName: string;
     lastName: string;

@@ -1,5 +1,5 @@
-import { UserRepository } from '@models/index';
-import { TokenRepository } from '@models/token/token.repository';
+import { UserRepository } from "../../models/index";
+import { TokenRepository } from "../../models/token/token.repository";
 import { ConfigService } from '@nestjs/config';
 import { Strategy } from 'passport-jwt';
 declare const JwtStrategy_base: new (...args: [opt: import("passport-jwt").StrategyOptionsWithRequest] | [opt: import("passport-jwt").StrategyOptionsWithoutRequest]) => Strategy & {

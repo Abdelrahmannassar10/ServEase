@@ -1,5 +1,5 @@
-import { CloudinaryService } from '@common/cloudinary';
-import { UserRepository } from '@models/index';
+import { CloudinaryService } from "../../common/cloudinary";
+import { UserRepository } from "../../models/index";
 export declare class CommonService {
     private readonly userRepository;
     private readonly cloudService;

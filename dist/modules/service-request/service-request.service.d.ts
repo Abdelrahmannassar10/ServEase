@@ -3,7 +3,7 @@ import { CreateServiceRequestDto } from './dto/create-service-request.dto';
 import { UpdateServiceRequestDto } from './dto/update-service-request.dto';
 import { ServiceRequestFactoryService } from './factory';
 import { ServiceRequestRepository } from '../../models/service-request/service-request.repository';
-import { ProviderRepository } from '@models/index';
+import { ProviderRepository } from "../../models/index";
 export declare class ServiceRequestService {
     private readonly serviceRequestRepository;
     private readonly serviceRequestFactory;

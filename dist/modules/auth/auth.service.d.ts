@@ -1,12 +1,12 @@
 import { ProviderRegisterDto } from './dto/register.dto';
-import { CustomerRepository, ProviderRepository, UserRepository } from '@models/index';
+import { CustomerRepository, ProviderRepository, UserRepository } from "../../models/index";
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Role, UserAgent } from '@common/types/enum';
+import { Role, UserAgent } from "../../common/types/enum";
 import { ConfirmOTPDto } from './dto/confirmOTP.dto';
 import { ResendOTPDto } from './dto/resendOTP';
-import { TokenRepository } from '@models/token/token.repository';
-import { CloudinaryService } from '@common/cloudinary';
+import { TokenRepository } from "../../models/token/token.repository";
+import { CloudinaryService } from "../../common/cloudinary";
 import { Customer } from './entities/auth.entity';
 export declare class AuthService {
     private readonly userRepository;

@@ -3,19 +3,9 @@ export declare class BlacklistToken {
     token: string;
     expiresAt: Date;
 }
-export declare const BlacklistTokenSchema: import("mongoose").Schema<BlacklistToken, import("mongoose").Model<BlacklistToken, any, any, any, (Document<unknown, any, BlacklistToken, any, import("mongoose").DefaultSchemaOptions> & BlacklistToken & {
-    _id: import("mongoose").Types.ObjectId;
-} & {
-    __v: number;
-} & {
+export declare const BlacklistTokenSchema: import("mongoose").Schema<BlacklistToken, import("mongoose").Model<BlacklistToken, any, any, any, any, any, BlacklistToken>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, BlacklistToken, Document<unknown, {}, BlacklistToken, {
     id: string;
-}) | (Document<unknown, any, BlacklistToken, any, import("mongoose").DefaultSchemaOptions> & BlacklistToken & {
-    _id: import("mongoose").Types.ObjectId;
-} & {
-    __v: number;
-}), any, BlacklistToken>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, BlacklistToken, Document<unknown, {}, BlacklistToken, {
-    id: string;
-}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<BlacklistToken & {
+}, import("mongoose").DefaultSchemaOptions> & Omit<BlacklistToken & {
     _id: import("mongoose").Types.ObjectId;
 } & {
     __v: number;
@@ -24,7 +14,7 @@ export declare const BlacklistTokenSchema: import("mongoose").Schema<BlacklistTo
 }, {
     token?: import("mongoose").SchemaDefinitionProperty<string, BlacklistToken, Document<unknown, {}, BlacklistToken, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<BlacklistToken & {
+    }, import("mongoose").DefaultSchemaOptions> & Omit<BlacklistToken & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
@@ -33,7 +23,7 @@ export declare const BlacklistTokenSchema: import("mongoose").Schema<BlacklistTo
     }> | undefined;
     expiresAt?: import("mongoose").SchemaDefinitionProperty<Date, BlacklistToken, Document<unknown, {}, BlacklistToken, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<BlacklistToken & {
+    }, import("mongoose").DefaultSchemaOptions> & Omit<BlacklistToken & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;

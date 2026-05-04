@@ -17,19 +17,9 @@ export declare class ServiceRequest {
     completionCode?: string | null;
     addedToProviderCalendar: boolean;
 }
-export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequest, import("mongoose").Model<ServiceRequest, any, any, any, (import("mongoose").Document<unknown, any, ServiceRequest, any, import("mongoose").DefaultSchemaOptions> & ServiceRequest & Required<{
-    _id: Types.ObjectId;
-}> & {
-    __v: number;
-} & {
+export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequest, import("mongoose").Model<ServiceRequest, any, any, any, any, any, ServiceRequest>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
     id: string;
-}) | (import("mongoose").Document<unknown, any, ServiceRequest, any, import("mongoose").DefaultSchemaOptions> & ServiceRequest & Required<{
-    _id: Types.ObjectId;
-}> & {
-    __v: number;
-}), any, ServiceRequest>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
-    id: string;
-}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+}, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
     _id: Types.ObjectId;
 }> & {
     __v: number;
@@ -38,7 +28,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
 }, {
     readonly _id?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -47,7 +37,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     customerId?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -56,7 +46,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     providerId?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -65,7 +55,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     governorate?: import("mongoose").SchemaDefinitionProperty<string, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -74,7 +64,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     city?: import("mongoose").SchemaDefinitionProperty<string, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -83,7 +73,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     street?: import("mongoose").SchemaDefinitionProperty<string, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -92,7 +82,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     exactLocation?: import("mongoose").SchemaDefinitionProperty<string, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -101,7 +91,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     serviceNeeded?: import("mongoose").SchemaDefinitionProperty<string, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -110,7 +100,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     dateNeeded?: import("mongoose").SchemaDefinitionProperty<Date, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -119,7 +109,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     startTime?: import("mongoose").SchemaDefinitionProperty<string, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -128,7 +118,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     endTime?: import("mongoose").SchemaDefinitionProperty<string | undefined, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -137,7 +127,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     price?: import("mongoose").SchemaDefinitionProperty<number | undefined, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -146,7 +136,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     status?: import("mongoose").SchemaDefinitionProperty<ServiceStatus, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -155,7 +145,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     completionCode?: import("mongoose").SchemaDefinitionProperty<string | null | undefined, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
@@ -164,7 +154,7 @@ export declare const serviceRequestSchema: import("mongoose").Schema<ServiceRequ
     }> | undefined;
     addedToProviderCalendar?: import("mongoose").SchemaDefinitionProperty<boolean, ServiceRequest, import("mongoose").Document<unknown, {}, ServiceRequest, {
         id: string;
-    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<ServiceRequest & Required<{
+    }, import("mongoose").DefaultSchemaOptions> & Omit<ServiceRequest & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;

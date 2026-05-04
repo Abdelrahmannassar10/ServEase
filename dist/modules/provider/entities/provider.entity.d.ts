@@ -1,4 +1,4 @@
-import { ServiceCategory } from "@common/types/enum";
+import { ServiceCategory } from "../../../common/types/enum";
 export declare class Provider {
     firstName: string;
     lastName: string;

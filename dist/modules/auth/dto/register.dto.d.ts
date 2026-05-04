@@ -1,4 +1,4 @@
-import { City, ServiceCategory } from '@common/types/enum';
+import { City, ServiceCategory } from "../../../common/types/enum";
 export declare class ProviderRegisterDto {
     firstName: string;
     lastName: string;

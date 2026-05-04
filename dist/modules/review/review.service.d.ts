@@ -1,6 +1,6 @@
 import { Review } from './entities/review.entity';
-import { ReviewRepository } from '@models/reviews/reviews.repository';
-import { ProviderRepository } from '@models/index';
+import { ReviewRepository } from "../../models/reviews/reviews.repository";
+import { ProviderRepository } from "../../models/index";
 export declare class ReviewService {
     private readonly reviewRepository;
     private readonly providerRepository;

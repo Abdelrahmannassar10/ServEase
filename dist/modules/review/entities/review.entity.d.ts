@@ -1,4 +1,4 @@
-import { ReviewType } from '@common/types/enum';
+import { ReviewType } from "../../../common/types/enum";
 import { Types } from 'mongoose';
 export declare class Review {
     readonly id: Types.ObjectId;
