@@ -11,7 +11,6 @@ import { UserMongooseModule } from '@shared/modules';
 import { CustomerModule } from './modules/customer/customer.module';
 import { ProviderModule } from './modules/provider/provider.module';
 import { CommonModule } from './modules/common/common.module';
-import { CategoryModule } from './modules/category/category.module';
 import { ServiceModule } from './modules/service/service.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ReviewModule } from './modules/review/review.module';
@@ -38,7 +37,6 @@ import { ServiceRequestModule } from '@modules/service-request/service-request.m
     CommonModule,
     AdminModule,
     ServiceModule,
-    CategoryModule,
     ReviewModule,
     ServiceRequestModule,
   ],
