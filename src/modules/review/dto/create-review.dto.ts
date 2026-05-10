@@ -5,7 +5,7 @@ export class globalReviewDto {
     @IsNumber()
     @Max(5)
     @Min(0)
-    rate :Number ;
+    rate :number ;
 
     @IsString()
     content :string ;

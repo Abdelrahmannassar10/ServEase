@@ -50,11 +50,7 @@ export class AbstractRepository<T> {
     projection?: ProjectionType<T>,
     options?: QueryOptions<T>,
   ) {
-    return this.model.find(
-      filter,
-      projection,
-      options,
-    );
+    return this.model.find(filter, projection, options);
   }
   count(filter: QueryFilter<T>) {
     return this.model.countDocuments(filter);
@@ -83,7 +79,6 @@ export class AbstractRepository<T> {
   updateMany(filter: QueryFilter<T>, update: UpdateQuery<T>) {
     return this.model.updateMany(filter, update);
   }
-
 
   /* ================= DELETE ================= */
   deleteMany(filter: QueryFilter<T>): Promise<DeleteResult> {
@@ -116,8 +111,12 @@ export class AbstractRepository<T> {
     );
   }
 
-async deleteById(id: string): Promise<DeleteResult | null> {
-  return this.model.deleteOne({ _id: id } as QueryFilter<T>);
-}
+  async deleteById(id: string): Promise<DeleteResult | null> {
+    return this.model.deleteOne({ _id: id } as QueryFilter<T>);
+  }
+  /* ================= AGGREGATE ================= */
 
+  aggregate(pipeline: any[]) {
+    return this.model.aggregate(pipeline);
+  }
 }

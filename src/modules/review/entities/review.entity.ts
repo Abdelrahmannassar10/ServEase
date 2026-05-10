@@ -7,7 +7,7 @@ export class Review {
   customerId: Types.ObjectId;
   ProviderId: Types.ObjectId;
   requestId: Types.ObjectId;
-  rate: Number;
+  rate: number;
   content: string;
   status: ReviewType;
 }

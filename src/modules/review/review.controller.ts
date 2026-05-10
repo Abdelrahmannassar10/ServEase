@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { Role } from '@common/types/enum';
 import { Roles } from '@common/decorators';
@@ -20,10 +20,6 @@ export class ReviewController {
     const review = this.reviewFactoryService.globalReview(globalReviewDto, req.user._id);
     const result = await this.reviewService.globalReview(review);
     return result;
-
-
-
-    
   }
 
   @Get("/global-reviews")
@@ -33,7 +29,7 @@ export class ReviewController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.CUSTOMER)
+  @Roles(Role.CUSTOMER )
   @Post("request-review")
   async requestReview(@Body() requestReviewDto:RequestReviewDto ,@Request() req: any) {
     const review = this.reviewFactoryService.requestReview(requestReviewDto ,req.user._id);
@@ -54,6 +50,14 @@ export class ReviewController {
   @Get("request-reviews")
   async getRequestReviews() {
     const result = await this.reviewService.getRequestReviews();
+    return result;
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Delete("delete-review/:reviewId")
+  async deleteReview(@Param("reviewId") reviewId:string) {
+    const result = await this.reviewService.deleteReview(reviewId);
     return result;
   }
 }

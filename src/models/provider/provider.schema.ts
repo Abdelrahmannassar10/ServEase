@@ -5,7 +5,7 @@ import { City, Role, ServiceCategory, UserAgent } from '@common/types/enum';
 @Schema({
   timestamps: true,
   toJSON: { virtuals: true },
-   toObject: { virtuals: true },
+  toObject: { virtuals: true },
   discriminatorKey: 'role',
 })
 export class Provider {
@@ -19,9 +19,9 @@ export class Provider {
   email: string;
 
   @Prop({
-      type: String,
-      required: true
-    })
+    type: String,
+    required: true,
+  })
   mobileNumber: string;
 
   password: string;
@@ -35,14 +35,14 @@ export class Provider {
 
   @Prop({
     type: String,
-    required: true
+    required: true,
   })
   state: string;
 
   @Prop({
-      type: String,
-      required:true
-    })
+    type: String,
+    required: true,
+  })
   city: City;
 
   dob: Date;
@@ -74,12 +74,21 @@ export class Provider {
 
   @Prop({ type: String })
   cvUrl: string;
-   @Prop({ default: 0, min: 0 })
+
+  @Prop({ default: 0, min: 0 })
   providerCancelCount: number;
+
   @Prop({ default: 0, min: 0 })
   providerCancelFees: number;
+
   @Prop({ type: Number, default: 0, min: 0 })
   debt: number;
+
+  @Prop({ type: Number, default: 0, min: 0, max: 5 })
+  averageRating: number;
+
+  @Prop({ type: Number, default: 0, min: 0 })
+  reviewsCount: number;
 }
 export const providerSchema = SchemaFactory.createForClass(Provider);
 export type HProviderDocument = HydratedDocument<Provider>;
