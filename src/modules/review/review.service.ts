@@ -3,7 +3,6 @@ import { Review } from './entities/review.entity';
 import { ReviewRepository } from '@models/reviews/reviews.repository';
 import { ReviewType } from '@common/types/enum';
 import { ProviderRepository } from '@models/index';
-import { log } from 'node:console';
 
 @Injectable()
 export class ReviewService {

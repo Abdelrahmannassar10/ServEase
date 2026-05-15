@@ -59,7 +59,6 @@ export class ServiceRequestService {
 
   return data;
   }
-
   private async findOneForUser(
   requestId: string,
   userId: Types.ObjectId,
@@ -81,7 +80,9 @@ export class ServiceRequestService {
   }
 
   async findOne(id: string) {
-    const request = await this.serviceRequestRepository.findById(id);
+    const request = await this.serviceRequestRepository.findById(id)
+    .populate('providerId', 'firstName lastName userName dob age profileUrl')
+    .populate('customerId', 'firstName lastName userName dob age profileUrl');
 
     if (!request) {
       throw new NotFoundException('Service request not found');
