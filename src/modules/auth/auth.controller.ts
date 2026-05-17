@@ -11,17 +11,23 @@ import {
   Response,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CustomerRegisterDto, ProviderRegisterDto } from './dto/register.dto';
 import { AuthFactoryService } from './factory';
-import { GoogleAuthGuard } from '@common/guard/google.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { ConfirmOTPDto } from './dto/confirmOTP.dto';
-import { ResendOTPDto } from './dto/resendOTP';
 import { Roles } from '@common/decorators';
 import { Role } from '@common/types/enum';
-import { RolesGuard } from '@common/guard';
+import { GoogleAuthGuard, RolesGuard } from '@common/guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
+import {
+  ChangePasswordOTPDto,
+  CheckOTPDto,
+  ConfirmOTPDto,
+  CustomerRegisterDto,
+  ForgetPasswordOTPDto,
+  ProviderRegisterDto,
+  ResendOTPDto,
+} from './dto';
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -92,6 +98,23 @@ export class AuthController {
   @Post('resend-otp')
   async resendOTP(@Body() resendOTPDto: ResendOTPDto) {
     return this.authService.resendOTP(resendOTPDto);
+  }
+
+  @Post('forget-passwordOTP')
+  async forgetPassword(@Body() forgetPasswordDTO: ForgetPasswordOTPDto) {
+    return await this.authService.forgetPassword(forgetPasswordDTO);
+  }
+
+  @Post('check-forget-password-otp')
+  async checkForgetPasswordOTP(@Body() checkOTPDto: CheckOTPDto) {
+    return await this.authService.checkForgetPasswordOTP(checkOTPDto);
+  }
+
+  @Post('change-password-after-otp')
+  async changePasswordAfterOTP(
+    @Body() changePasswordOTPDto: ChangePasswordOTPDto,
+  ) {
+    return await this.authService.changePasswordAfterOTP(changePasswordOTPDto);
   }
 
   @UseGuards(AuthGuard('jwt'))

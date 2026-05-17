@@ -8,6 +8,7 @@ import { CustomerRepository } from '@models/index';
 import { decrypt } from '@common/helper';
 import * as bcrypt from 'bcrypt';
 import { CloudinaryService } from '@common/cloudinary';
+import { getAnotherProfileDTO } from './dto/getAnotherProfileDTO';
 
 @Injectable()
 export class CustomerService {
@@ -15,8 +16,8 @@ export class CustomerService {
     private readonly customerRepository: CustomerRepository,
     private readonly cloudService: CloudinaryService,
   ) {}
-  updateProfile(updateProfile: Customer, id: string) {
-    const updatedCustomer = this.customerRepository.updateById(
+  async updateProfile(updateProfile: Customer, id: string) {
+    const updatedCustomer =await this.customerRepository.updateById(
       id,
       updateProfile,
     );
@@ -53,8 +54,8 @@ export class CustomerService {
     return customerData;
   }
 
-  async getAnotherProfile(userid: string) {
-    const customer = await this.customerRepository.findById(userid);
+  async getAnotherProfile(getAnotherProfile: getAnotherProfileDTO) {
+    const customer = await this.customerRepository.findById(getAnotherProfile.id);
     if (!customer) {
       throw new NotFoundException('Customer not found');
     }

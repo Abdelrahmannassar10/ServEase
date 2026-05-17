@@ -76,3 +76,9 @@ export enum ReviewType {
     GLOBAL = "GLOBAL" ,
     REQUEST = "REQUEST"
 }
+export enum ProviderStatus {
+    Active = "Active",
+    Banned = "Banned",
+    Stopped = "Stopped",
+    PendingApproval = "PendingApproval"
+}

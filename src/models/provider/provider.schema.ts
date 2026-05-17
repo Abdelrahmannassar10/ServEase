@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { City, Role, ServiceCategory, UserAgent } from '@common/types/enum';
+import { City, ProviderStatus, Role, ServiceCategory, UserAgent } from '@common/types/enum';
 
 @Schema({
   timestamps: true,
@@ -63,8 +63,8 @@ export class Provider {
   @Prop({ type: String, unique: true, required: true, match: /^\d{6,20}$/ })
   nationalNumber: string;
 
-  @Prop({ type: Boolean, default: false })
-  adminApproved: boolean;
+  @Prop({ type: String, enum: ProviderStatus, default: ProviderStatus.PendingApproval })
+  adminApproved: ProviderStatus;
 
   @Prop({ type: String, enum: ServiceCategory })
   service: ServiceCategory;

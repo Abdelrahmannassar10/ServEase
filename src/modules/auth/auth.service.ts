@@ -4,23 +4,25 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CustomerRegisterDto, ProviderRegisterDto } from './dto/register.dto';
+import { ProviderRegisterDto } from './dto/register.dto';
 import {
-  AdminRepository,
   CustomerRepository,
   ProviderRepository,
   UserRepository,
 } from '@models/index';
-import { sendMail } from '@common/helper';
+import { generateOTP, sendMail } from '@common/helper';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Role, UserAgent } from '@common/types/enum';
+import { ProviderStatus, Role, UserAgent } from '@common/types/enum';
 import * as bcrypt from 'bcrypt';
 import { ConfirmOTPDto } from './dto/confirmOTP.dto';
 import { ResendOTPDto } from './dto/resendOTP';
 import { TokenRepository } from '@models/token/token.repository';
 import { CloudinaryService } from '@common/cloudinary';
 import { Customer } from './entities/auth.entity';
+import { ForgetPasswordOTPDto } from './dto/forget-passwordOTP';
+import { CheckOTPDto } from './dto/checkForgetPasswordOTP';
+import { ChangePasswordOTPDto } from './dto/changePasswordOTPDto';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +30,6 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly customerRepository: CustomerRepository,
     private readonly providerRepository: ProviderRepository,
-    // private readonly adminRepository: AdminRepository,
     private readonly tokenRepository: TokenRepository,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -47,7 +48,7 @@ export class AuthService {
     }
 
     if (user.role == Role.PROVIDER) {
-      if (user.adminApproved == false) {
+      if (user.adminApproved === ProviderStatus.PendingApproval) {
         throw new UnauthorizedException(
           'Admin did`t approve for your email yet',
         );
@@ -297,6 +298,59 @@ export class AuthService {
     });
     return { message: 'OTP resent successfully' };
   }
+
+  async forgetPassword(forgetPasswordDTO: ForgetPasswordOTPDto) {
+    const user = await this.userRepository.findOne({
+      email: forgetPasswordDTO.email,
+    });
+    if (!user) {
+      throw new UnauthorizedException('Invalid email');
+    }
+    const otp = generateOTP(); 
+    const otpExpiry = new Date(Date.now() + 90 * 1000); 
+    await this.userRepository.findOneAndUpdate(
+      { email: forgetPasswordDTO.email },
+      { otp, otpExpiry },
+    );
+    sendMail({
+      to: user.email,
+      subject: 'Forget Password OTP',
+      html: this.configService.get('OTP_Body').body(otp),
+    });
+    return { message: 'OTP sent to your email' };
+  }
+
+  async checkForgetPasswordOTP(checkOTPDto: CheckOTPDto) {
+    const user = await this.userRepository.findOne({
+      email: checkOTPDto.email,
+    });
+    if (!user) {
+      throw new UnauthorizedException('Invalid email');
+    }
+    if (user.otp !== checkOTPDto.otp) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+    return { message: 'OTP is valid' };
+  }
+
+  async changePasswordAfterOTP(changePasswordOTPDto: ChangePasswordOTPDto) {
+    const user = await this.userRepository.findOne({
+      email: changePasswordOTPDto.email,
+    });
+    if (!user) {
+      throw new UnauthorizedException('Invalid email');
+    }
+    if (user.otp !== changePasswordOTPDto.otp) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+    const hashedPassword = await bcrypt.hash(changePasswordOTPDto.newPassword, 10);
+    await this.userRepository.findOneAndUpdate(
+      { email: changePasswordOTPDto.email },
+      { password: hashedPassword, otp: null, otpExpiry: null }
+    );
+    return { message: 'Password changed successfully' };
+  }
+
   async logout(token: string) {
     await this.tokenRepository.add(
       token,
@@ -304,7 +358,6 @@ export class AuthService {
     );
     return { message: 'Logged out successfully' };
   }
-
   async validateAdmin(email: string, password: string) {
     const admin = await this.userRepository.findOne({
       email,

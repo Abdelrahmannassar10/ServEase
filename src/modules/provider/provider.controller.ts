@@ -17,6 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '@common/guard';
 import { Role } from '@common/types/enum';
 import { Roles } from '@common/decorators';
+import { updatePasswordDTO } from './dto/updatePasswordDTO';
 
 @Controller('provider')
 export class ProviderController {
@@ -53,9 +54,9 @@ export class ProviderController {
   @Roles(Role.PROVIDER)
   async updatePassword(
     @Req() req: any,
-    @Body() body: { oldPassword: string; newPassword: string },
+    @Body() updatePasswordDTO: updatePasswordDTO,
   ) {
-    const { oldPassword, newPassword } = body;
+    const { oldPassword, newPassword } = updatePasswordDTO;
     if (!oldPassword || !newPassword) {
       throw new UnauthorizedException(
         'Old password and new password are required',

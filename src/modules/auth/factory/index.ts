@@ -3,6 +3,7 @@ import { CustomerRegisterDto, ProviderRegisterDto } from '../dto';
 import { Customer, Provider } from '../entities/auth.entity';
 import * as bcrypt from 'bcrypt';
 import { BadRequestException } from '@nestjs/common';
+import { ProviderStatus } from '@common/types/enum';
 export class AuthFactoryService {
   async createCustomer(customerDTO: CustomerRegisterDto) {
     const customer = new Customer();
@@ -39,7 +40,7 @@ export class AuthFactoryService {
     provider.state = providerDTO.state;
     provider.writtenCv = providerDTO.writtenCv;
     provider.nationalNumber = providerDTO.nationalNumber;
-    provider.adminApproved = false;
+    provider.adminApproved = ProviderStatus.PendingApproval;
     provider.service = providerDTO.service;
     provider.specialization = providerDTO.specialization;
     return provider;

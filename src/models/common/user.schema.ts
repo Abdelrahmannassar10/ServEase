@@ -1,4 +1,4 @@
-import { City, Role, UserAgent } from '@common/types/enum';
+import { City, ProviderStatus, Role, UserAgent } from '@common/types/enum';
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 @Schema({
@@ -72,7 +72,7 @@ export class User {
 
   @Prop({ type: Date })
   dob: Date;
-  adminApproved: boolean;
+  adminApproved: ProviderStatus;
   @Virtual({
     get(this: User) {
       if (!this.dob) return null;

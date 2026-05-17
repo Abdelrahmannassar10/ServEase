@@ -3,7 +3,7 @@ import { Admin } from './entities/admin.entity';
 import { AdminRepository, ProviderRepository } from '@models/index';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Role } from '@common/types/enum';
+import { ProviderStatus, Role } from '@common/types/enum';
 import { profile } from 'console';
 
 @Injectable()
@@ -48,7 +48,7 @@ export class AdminService {
     const allProviders = await this.providerRepository.find({});
     console.log('ALL PROVIDERS:', allProviders);
     const pendingProviders = await this.providerRepository.find({
-      adminApproved: false,
+      adminApproved: ProviderStatus.PendingApproval,
     });
     
 

@@ -1,3 +1,6 @@
 export * from "./register.dto"
 export *from"./confirmOTP.dto"
 export *from"./resendOTP"
+export * from "./forget-passwordOTP"
+export * from "./checkForgetPasswordOTP"
+export * from "./changePasswordOTPDto"

@@ -15,6 +15,8 @@ import { CustomerFactoryService } from './factory';
 import { RolesGuard } from '@common/guard';
 import { Roles } from '@common/decorators';
 import { Role } from '@common/types/enum';
+import { getAnotherProfileDTO } from './dto/getAnotherProfileDTO';
+import { updatePasswordDTO } from './dto/updatePasswordDTO';
 
 
 @Controller('customer')
@@ -50,8 +52,8 @@ export class CustomerController {
   }
 
   @Get(':id')
-  async getAnotherProfile(@Param('id') id: string) {
-    return await this.customerService.getAnotherProfile(id);
+  async getAnotherProfile(@Param('id') getAnotherProfile: getAnotherProfileDTO) {
+    return await this.customerService.getAnotherProfile(getAnotherProfile);
   }
 
   @Post('update-password')
@@ -59,9 +61,9 @@ export class CustomerController {
   @Roles(Role.CUSTOMER)
   async updatePassword(
     @Request() req: any,
-    @Body() body: { oldPassword: string; newPassword: string },
+    @Body() updatePassword:updatePasswordDTO,
   ) {
-    const { oldPassword, newPassword } = body;
+    const { oldPassword, newPassword } = updatePassword;
     if (!oldPassword || !newPassword) {
       throw new UnauthorizedException(
         'Old password and new password are required',
