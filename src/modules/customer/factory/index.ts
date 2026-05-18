@@ -17,6 +17,7 @@ export class CustomerFactoryService {
     updatedCustomer.dob = updateCustomerDto.dob ?? existCustomer.dob;
     updatedCustomer.city = updateCustomerDto.city ?? existCustomer.city;
     updatedCustomer.state = updateCustomerDto.state ?? existCustomer.state;
+    updatedCustomer.gender = updateCustomerDto.gender ?? existCustomer.gender;
     return updatedCustomer;
   }
 }

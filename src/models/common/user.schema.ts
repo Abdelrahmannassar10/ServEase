@@ -1,10 +1,17 @@
-import { City, ProviderStatus, Role, UserAgent } from '@common/types/enum';
+import {
+  City,
+  Gender,
+  ProviderStatus,
+  Role,
+  state,
+  UserAgent,
+} from '@common/types/enum';
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 @Schema({
   timestamps: true,
   toJSON: { virtuals: true },
-   toObject: { virtuals: true },
+  toObject: { virtuals: true },
   discriminatorKey: 'role',
 })
 export class User {
@@ -18,7 +25,6 @@ export class User {
     get(this: User) {
       return `${this.firstName ?? ''} ${this.lastName ?? ''}`.trim();
     },
-
   })
   userName: string;
   @Prop({ type: String, required: true, unique: true })
@@ -58,8 +64,9 @@ export class User {
     required: function (this: User) {
       return this.userAgent === 'SYSTEM';
     },
+    enum: state,
   })
-  state: string;
+  state: state;
 
   @Prop({
     type: String,
@@ -69,6 +76,15 @@ export class User {
     enum: City,
   })
   city: City;
+
+  @Prop({
+    enum: Gender,
+    required: function (this: User) {
+      return this.userAgent === 'SYSTEM';
+    },
+    type: String,
+  })
+  gender: Gender;
 
   @Prop({ type: Date })
   dob: Date;

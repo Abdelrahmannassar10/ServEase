@@ -1,4 +1,4 @@
-import { City } from '@common/types/enum';
+import { City, Gender, state } from '@common/types/enum';
 import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
@@ -8,7 +8,6 @@ import {
   IsString,
   MaxLength,
   MinLength,
-  ValidateNested,
 } from 'class-validator';
 
 export class UpdateCustomerDto {
@@ -39,5 +38,11 @@ export class UpdateCustomerDto {
 
   @IsOptional()
   @IsString()
-  state: string;
+  @IsEnum(state)
+  state: state;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(Gender)
+  gender: Gender;
 }

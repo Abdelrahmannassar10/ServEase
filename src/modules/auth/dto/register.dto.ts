@@ -11,7 +11,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { City, ServiceCategory } from '@common/types/enum';
+import { City, Gender, ServiceCategory, state } from '@common/types/enum';
 
 export class ProviderRegisterDto {
   @IsString()
@@ -50,7 +50,8 @@ export class ProviderRegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  state: string;
+  @IsEnum(state)
+  state: state;
 
   @IsOptional()
   @IsString()
@@ -68,6 +69,11 @@ export class ProviderRegisterDto {
 
   @IsString()
   specialization: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(Gender)
+  gender: Gender;
 }
 
 ///////////////////////////////////////////
@@ -109,5 +115,11 @@ export class CustomerRegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  state: string;
+  @IsEnum(state)
+  state: state;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(Gender)
+  gender: Gender;
 }

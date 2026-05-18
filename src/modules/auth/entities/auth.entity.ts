@@ -1,4 +1,4 @@
-import {  City, ProviderStatus, ServiceCategory } from '@common/types/enum';
+import {  City, Gender, ProviderStatus, ServiceCategory, state } from '@common/types/enum';
 import { Types } from 'mongoose';
 
 
@@ -15,7 +15,8 @@ export class Customer {
   isVerified: boolean;
   dob: Date;
   city: City;
-  state: string;
+  state: state;
+  gender:Gender;
 }
 
 export class Provider {
@@ -31,10 +32,11 @@ export class Provider {
   isVerified: boolean;
   dob: Date;
   city: City;
-  state: string;
+  state: state;
   writtenCv: string;
   adminApproved: ProviderStatus;
   nationalNumber: string;
   service:ServiceCategory;
   specialization: string;
+  gender:Gender;
 }

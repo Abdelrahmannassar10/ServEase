@@ -1,4 +1,4 @@
-import { City } from "@common/types/enum";
+import { City, Gender, state } from "@common/types/enum";
 import { Types } from "mongoose";
 
 export class Customer {
@@ -13,5 +13,6 @@ export class Customer {
       isVerified: boolean;
       dob: Date;
       city: City;
-      state: string;
+      state: state;
+      gender: Gender;
 }

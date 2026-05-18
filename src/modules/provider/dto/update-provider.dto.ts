@@ -1,4 +1,4 @@
-import { City, ServiceCategory } from '@common/types/enum';
+import { City, Gender, ServiceCategory, state } from '@common/types/enum';
 import { Transform } from 'class-transformer';
 import {
   IsDate,
@@ -42,7 +42,8 @@ export class UpdateProviderDto {
 
   @IsOptional()
   @IsString()
-  state: string;
+  @IsEnum(state)
+  state: state;
 
   @IsOptional()
   @IsString()
@@ -63,4 +64,9 @@ export class UpdateProviderDto {
   @IsOptional()
   @IsString()
   specialization: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(Gender)
+  gender: Gender;
 }

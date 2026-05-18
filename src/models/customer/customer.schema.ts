@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { City, Role, UserAgent } from '@common/types/enum';
+import { City, Gender, Role, state, UserAgent } from '@common/types/enum';
 
 @Schema({
   timestamps: true,
@@ -37,8 +37,10 @@ export class Customer {
     required: function (this: Customer) {
       return this.userAgent === 'SYSTEM';
     },
+    enum:state
   })
-  state: string;
+  state: state;
+  
   @Prop({
     type: String,
     required: function (this: Customer) {
@@ -47,6 +49,15 @@ export class Customer {
     enum: City,
   })
   city: City;
+
+    @Prop({
+      enum: Gender,
+      required: function (this: Customer) {
+        return this.userAgent === 'SYSTEM';
+      },
+      type: String,
+    })
+    gender: Gender;
 
   dob: Date;
   userAgent: UserAgent;

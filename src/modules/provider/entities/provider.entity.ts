@@ -1,4 +1,4 @@
-import { ServiceCategory } from "@common/types/enum";
+import { Gender, ServiceCategory, state } from "@common/types/enum";
 
 export class Provider {
 
@@ -13,7 +13,7 @@ export class Provider {
 
       city: string;
   
-      state: string;
+      state: state;
   
       writtenCv: string;
 
@@ -23,4 +23,5 @@ export class Provider {
       service: ServiceCategory;
   
       specialization: string;
+      gender: Gender;
 }

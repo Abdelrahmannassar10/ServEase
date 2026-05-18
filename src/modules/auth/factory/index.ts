@@ -23,6 +23,7 @@ export class AuthFactoryService {
     customer.dob = customerDTO.dob;
     customer.city = customerDTO.city;
     customer.state = customerDTO.state;
+    customer.gender = customerDTO.gender;
     return customer;
   }
   async createProvider(providerDTO: ProviderRegisterDto) {
@@ -43,6 +44,7 @@ export class AuthFactoryService {
     provider.adminApproved = ProviderStatus.PendingApproval;
     provider.service = providerDTO.service;
     provider.specialization = providerDTO.specialization;
+    provider.gender = providerDTO.gender;
     return provider;
   }
 }

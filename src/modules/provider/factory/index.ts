@@ -12,6 +12,7 @@ export class ProviderFactoryService {
            existingProvider.writtenCv = updateProviderDto.writtenCv??existingProvider.writtenCv;
            existingProvider.nationalNumber = updateProviderDto.nationalNumber??existingProvider.nationalNumber;
            existingProvider.service = updateProviderDto.service??existingProvider.service;
+           existingProvider.gender = updateProviderDto.gender??existingProvider.gender;
            existingProvider.specialization = updateProviderDto.specialization??existingProvider.specialization;
            return existingProvider;
     }
