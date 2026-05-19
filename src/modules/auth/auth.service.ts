@@ -128,11 +128,14 @@ export class AuthService {
     }
 
     const providerExists = await this.userRepository.findOne({
-      email: providerRegisterDTO.email,
+      $or: [
+        { email: providerRegisterDTO.email },
+        { nationalNumber: providerRegisterDTO.nationalNumber },
+      ],
     });
 
     if (providerExists) {
-      throw new ConflictException('User already exists');
+      throw new ConflictException('User Email or National Number already exists');
     }
 
     let cvUrl: string | undefined = undefined;
@@ -285,7 +288,7 @@ export class AuthService {
     if (user.isVerified) {
       throw new ConflictException('Email already verified');
     }
-    const otp = Math.floor(100000 + Math.random() * 900000);
+    const otp = generateOTP();
     const otpExpiry = new Date(Date.now() + 30 * 1000);
     await this.userRepository.findOneAndUpdate(
       { email: resendOTPDto.email },
@@ -306,8 +309,8 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid email');
     }
-    const otp = generateOTP(); 
-    const otpExpiry = new Date(Date.now() + 90 * 1000); 
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 90 * 1000);
     await this.userRepository.findOneAndUpdate(
       { email: forgetPasswordDTO.email },
       { otp, otpExpiry },
@@ -343,10 +346,13 @@ export class AuthService {
     if (user.otp !== changePasswordOTPDto.otp) {
       throw new UnauthorizedException('Invalid OTP');
     }
-    const hashedPassword = await bcrypt.hash(changePasswordOTPDto.newPassword, 10);
+    const hashedPassword = await bcrypt.hash(
+      changePasswordOTPDto.newPassword,
+      10,
+    );
     await this.userRepository.findOneAndUpdate(
       { email: changePasswordOTPDto.email },
-      { password: hashedPassword, otp: null, otpExpiry: null }
+      { password: hashedPassword, otp: null, otpExpiry: null },
     );
     return { message: 'Password changed successfully' };
   }
