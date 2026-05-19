@@ -92,11 +92,11 @@ export class AuthService {
       throw new ConflictException('User already exists');
     }
     const customerExist = await this.customerRepository.create(customer);
-    // sendMail({
-    //   to: customerExist.email,
-    //   subject: 'Confirmation Email',
-    //   html: this.configService.get('OTP_Body').body(customerExist.otp),
-    // });
+    sendMail({
+      to: customerExist.email,
+      subject: 'Confirmation Email',
+      html: this.configService.get('OTP_Body').body(customerExist.otp),
+    });
     const { password, otp, otpExpiry, ...createdObj } = JSON.parse(
       JSON.stringify(customerExist),
     );
