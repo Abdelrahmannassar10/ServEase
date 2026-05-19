@@ -15,7 +15,7 @@ export async function sendMail({
 }: SendMailOptions) {
   try {
     const response = await resend.emails.send({
-      from: process.env.EMAIL_USER as string,
+      from: 'onboarding@resend.dev',
       to,
       subject,
       html,
