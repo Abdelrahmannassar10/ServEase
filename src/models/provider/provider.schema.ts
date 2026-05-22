@@ -1,6 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { City, Gender, ProviderStatus, Role, ServiceCategory, state, UserAgent } from '@common/types/enum';
+import {
+  City,
+  Gender,
+  ProviderStatus,
+  Role,
+  ServiceCategory,
+  state,
+  UserAgent,
+} from '@common/types/enum';
 
 @Schema({
   timestamps: true,
@@ -35,26 +43,30 @@ export class Provider {
 
   @Prop({
     type: String,
-    required: true,
-    enum: state
+    required: function (this: Provider) {
+      return this.userAgent === 'SYSTEM';
+    },
+    enum: state,
   })
   state: state;
 
   @Prop({
     type: String,
-    required: true,
+    required: function (this: Provider) {
+      return this.userAgent === 'SYSTEM';
+    },
     enum: City,
   })
   city: City;
 
-    @Prop({
-      enum: Gender,
-      required: function (this: Provider) {
-        return this.userAgent === 'SYSTEM';
-      },
-      type: String,
-    })
-    gender: Gender;
+  @Prop({
+    enum: Gender,
+    required: function (this: Provider) {
+      return this.userAgent === 'SYSTEM';
+    },
+    type: String,
+  })
+  gender: Gender;
 
   dob: Date;
 
@@ -74,7 +86,11 @@ export class Provider {
   @Prop({ type: String, unique: true, required: true, match: /^\d{6,20}$/ })
   nationalNumber: string;
 
-  @Prop({ type: String, enum: ProviderStatus, default: ProviderStatus.PendingApproval })
+  @Prop({
+    type: String,
+    enum: ProviderStatus,
+    default: ProviderStatus.PendingApproval,
+  })
   adminApproved: ProviderStatus;
 
   @Prop({ type: String, enum: ServiceCategory })

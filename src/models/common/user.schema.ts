@@ -30,12 +30,7 @@ export class User {
   @Prop({ type: String, required: true, unique: true })
   email: string;
 
-  @Prop({
-    type: String,
-    required: function (this: User) {
-      return this.userAgent === 'SYSTEM';
-    },
-  })
+
   mobileNumber: string;
 
   @Prop({
@@ -59,31 +54,10 @@ export class User {
   @Prop({ type: String, enum: UserAgent, default: UserAgent.SYSTEM })
   userAgent: UserAgent;
 
-  @Prop({
-    type: String,
-    required: function (this: User) {
-      return this.userAgent === 'SYSTEM';
-    },
-    enum: state,
-  })
   state: state;
 
-  @Prop({
-    type: String,
-    required: function (this: User) {
-      return this.userAgent === 'SYSTEM';
-    },
-    enum: City,
-  })
   city: City;
 
-  @Prop({
-    enum: Gender,
-    required: function (this: User) {
-      return this.userAgent === 'SYSTEM';
-    },
-    type: String,
-  })
   gender: Gender;
 
   @Prop({ type: Date })

@@ -7,11 +7,11 @@ export class GeneralSetting{
     readonly _id: string;
 
 
-    @Prop({type: Number})
+    @Prop({type: Number , required:true,default:10 ,min:0 ,max:100})
     webCommission: number;
 
 
-    @Prop({type: Number})
+    @Prop({type: Number ,required:true,default:0 ,min:0})
     providerDebt: number;
 }
 

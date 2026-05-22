@@ -15,6 +15,7 @@ import { ServiceModule } from './modules/service/service.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ReviewModule } from './modules/review/review.module';
 import { ServiceRequestModule } from '@modules/service-request/service-request.module';
+import { GeneralSettingModule } from './modules/general-setting/general-setting.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ServiceRequestModule } from '@modules/service-request/service-request.m
     ServiceModule,
     ReviewModule,
     ServiceRequestModule,
+    GeneralSettingModule,
   ],
   controllers: [AppController],
   providers: [AppService,TasksService],
