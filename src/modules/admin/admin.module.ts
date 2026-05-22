@@ -7,10 +7,18 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AdminLocalStrategy } from '@common/strategy/admin-local.stratgy';
 import { AuthModule } from '@modules/auth/auth.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { GeneralSetting, generalSettingSchema } from '@models/index';
 
 @Module({
   imports: [
     UserMongooseModule,
+    MongooseModule.forFeature([
+      {
+        name: GeneralSetting.name,
+        schema: generalSettingSchema,
+      },
+    ]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -18,10 +26,9 @@ import { AuthModule } from '@modules/auth/auth.module';
         signOptions: { expiresIn: '1d' },
       }),
     }),
-    AuthModule
+    AuthModule,
   ],
   controllers: [AdminController],
-  providers: [AdminService, AdminFactoryService,AdminLocalStrategy],
-    
+  providers: [AdminService, AdminFactoryService, AdminLocalStrategy],
 })
 export class AdminModule {}

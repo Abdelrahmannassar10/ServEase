@@ -27,3 +27,6 @@ export * from './service-request/service-request.schema';
 
 export * from './token/token.repository';
 export * from './token/token.schema';
+
+export * from './general-settings/general-settings.repository';
+export * from './general-settings/general-settings.schema';
