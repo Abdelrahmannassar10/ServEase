@@ -38,4 +38,13 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
       startTime,
     });
   }
+  async findProviderCalendarRequests(providerId: string) {
+  return this.serviceRequestModel
+    .find({
+      providerId,
+      addedToProviderCalendar: true,
+    })
+    .populate('customerId')
+    .sort({ dateNeeded: 1, startTime: 1 });
+}
 }

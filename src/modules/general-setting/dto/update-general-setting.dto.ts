@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, length, MAX, Min } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 export class UpdateGeneralSettingDto {
   @IsOptional()
   @IsNumber()

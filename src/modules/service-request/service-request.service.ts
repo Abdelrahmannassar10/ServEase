@@ -357,6 +357,11 @@ return data;
 
   return data;
 }
+async getProviderCalendar(providerId: Types.ObjectId) {
+  return this.serviceRequestRepository.findProviderCalendarRequests(
+    providerId.toString(),
+  );
+}
 
 async findRequests(user:any){
   if(user.role === Role.CUSTOMER){

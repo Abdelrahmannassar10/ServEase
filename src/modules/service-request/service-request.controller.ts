@@ -121,6 +121,12 @@ completeService(
     req.user._id,
   );
 }
+@Get('provider/calendar')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.PROVIDER)
+getProviderCalendar(@Request() req: any) {
+  return this.serviceRequestService.getProviderCalendar(req.user._id);
+}
 
 
 @UseGuards(AuthGuard('jwt'),RolesGuard)

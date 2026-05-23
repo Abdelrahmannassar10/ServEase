@@ -1,6 +1,5 @@
 import {
-  GeneralSettingDocument,
-  GeneralSettingRepository,
+  GeneralSettingRepository
 } from '@models/index';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { UpdateGeneralSettingDto } from './dto/update-general-setting.dto';
