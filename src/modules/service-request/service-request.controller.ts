@@ -30,19 +30,19 @@ export class ServiceRequestController {
     return this.serviceRequestService.create(dto, req.user._id);
   }
 
-  @Get()
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.ADMIN)
-  findAll() {
-    return this.serviceRequestService.findAll();
-  }
+@Get()
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.CUSTOMER, Role.PROVIDER, Role.ADMIN)
+findRequests(@Request() req: any) {
+  return this.serviceRequestService.findRequests(req.user);
+}
 
-  @Get(':id')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.CUSTOMER, Role.PROVIDER, Role.ADMIN)
-  findOne(@Param('id') id: string) {
-    return this.serviceRequestService.findOne(id);
-  }
+  // @Get(':id')
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @Roles(Role.CUSTOMER, Role.PROVIDER, Role.ADMIN)
+  // findOne(@Param('id') id: string) {
+  //   return this.serviceRequestService.findOne(id);
+  // }
 
   @Patch('provider-accept')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -121,7 +121,7 @@ completeService(
     req.user._id,
   );
 }
-@Get('provider/calendar')
+@Get('calendar')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(Role.PROVIDER)
 getProviderCalendar(@Request() req: any) {
@@ -134,5 +134,18 @@ getProviderCalendar(@Request() req: any) {
 @Get("get-requests")
 async getRequestService(@Request() req :any){
   return this.serviceRequestService.findRequests(req.user);
+}
+
+@Get(':id')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.CUSTOMER, Role.PROVIDER, Role.ADMIN)
+getRequestDetails(
+  @Param('id') id: string,
+  @Request() req: any,
+) {
+  return this.serviceRequestService.findOneDetails(
+    id,
+    req.user,
+  );
 }
 }

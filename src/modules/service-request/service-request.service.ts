@@ -8,11 +8,12 @@ import {
 import { Types } from 'mongoose';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
 import { UpdateServiceRequestDto } from './dto/update-service-request.dto';
-import { Role, ServiceStatus } from '../../common/types/enum';
+import { ProviderStatus, Role, ServiceStatus } from '../../common/types/enum';
 import { ServiceRequestFactoryService } from './factory';
 import { ServiceRequestRepository } from '../../models/service-request/service-request.repository';
-import { generateCode } from '../../common/helper';
+import { generateCode, decrypt } from '../../common/helper';
 import { ProviderRepository } from '@models/index';
+import { GeneralSettingService } from '@modules/general-setting/general-setting.service';
 
 @Injectable()
 export class ServiceRequestService {
@@ -20,6 +21,7 @@ export class ServiceRequestService {
     private readonly serviceRequestRepository: ServiceRequestRepository,
     private readonly serviceRequestFactory: ServiceRequestFactoryService,
     private readonly providerRepository: ProviderRepository,
+    private readonly generalSettingService: GeneralSettingService,
   ) {}
 
   async create(
@@ -59,6 +61,9 @@ export class ServiceRequestService {
 
   return data;
   }
+  private getId(value: any): string {
+    return value?._id ? value._id.toString() : value?.toString();
+  }
   private async findOneForUser(
   requestId: string,
   userId: Types.ObjectId,
@@ -66,7 +71,10 @@ export class ServiceRequestService {
 ) {
   const request = await this.findOne(requestId);
 
-  if (request[field]?.toString() !== userId.toString()) {
+  const requestOwnerId = this.getId(request[field]);
+  const loggedUserId = userId.toString();
+
+  if (requestOwnerId !== loggedUserId) {
     throw new UnauthorizedException(
       'You are not allowed to access this service request',
     );
@@ -80,17 +88,125 @@ export class ServiceRequestService {
   }
 
   async findOne(id: string) {
-    const request = await this.serviceRequestRepository.findById(id)
-    .populate('providerId', 'firstName lastName userName dob age profileUrl')
-    .populate('customerId', 'firstName lastName userName dob age profileUrl');
+  const request =
+    await this.serviceRequestRepository.findByIdWithUsers(id);
 
-    if (!request) {
-      throw new NotFoundException('Service request not found');
-    }
-
-    return request;
+  if (!request) {
+    throw new NotFoundException('Service request not found');
   }
 
+  return request;
+}
+async findRequests(user: any) {
+  if (user.role === Role.CUSTOMER) {
+    const requests =
+      await this.serviceRequestRepository.findByCustomerId(
+        user._id.toString(),
+      );
+
+    return requests.map((request: any) => {
+      const req = JSON.parse(JSON.stringify(request));
+
+      const {
+        __v,
+        isDeleted,
+        addedToProviderCalendar,
+        completionCode,
+        createdAt,
+        updatedAt,
+        customerId,
+        providerId,
+        ...serviceData
+      } = req;
+
+      const {
+        password,
+        otp,
+        otpExpiry,
+        isVerified,
+        isDeleted: providerIsDeleted,
+        __v: providerV,
+        createdAt: providerCreatedAt,
+        updatedAt: providerUpdatedAt,
+        role,
+        mobileNumber,
+        debt,
+        providerCancelFees,
+        providerCancelCount,
+        ...providerData
+      } = providerId;
+
+      return {
+        ...serviceData,
+        provider: providerData,
+      };
+    });
+  }
+  if (user.role === Role.PROVIDER) {
+    const requests =
+      await this.serviceRequestRepository.findByProviderId(
+        user._id.toString(),
+      );
+
+    return await Promise.all(
+      requests.map(async (request: any) => {
+        const req = JSON.parse(JSON.stringify(request));
+
+        const {
+          __v,
+          isDeleted,
+          addedToProviderCalendar,
+          completionCode,
+          createdAt,
+          updatedAt,
+          customerId,
+          providerId,
+          ...serviceData
+        } = req;
+
+        const {
+          password,
+          otp,
+          otpExpiry,
+          isVerified,
+          isDeleted: customerIsDeleted,
+          __v: customerV,
+          createdAt: customerCreatedAt,
+          updatedAt: customerUpdatedAt,
+          role,
+          mobileNumber,
+          ...customerData
+        } = customerId;
+        const settings =
+          await this.generalSettingService.getGeneralSettings();
+        const commissionPercentage = settings.webCommission;
+        const commission = Math.round(
+          (req.price || 0) * (commissionPercentage / 100),
+        );
+        const earnings = (req.price || 0) - commission;
+        return {
+          ...serviceData,
+
+          commission,
+
+          earnings,
+
+          customer:
+            req.status === ServiceStatus.CONFIRMED
+              ? {
+                  ...customerData,
+                  mobileNumber: await decrypt(
+                    customerId.mobileNumber,
+                  ),
+                }
+              : customerData,
+        };
+      }),
+    );
+  }
+
+  return this.serviceRequestRepository.find({});
+}
   async providerAccept(
     id: string,
     dto: UpdateServiceRequestDto,
@@ -109,11 +225,16 @@ export class ServiceRequestService {
         'Price and end time are required',
       );
     }
+    const date = new Date(request.dateNeeded);
+    const [hours, minutes] = dto.endTime.split(':').map(Number);
+
+    date.setHours(hours, minutes, 0, 0);
     
   const updated = await this.serviceRequestRepository.updateById(id, {
   providerId,
   price:dto.price,
   endTime:dto.endTime,
+  scheduledEndAt: date,
   status: ServiceStatus.PENDING,
 });
 
@@ -273,6 +394,8 @@ return data;
     providerCancelFees: (provider.providerCancelFees || 0) + cancelFee,
   });
 
+  
+
   const updated = await this.serviceRequestRepository.updateById(id, {
     status: ServiceStatus.REFUSED,
     addedToProviderCalendar: false,
@@ -333,16 +456,24 @@ return data;
     throw new NotFoundException('Provider not found');
   }
 
-  const debtAmount = Math.round(request.price * 0.4);
+  const settings =
+  await this.generalSettingService.getGeneralSettings();
 
-  await this.providerRepository.updateById(request.providerId.toString(), {
-    debt: (provider.debt || 0) + debtAmount,
-    providerCancelCount: 0,
-  });
+const debtAmount = Math.round(
+  request.price * (settings.webCommission / 100),
+);
+provider.debt = (provider.debt || 0) + debtAmount;
+if (provider.debt > settings.providerDebt) {
+  provider.adminApproved = ProviderStatus.Stopped;
+}
+provider.providerCancelCount = 0;
+  await this.providerRepository.updateById(request.providerId.toString(), 
+provider);
 
   const updated = await this.serviceRequestRepository.updateById(id, {
     status: ServiceStatus.COMPLETED,
     completionCode: null,
+    addedToProviderCalendar: false,
   });
 
   const {
@@ -358,14 +489,177 @@ return data;
   return data;
 }
 async getProviderCalendar(providerId: Types.ObjectId) {
-  return this.serviceRequestRepository.findProviderCalendarRequests(
-    providerId.toString(),
-  );
+  const requests =
+    await this.serviceRequestRepository.findProviderCalendarRequests(
+      providerId.toString(),
+    );
+
+  return await Promise.all(  requests.map(async (request: any) => {
+    const {
+      __v,
+      isDeleted,
+      addedToProviderCalendar,
+      createdAt,
+      updatedAt,
+      customerId,
+      ...data
+    } = JSON.parse(JSON.stringify(request));
+
+    const {
+      password,
+      otp,
+      otpExpiry,
+      isVerified,
+      isDeleted: customerIsDeleted,
+      __v: customerV,
+      createdAt: customerCreatedAt,
+      updatedAt: customerUpdatedAt,
+      mobileNumber,
+      userAgent,
+      role,
+      ...customerData
+    } = customerId;
+    
+    return {
+      ...data,
+      customer: {
+        ...customerData,
+        mobileNumber:await decrypt(mobileNumber),
+        
+      },
+      
+    };
+    
+  }));
+  
+}
+async findOneDetails(id: string, user: any) {
+  if (user.role === Role.PROVIDER) {
+    const request = await this.findOneForUser(id, user._id, 'providerId');
+    const req = JSON.parse(JSON.stringify(request));
+
+    const {
+      __v,
+      isDeleted,
+      addedToProviderCalendar,
+      createdAt,
+      updatedAt,
+      customerId,
+      providerId,
+      ...serviceData
+    } = req;
+
+    const {
+      password,
+      otp,
+      otpExpiry,
+      isVerified,
+      isDeleted: customerIsDeleted,
+      __v: customerV,
+      createdAt: customerCreatedAt,
+      updatedAt: customerUpdatedAt,
+      role,
+      mobileNumber,
+      ...customerData
+    } = customerId;
+    
+    const settings =
+          await this.generalSettingService.getGeneralSettings();
+        const commissionPercentage = settings.webCommission;
+        const commission = Math.round(
+          (req.price || 0) * (commissionPercentage / 100),
+        );
+        const earnings = (req.price || 0) - commission;
+
+    return {
+      ...serviceData,
+      commission,
+      earnings,
+      customer:
+    req.status === ServiceStatus.CONFIRMED
+      ? {
+          ...customerData,
+          mobileNumber: await decrypt(customerId.mobileNumber),
+        }
+      : customerData,
+    };
+  }
+
+  if (user.role === Role.CUSTOMER) {
+    const request = await this.findOneForUser(id, user._id, 'customerId');
+    const req = JSON.parse(JSON.stringify(request));
+
+    const {
+      __v,
+      isDeleted,
+      addedToProviderCalendar,
+      createdAt,
+      updatedAt,
+      customerId,
+      providerId,
+      completionCode,
+     
+      
+      ...serviceData
+    } = req;
+
+    const {
+      password,
+      otp,
+      otpExpiry,
+      isVerified,
+      isDeleted: providerIsDeleted,
+      __v: providerV,
+      createdAt: providerCreatedAt,
+      updatedAt: providerUpdatedAt,
+      role,
+      ...providerData
+    } = providerId;
+
+    return {
+      ...serviceData,
+      provider: providerData,
+    };
+  }
+
+  return this.findOne(id);
 }
 
-async findRequests(user:any){
-  if(user.role === Role.CUSTOMER){
-    this.serviceRequestRepository.find({})
+async handleOutdatedConfirmedRequests() {
+  const outdatedDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  const requests =
+    await this.serviceRequestRepository.findOutdatedConfirmedRequests(
+      outdatedDate,
+    );
+
+  for (const request of requests) {
+    if (!request.price || !request.providerId) continue;
+
+    const provider = await this.providerRepository.findById(
+      request.providerId.toString(),
+    );
+
+    if (!provider) continue;
+
+    const cancelFee = Math.round(request.price * 0.2);
+
+    await this.providerRepository.updateById(
+      request.providerId.toString(),
+      {
+        providerCancelCount:
+          (provider.providerCancelCount || 0) + 1,
+
+        providerCancelFees:
+          (provider.providerCancelFees || 0) + cancelFee,
+      },
+    );
+
+    await this.serviceRequestRepository.updateById(request._id.toString(), {
+      status: ServiceStatus.OUTDATED,
+      addedToProviderCalendar: false,
+      completionCode: null,
+    });
   }
 }
 }

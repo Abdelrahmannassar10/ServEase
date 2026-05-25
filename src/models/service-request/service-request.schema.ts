@@ -52,6 +52,9 @@ export class ServiceRequest {
   @Prop({ default: false, type: Boolean })
   addedToProviderCalendar: boolean;
 
+  @Prop({ type: Date })
+  scheduledEndAt?: Date;
+
 }
 export const serviceRequestSchema =SchemaFactory.createForClass(ServiceRequest);
 export type HServiceRequestDocument =HydratedDocument<ServiceRequest>;

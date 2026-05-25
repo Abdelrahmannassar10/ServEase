@@ -7,6 +7,7 @@ import {
   ServiceRequest,
   HServiceRequestDocument,
 } from './service-request.schema';
+import { ServiceStatus } from '@common/types/enum';
 
 @Injectable()
 export class ServiceRequestRepository extends AbstractRepository<HServiceRequestDocument> {
@@ -18,13 +19,41 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
   }
 
   async findByCustomerId(customerId: string) {
-    return this.serviceRequestModel.find({ customerId });
-  }
+  return this.serviceRequestModel
+    .find({ customerId })
+    .populate(
+      'providerId',
+      `
+      firstName
+      lastName
+      userName
+      dob
+      age
+      profileURL
+      averageRating
+      reviewsCount
+      `,
+    )
+    .sort({ createdAt: -1 });
+}
 
-  async findByProviderId(providerId: string) {
-    return this.serviceRequestModel.find({ providerId });
-  }
-
+async findByProviderId(providerId: string) {
+  return this.serviceRequestModel
+    .find({ providerId })
+    .populate(
+      'customerId',
+      `
+      firstName
+      lastName
+      userName
+      dob
+      age
+      profileURL
+      mobileNumber
+      `,
+    )
+    .sort({ createdAt: -1 });
+}
   async findDuplicateRequest(
     customerId: string| Types.ObjectId,
     providerId: string| Types.ObjectId,
@@ -46,5 +75,23 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
     })
     .populate('customerId')
     .sort({ dateNeeded: 1, startTime: 1 });
+}
+async findByIdWithUsers(id: string) {
+  return this.serviceRequestModel
+    .findById(id)
+    .populate(
+      'providerId',
+      'firstName lastName userName dob age profileURL',
+    )
+    .populate(
+      'customerId',
+      'firstName lastName userName dob age profileURL mobileNumber',
+    );
+}
+async findOutdatedConfirmedRequests(date: Date) {
+  return this.serviceRequestModel.find({
+    status: ServiceStatus.CONFIRMED,
+    scheduledEndAt: { $lte: date },
+  });
 }
 }

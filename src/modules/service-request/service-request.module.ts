@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserMongooseModule } from '@shared/modules';
-
+import { GeneralSettingModule } from '../general-setting/general-setting.module';
 import { ServiceRequestController } from './service-request.controller';
 import { ServiceRequestService } from './service-request.service';
 import { ServiceRequestFactoryService } from './factory';
@@ -14,6 +14,7 @@ import {
 @Module({
   imports: [
     UserMongooseModule,
+    GeneralSettingModule,
     MongooseModule.forFeature([
       {
         name: ServiceRequest.name,
@@ -27,5 +28,6 @@ import {
     ServiceRequestFactoryService,
     ServiceRequestRepository,
   ],
+  exports: [ServiceRequestService],
 })
 export class ServiceRequestModule {}

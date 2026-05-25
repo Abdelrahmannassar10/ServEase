@@ -108,12 +108,12 @@ export class AuthService {
     };
     return {
       access_token: this.jwtService.sign(
-        { payload },
-        {
-          secret: this.configService.get('JWT_SECRET'),
-          expiresIn: '1d',
-        },
-      ),
+  payload,
+  {
+    secret: this.configService.get('JWT_SECRET'),
+    expiresIn: '1d',
+  },
+),
       user: createdObj,
     };
   }
@@ -173,7 +173,7 @@ export class AuthService {
 
     return {
       access_token: this.jwtService.sign(
-        { payload },
+       payload,
         {
           secret: this.configService.get('JWT_SECRET'),
           expiresIn: '1d',
@@ -198,7 +198,7 @@ export class AuthService {
       };
       return {
         access_token: this.jwtService.sign(
-          { payload },
+          payload,
           {
             secret: this.configService.get('JWT_SECRET'),
             expiresIn: '1d',
@@ -226,7 +226,7 @@ export class AuthService {
     };
     return {
       access_token: this.jwtService.sign(
-        { payload },
+        payload,
         {
           secret: this.configService.get('JWT_SECRET'),
           expiresIn: '1d',
@@ -270,7 +270,7 @@ export class AuthService {
     };
     return {
       access_token: this.jwtService.sign(
-        { payload },
+        payload,
         {
           secret: this.configService.get('JWT_SECRET'),
           expiresIn: '1d',
