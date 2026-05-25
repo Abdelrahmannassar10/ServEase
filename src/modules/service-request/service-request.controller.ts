@@ -37,12 +37,6 @@ findRequests(@Request() req: any) {
   return this.serviceRequestService.findRequests(req.user);
 }
 
-  // @Get(':id')
-  // @UseGuards(AuthGuard('jwt'), RolesGuard)
-  // @Roles(Role.CUSTOMER, Role.PROVIDER, Role.ADMIN)
-  // findOne(@Param('id') id: string) {
-  //   return this.serviceRequestService.findOne(id);
-  // }
 
   @Patch('provider-accept')
   @UseGuards(AuthGuard('jwt'), RolesGuard)

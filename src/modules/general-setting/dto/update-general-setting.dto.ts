@@ -9,4 +9,14 @@ export class UpdateGeneralSettingDto {
   @IsNumber()
   @Min(0)
   providerDebt?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  providerCancelFee?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  providerCancelCount?: number;
 }
