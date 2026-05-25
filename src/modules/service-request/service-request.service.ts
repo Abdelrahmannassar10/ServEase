@@ -212,9 +212,28 @@ export class ServiceRequestService {
         'Provider can only accept a waiting request',
       );
     }
+    const provider = await this.providerRepository.findOne({
+      _id: providerId,
+    });
+    if (!provider) {
+      throw new NotFoundException('Provider not found');
+    }
+    if (provider.adminApproved === ProviderStatus.Banned) {
+      throw new BadRequestException(
+        'You are banned, Call the support team',
+      );
+    }
+    if (provider.adminApproved === ProviderStatus.Stopped) {
+      throw new BadRequestException(
+        'Your account is stopped, Pay your dept or call the support team',
+      );
+    }
 
     if (!dto.price || !dto.endTime) {
       throw new BadRequestException('Price and end time are required');
+    }
+    if (dto.price <= 150) {
+      throw new BadRequestException('Price must be greater than 150');
     }
     const date = new Date(request.dateNeeded);
     const [hours, minutes] = dto.endTime.split(':').map(Number);

@@ -50,6 +50,7 @@ async findByProviderId(providerId: string) {
       age
       profileURL
       mobileNumber
+      email
       `,
     )
     .sort({ createdAt: -1 });
@@ -85,7 +86,7 @@ async findByIdWithUsers(id: string) {
     )
     .populate(
       'customerId',
-      'firstName lastName userName dob age profileURL mobileNumber',
+      'firstName lastName userName dob age profileURL mobileNumber email',
     );
 }
 async findOutdatedConfirmedRequests(date: Date) {
