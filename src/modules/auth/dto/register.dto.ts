@@ -35,7 +35,7 @@ export class ProviderRegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(8)
+  @MinLength(8)
   password: string;
 
   @IsNotEmpty()

@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsEmail, IsString, Length, MinLength } from 'class-validator';
 
 export class ChangePasswordOTPDto {
   @IsEmail()
@@ -9,6 +9,6 @@ export class ChangePasswordOTPDto {
   otp: string;
 
   @IsString()
-  @Length(8, 8, { message: 'New password must be exactly 8 characters long' })
+  @MinLength(8)
   newPassword: string;
 }
