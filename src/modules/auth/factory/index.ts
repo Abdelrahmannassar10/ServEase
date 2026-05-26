@@ -3,7 +3,8 @@ import { CustomerRegisterDto, ProviderRegisterDto } from '../dto';
 import { Customer, Provider } from '../entities/auth.entity';
 import * as bcrypt from 'bcrypt';
 import { BadRequestException } from '@nestjs/common';
-import { ProviderStatus } from '@common/types/enum';
+import { ProviderStatus, Role } from '@common/types/enum';
+import { getDefaultProfileImage } from '@common/constants';
 export class AuthFactoryService {
   async createCustomer(customerDTO: CustomerRegisterDto) {
     const customer = new Customer();
@@ -24,6 +25,10 @@ export class AuthFactoryService {
     customer.city = customerDTO.city;
     customer.state = customerDTO.state;
     customer.gender = customerDTO.gender;
+    customer.profileURL = getDefaultProfileImage(
+      Role.CUSTOMER,
+      customerDTO.gender,
+    );
     return customer;
   }
   async createProvider(providerDTO: ProviderRegisterDto) {
@@ -45,6 +50,10 @@ export class AuthFactoryService {
     provider.service = providerDTO.service;
     provider.specialization = providerDTO.specialization;
     provider.gender = providerDTO.gender;
+    provider.profileURL = getDefaultProfileImage(
+      Role.PROVIDER,
+      providerDTO.gender,
+    );
     return provider;
   }
 }

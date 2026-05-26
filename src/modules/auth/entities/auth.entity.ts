@@ -17,6 +17,7 @@ export class Customer {
   city: City;
   state: state;
   gender:Gender;
+  profileURL: string;
 }
 
 export class Provider {
@@ -39,4 +40,5 @@ export class Provider {
   service:ServiceCategory;
   specialization: string;
   gender:Gender;
+  profileURL: string;
 }
