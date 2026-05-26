@@ -88,7 +88,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.CUSTOMER)
+  @Roles(Role.CUSTOMER ,Role.PROVIDER, Role.ADMIN)
   @Post('refresh-token')
   async refreshToken(@Request() req: any) {
     const user = req.user;

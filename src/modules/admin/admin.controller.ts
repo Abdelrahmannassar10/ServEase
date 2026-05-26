@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req, Param } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { AdminFactoryService } from './factory';
@@ -31,5 +31,12 @@ export class AdminController {
   @Roles(Role.ADMIN)
   async getPendingProviders() {
     return await this.adminService.getPendingProviders();
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post('approve-provider/:providerId')
+  async approveProvider(@Param('providerId') providerId: string) {
+    return await this.adminService.approveProvider(providerId);
   }
 }
