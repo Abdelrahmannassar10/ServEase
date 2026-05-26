@@ -41,6 +41,7 @@ export class UpdateCustomerDto {
   @IsEnum(state)
   state: state;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @IsEnum(Gender)

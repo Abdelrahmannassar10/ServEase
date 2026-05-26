@@ -19,42 +19,26 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
   }
 
   async findByCustomerId(customerId: string) {
-  return this.serviceRequestModel
-    .find({ customerId })
-    .populate(
-      'providerId',
-      `
-      firstName
-      lastName
-      userName
-      dob
-      age
-      profileURL
-      averageRating
-      reviewsCount
-      `,
-    )
-    .sort({ createdAt: -1 });
-}
+    return this.find(
+      { customerId },
+      {
+        populate: ['providerId'],
+        select: 'firstName lastName userName dob age profileURL averageRating reviewsCount',
+        sort: { createdAt: -1 },
+      },
+    );
+  }
 
-async findByProviderId(providerId: string) {
-  return this.serviceRequestModel
-    .find({ providerId })
-    .populate(
-      'customerId',
-      `
-      firstName
-      lastName
-      userName
-      dob
-      age
-      profileURL
-      mobileNumber
-      email
-      `,
-    )
-    .sort({ createdAt: -1 });
-}
+  async findByProviderId(providerId: string) {
+    return this.find(
+      { providerId },
+      {
+        populate: ['customerId'],
+        select: 'firstName lastName userName dob age profileURL mobileNumber email',
+        sort: { createdAt: -1 },
+      },
+    );
+  }
   async findDuplicateRequest(
     customerId: string| Types.ObjectId,
     providerId: string| Types.ObjectId,
@@ -69,26 +53,24 @@ async findByProviderId(providerId: string) {
     });
   }
   async findProviderCalendarRequests(providerId: string) {
-  return this.serviceRequestModel
-    .find({
-      providerId,
-      addedToProviderCalendar: true,
-    })
-    .populate('customerId')
-    .sort({ dateNeeded: 1, startTime: 1 });
-}
-async findByIdWithUsers(id: string) {
-  return this.serviceRequestModel
-    .findById(id)
-    .populate(
-      'providerId',
-      'firstName lastName userName dob age profileURL',
-    )
-    .populate(
-      'customerId',
-      'firstName lastName userName dob age profileURL mobileNumber email',
+    return this.find(
+      {
+        providerId,
+        addedToProviderCalendar: true,
+      },
+      {
+        populate: ['customerId'],
+        sort: { dateNeeded: 1, startTime: 1 },
+      },
     );
-}
+  }
+
+  async findByIdWithUsers(id: string) {
+    return this.findById(id, {
+      populate: ['providerId', 'customerId'],
+      select: 'firstName lastName userName dob age profileURL mobileNumber email',
+    });
+  }
 async findOutdatedConfirmedRequests(date: Date) {
   return this.serviceRequestModel.find({
     status: ServiceStatus.CONFIRMED,

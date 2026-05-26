@@ -18,9 +18,13 @@ export class ReviewService {
   }
 
   async getGlobalReviews() {
-    return await this.reviewRepository
-      .find({ status: ReviewType.GLOBAL })
-      .populate('userId', 'firstName lastName userName dob age profileUrl');
+    return await this.reviewRepository.find(
+      { status: ReviewType.GLOBAL },
+      {
+        populate: ['userId'],
+        select: 'firstName lastName userName dob age profileUrl',
+      },
+    );
   }
 
   async requestReview(review: Review) {
@@ -50,16 +54,23 @@ export class ReviewService {
   }
 
   async getProviderReviews(providerId: any) {
-    return await this.reviewRepository
-      .find({ ProviderId: providerId, status: ReviewType.REQUEST })
-      .populate('userId', 'firstName lastName userName dob age profileUrl');
+    return await this.reviewRepository.find(
+      { ProviderId: providerId, status: ReviewType.REQUEST },
+      {
+        populate: ['userId'],
+        select: 'firstName lastName userName dob age profileUrl',
+      },
+    );
   }
 
   async getRequestReviews() {
-    return await this.reviewRepository
-      .find({ status: ReviewType.REQUEST })
-      .populate('userId', 'firstName lastName userName dob age profileUrl')
-      .populate('ProviderId', 'name profileUrl');
+    return await this.reviewRepository.find(
+      { status: ReviewType.REQUEST },
+      {
+        populate: ['userId', 'ProviderId'],
+        select: 'firstName lastName userName dob age profileUrl name profileUrl',
+      },
+    );
   }
 
   async deleteReview(reviewId: string) {

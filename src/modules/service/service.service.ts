@@ -19,10 +19,13 @@ export class ServiceService {
     return { message: 'Service created successfully', service: service.name };
   }
   async getServices() {
-     const service =  await this.serviceRepository.findAll(
-      {} ,{_id :1 ,name:1 ,categoryId:1},{}
-    ).populate('categoryId', 'name');
-    return service;
+    return await this.serviceRepository.find(
+      {},
+      {
+        select: '_id name categoryId',
+        populate: ['categoryId'],
+      },
+    );
   }
 
   async deleteService(serviceId: string) {

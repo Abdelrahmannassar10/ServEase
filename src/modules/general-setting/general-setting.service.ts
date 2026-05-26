@@ -21,27 +21,17 @@ export class GeneralSettingService implements OnModuleInit {
   }
 
   async updateSettings(updateGeneralSettingDto: UpdateGeneralSettingDto) {
-    await this.generalSettingRepository.findOneAndUpdate(
+    await this.generalSettingRepository.updateMany(
       {},
       updateGeneralSettingDto,
-      {
-        upsert: true,
-        new: true,
-      },
     );
   }
 
   async getGeneralSettings() {
     const list = await this.generalSettingRepository.find(
       {},
-      {},
       {
-        select: {
-          webCommission: 1,
-          providerDebt: 1,
-          providerCancelFee: 1,
-          providerCancelCount: 1,
-        },
+        select: 'webCommission providerDebt providerCancelFee providerCancelCount',
       },
     );
 

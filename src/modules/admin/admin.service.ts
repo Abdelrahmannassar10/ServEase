@@ -69,4 +69,13 @@ export class AdminService {
       cvUrl: p.cvUrl,
     }));
   }
+
+  async approveProvider(providerId: string) {
+    const provider = await this.providerRepository.findOne({ _id: providerId });
+    if (!provider) {
+      return { message: 'Provider not found' };
+    }
+    provider.adminApproved = ProviderStatus.Active;
+
+  }
 }
