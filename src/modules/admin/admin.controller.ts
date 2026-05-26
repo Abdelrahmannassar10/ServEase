@@ -83,5 +83,6 @@ export class AdminController {
   @Post('delete/:Id')
   async deleteUser(@Param('Id') userId: string) {
     return await this.adminService.deleteUser(userId);
+    
   }
 }
