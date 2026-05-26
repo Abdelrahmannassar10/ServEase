@@ -6,6 +6,7 @@ import { RolesGuard } from '@common/guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from '@common/types/enum';
 import { Roles } from '@common/decorators';
+import { RejectProviderDto } from './dto/Reject-provider-dto';
 
 @Controller('admin')
 export class AdminController {
@@ -35,8 +36,15 @@ export class AdminController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.ADMIN)
-  @Post('approve-provider/:providerId')
+  @Post('active-provider/:providerId')
   async approveProvider(@Param('providerId') providerId: string) {
     return await this.adminService.approveProvider(providerId);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post('reject-provider')
+  async rejectProvider(@Body()rejectProviderDto:RejectProviderDto) {
+    return await this.adminService.rejectProvider(rejectProviderDto);
   }
 }

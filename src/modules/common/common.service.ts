@@ -29,22 +29,4 @@ export class CommonService {
     };
   }
 
-  async uploadBackgroundPhoto(user: any, photo: Express.Multer.File) {
-    const userExist = await this.userRepository.findById(user._id);
-    if (!userExist) {
-      throw new NotFoundException(`${user.role} not found`);
-    }
-    const upload = await this.cloudService.uploadImage(
-      photo,
-      `ServEase/${userExist.role}/${userExist.email}/background`,
-      `background_${userExist._id}`,
-    );
- 
-    userExist.backgroundURL = upload.secure_url;
-    await this.userRepository.updateById(userExist.id, userExist);
-    return {
-      message: 'Background photo added successfully',
-      backgroundURL: upload.secure_url,
-    };
-  }
 }

@@ -1,3 +1,4 @@
+import { AggregationResult, PaginationResult, QueryOptions , SoftDeleteConfig } from '@common/types';
 import {
   HydratedDocument,
   Model,
@@ -7,12 +8,7 @@ import {
   DeleteResult,
   QueryOptions as MongooseQueryOptions,
 } from 'mongoose';
-import {
-  QueryOptions,
-  PaginationResult,
-  AggregationResult,
-  SoftDeleteConfig,
-} from './repository.types';
+
 
 /**
  * Abstract repository providing type-safe database operations for Mongoose models

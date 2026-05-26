@@ -5,6 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ProviderStatus, Role } from '@common/types/enum';
 import { profile } from 'console';
+import { RejectProviderDto } from './dto/Reject-provider-dto';
+import { sendMail } from '@common/helper';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AdminService {
@@ -12,6 +15,7 @@ export class AdminService {
     private readonly adminRepository: AdminRepository,
     private readonly providerRepository: ProviderRepository,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
   async createAdmin(admin: Admin) {
     const existingAdmin = await this.adminRepository.findOne({
@@ -50,7 +54,6 @@ export class AdminService {
     const pendingProviders = await this.providerRepository.find({
       adminApproved: ProviderStatus.PendingApproval,
     });
-    
 
     return pendingProviders.map((p) => ({
       id: p._id,
@@ -76,6 +79,35 @@ export class AdminService {
       return { message: 'Provider not found' };
     }
     provider.adminApproved = ProviderStatus.Active;
+    await this.providerRepository.updateById(providerId, provider);
+    return { message: 'Provider approved successfully' };
+  }
 
+  async rejectProvider(rejectProviderDto: RejectProviderDto) {
+    const provider = await this.providerRepository.findOne({
+      _id: rejectProviderDto.providerId,
+    });
+    if (!provider) {
+      return { message: 'Provider not found' };
+    }
+    if (provider.adminApproved == ProviderStatus.PendingApproval) {
+      provider.adminApproved = ProviderStatus.Rejected;
+      const templates = this.configService.get('EMAIL_TEMPLATES');
+      sendMail({
+        to: provider.email,
+        subject: templates.rejectEmail.subject,
+        html: templates.rejectEmail.body(`${rejectProviderDto.cause}`),
+      });
+      await this.providerRepository.updateById(
+        rejectProviderDto.providerId,
+        provider,
+      );
+      return { message: 'Provider rejected successfully' };
+    } else {
+      return {
+        message:
+          'Provider cannot be rejected as it is not in pending approval status',
+      };
+    }
   }
 }

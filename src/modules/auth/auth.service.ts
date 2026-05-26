@@ -92,10 +92,11 @@ export class AuthService {
       throw new ConflictException('User already exists');
     }
     const customerExist = await this.customerRepository.create(customer);
+    const templates = this.configService.get('EMAIL_TEMPLATES');
     sendMail({
       to: customerExist.email,
-      subject: 'Confirmation Email',
-      html: this.configService.get('OTP_Body').body(customerExist.otp),
+      subject: templates.customerRegister.subject,
+      html: templates.customerRegister.body(customerExist.otp),
     });
     const { password, otp, otpExpiry, ...createdObj } = JSON.parse(
       JSON.stringify(customerExist),
@@ -107,13 +108,10 @@ export class AuthService {
       userName: customerExist.userName,
     };
     return {
-      access_token: this.jwtService.sign(
-  payload,
-  {
-    secret: this.configService.get('JWT_SECRET'),
-    expiresIn: '1d',
-  },
-),
+      access_token: this.jwtService.sign(payload, {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: '1d',
+      }),
       user: createdObj,
     };
   }
@@ -135,7 +133,9 @@ export class AuthService {
     });
 
     if (providerExists) {
-      throw new ConflictException('User Email or National Number already exists');
+      throw new ConflictException(
+        'User Email or National Number already exists',
+      );
     }
 
     let cvUrl: string | undefined = undefined;
@@ -153,11 +153,11 @@ export class AuthService {
       writtenCv: providerRegisterDTO.writtenCv || undefined,
       cvUrl,
     });
-
+    const templates = this.configService.get('EMAIL_TEMPLATES');
     sendMail({
       to: provider.email,
-      subject: 'Confirmation Email',
-      html: this.configService.get('OTP_Body').body(provider.otp),
+      subject: templates.providerRegister.subject,
+      html: templates.providerRegister.body(provider.otp),
     });
 
     const { password, otp, otpExpiry, ...createdObj } = JSON.parse(
@@ -172,13 +172,10 @@ export class AuthService {
     };
 
     return {
-      access_token: this.jwtService.sign(
-       payload,
-        {
-          secret: this.configService.get('JWT_SECRET'),
-          expiresIn: '1d',
-        },
-      ),
+      access_token: this.jwtService.sign(payload, {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: '1d',
+      }),
       user: createdObj,
     };
   }
@@ -197,13 +194,10 @@ export class AuthService {
         userName: userExists.userName,
       };
       return {
-        access_token: this.jwtService.sign(
-          payload,
-          {
-            secret: this.configService.get('JWT_SECRET'),
-            expiresIn: '1d',
-          },
-        ),
+        access_token: this.jwtService.sign(payload, {
+          secret: this.configService.get('JWT_SECRET'),
+          expiresIn: '1d',
+        }),
         user: createdObj,
       };
     }
@@ -225,13 +219,10 @@ export class AuthService {
       userName: newUser.userName,
     };
     return {
-      access_token: this.jwtService.sign(
-        payload,
-        {
-          secret: this.configService.get('JWT_SECRET'),
-          expiresIn: '1d',
-        },
-      ),
+      access_token: this.jwtService.sign(payload, {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: '1d',
+      }),
       user: createdObj,
     };
   }
@@ -269,13 +260,10 @@ export class AuthService {
       userName: user.userName,
     };
     return {
-      access_token: this.jwtService.sign(
-        payload,
-        {
-          secret: this.configService.get('JWT_SECRET'),
-          expiresIn: '1d',
-        },
-      ),
+      access_token: this.jwtService.sign(payload, {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: '1d',
+      }),
     };
   }
   async resendOTP(resendOTPDto: ResendOTPDto) {
@@ -294,10 +282,11 @@ export class AuthService {
       { email: resendOTPDto.email },
       { otp, otpExpiry },
     );
+    const templates = this.configService.get('EMAIL_TEMPLATES');
     sendMail({
       to: user.email,
-      subject: 'Resend OTP',
-      html: this.configService.get('OTP_Body').body(otp),
+      subject: templates.resendOtp.subject,
+      html: templates.resendOtp.body(otp),
     });
     return { message: 'OTP resent successfully' };
   }
@@ -315,10 +304,11 @@ export class AuthService {
       { email: forgetPasswordDTO.email },
       { otp, otpExpiry },
     );
+    const templates = this.configService.get('EMAIL_TEMPLATES');
     sendMail({
       to: user.email,
-      subject: 'Forget Password OTP',
-      html: this.configService.get('OTP_Body').body(otp),
+      subject: templates.forgotPassword.subject,
+      html: templates.forgotPassword.body(otp),
     });
     return { message: 'OTP sent to your email' };
   }

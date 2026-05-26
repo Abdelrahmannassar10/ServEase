@@ -273,5 +273,6 @@ export enum ProviderStatus {
     Active = "Active",
     Banned = "Banned",
     Stopped = "Stopped",
-    PendingApproval = "PendingApproval"
+    PendingApproval = "PendingApproval",
+    Rejected = "Rejected"
 }
