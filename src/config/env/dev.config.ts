@@ -329,7 +329,7 @@ function otpBox(
 function ctaButton(label: string, bg: string): string {
   return `
   <div style="text-align:center;margin:18px 0 22px;">
-    <a href="#" class="cta-btn" style="background:${bg};">${label}</a>
+    <a href="#" class="cta-btn" style="background:${bg};color:#fff;">${label}</a>
   </div>`;
 }
 

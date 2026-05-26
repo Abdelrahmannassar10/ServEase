@@ -28,6 +28,6 @@ import {
     ServiceRequestFactoryService,
     ServiceRequestRepository,
   ],
-  exports: [ServiceRequestService],
+  exports: [ServiceRequestService ,ServiceRequestRepository],
 })
 export class ServiceRequestModule {}

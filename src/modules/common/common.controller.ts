@@ -6,6 +6,7 @@ import {
   Req,
   UseInterceptors,
   UseGuards,
+  Get,
 } from '@nestjs/common';
 import { CommonService } from './common.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,7 +21,7 @@ export class CommonController {
   constructor(private readonly commonService: CommonService) {}
   @Post('upload-photo')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.CUSTOMER,Role.PROVIDER)
+  @Roles(Role.CUSTOMER, Role.PROVIDER)
   @UseInterceptors(
     FileInterceptor('photo', {
       storage: multer.memoryStorage(),
@@ -46,5 +47,22 @@ export class CommonController {
     return this.commonService.uploadPhoto(req.user, photo);
   }
 
- 
+  @Get('general-counts')
+  async getGeneralCounts() {
+    return await this.commonService.getGeneralCounts();
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('users-growth')
+  getUsersGrowth() {
+    return this.commonService.getUsersGrowth();
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('requests-status-statistics')
+  getRequestsStatusStatistics() {
+    return this.commonService.getRequestsStatusStatistics();
+  }
 }

@@ -13,5 +13,6 @@ import { UserMongooseModule } from '@shared/modules';
   ]) ,UserMongooseModule],
   controllers: [ReviewController],
   providers: [ReviewService, ReviewRepository, ReviewFactoryService],
+  exports: [ReviewRepository],
 })
 export class ReviewModule {}
