@@ -8,7 +8,10 @@ import { promisify } from 'node:util';
 
 const scryptAsync = promisify(scrypt);
 
-const PASSWORD = process.env.ENCRYPTION_SECRET || 'super-secret-key';
+const PASSWORD =
+  process.env.ENCRYPTION_SECRET ||
+  process.env.ENCRYPTION_SECRET_KEY ||
+  'super-secret-key';
 const SALT = 'secure-salt-value'; 
 
 let key: Buffer;
