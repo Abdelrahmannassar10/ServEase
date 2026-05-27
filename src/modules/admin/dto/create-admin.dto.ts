@@ -16,7 +16,7 @@ export class CreateAdminDto {
 
     @IsString()
     @IsNotEmpty()
-    @Length(8, 20)
+    @Length(8, 80, { message: 'password must be at least 8 characters long' })
     @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/, { message: 'password must contain at least one letter and one number' })   
     password: string;
 }

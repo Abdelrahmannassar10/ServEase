@@ -6,7 +6,7 @@ import {
 import { UpdateProviderDto } from './dto/update-provider.dto';
 import { ProviderRepository } from '@models/index';
 import * as bcrypt from 'bcrypt';
-import { decrypt, isEncrypted } from '@common/helper';
+import { decrypt, isEncrypted, safeDecrypt } from '@common/helper';
 
 @Injectable()
 export class ProviderService {
@@ -36,7 +36,7 @@ export class ProviderService {
       ...providerData
     } = JSON.parse(JSON.stringify(provider));
     if (provider.mobileNumber && isEncrypted(provider.mobileNumber)) {
-      providerData.mobileNumber = await decrypt(provider.mobileNumber);
+      providerData.mobileNumber = await safeDecrypt(provider.mobileNumber);
     } else {
       providerData.mobileNumber = provider.mobileNumber; // leave as is
     }

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Customer } from './entities/customer.entity';
 import { CustomerRepository } from '@models/index';
-import { decrypt } from '@common/helper';
+import { decrypt, safeDecrypt } from '@common/helper';
 import * as bcrypt from 'bcrypt';
 import { CloudinaryService } from '@common/cloudinary';
 import { getAnotherProfileDTO } from './dto/getAnotherProfileDTO';
@@ -50,7 +50,7 @@ export class CustomerService {
       createdAt,
       ...customerData
     } = JSON.parse(JSON.stringify(customer));
-    customerData.mobileNumber =await decrypt(customerData.mobileNumber);
+    customerData.mobileNumber = await safeDecrypt(customerData.mobileNumber);
     return customerData;
   }
 
@@ -62,7 +62,7 @@ export class CustomerService {
     const { mobileNumber, userName, profileURL, backgroundURL, ...customerData } = JSON.parse(
       JSON.stringify(customer),
     );
-    const decryptedMobileNumber = await decrypt(mobileNumber);
+    const decryptedMobileNumber = await safeDecrypt(mobileNumber);
     return { mobileNumber: decryptedMobileNumber, userName, profileURL, backgroundURL };
   }
 

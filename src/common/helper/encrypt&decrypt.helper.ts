@@ -49,9 +49,13 @@ export async function decrypt(encryptedData: string): Promise<string> {
     throw new Error('Decrypt called with empty value');
   }
 
-  const key = await getKey();
+  const parts = encryptedData.split(':');
+  if (parts.length !== 3) {
+    throw new Error('Invalid encrypted payload format');
+  }
 
-  const [ivHex, authTagHex, encryptedHex] = encryptedData.split(':');
+  const key = await getKey();
+  const [ivHex, authTagHex, encryptedHex] = parts;
 
   const iv = Buffer.from(ivHex, 'hex');
   const authTag = Buffer.from(authTagHex, 'hex');
@@ -68,6 +72,17 @@ export async function decrypt(encryptedData: string): Promise<string> {
   return decrypted.toString('utf8');
 }
 
+export async function safeDecrypt(value: unknown): Promise<string | null> {
+  if (typeof value !== 'string' || !isEncrypted(value)) {
+    return value as string | null;
+  }
+
+  try {
+    return await decrypt(value);
+  } catch {
+    return null;
+  }
+}
 
 export function isEncrypted(value: string): boolean {
   return typeof value === 'string' &&

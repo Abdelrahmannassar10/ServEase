@@ -26,8 +26,7 @@ export class UpdateProviderDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @MinLength(11)
-  @MaxLength(11)
+  @Length(11, 11)
   mobileNumber: string;
 
   @IsOptional()

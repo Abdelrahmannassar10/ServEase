@@ -11,7 +11,7 @@ import { UpdateServiceRequestDto } from './dto/update-service-request.dto';
 import { ProviderStatus, Role, ServiceStatus } from '../../common/types/enum';
 import { ServiceRequestFactoryService } from './factory';
 import { ServiceRequestRepository } from '../../models/service-request/service-request.repository';
-import { generateCode, decrypt } from '../../common/helper';
+import { generateCode, decrypt, safeDecrypt } from '../../common/helper';
 import { ProviderRepository } from '@models/index';
 import { GeneralSettingService } from '@modules/general-setting/general-setting.service';
 
@@ -545,7 +545,7 @@ export class ServiceRequestService {
           ...data,
           customer: {
             ...customerData,
-            mobileNumber: await decrypt(mobileNumber),
+            mobileNumber: await safeDecrypt(mobileNumber),
           },
         };
       }),
@@ -596,7 +596,7 @@ export class ServiceRequestService {
           req.status === ServiceStatus.CONFIRMED
             ? {
                 ...customerData,
-                mobileNumber: await decrypt(customerId.mobileNumber),
+                mobileNumber: await safeDecrypt(customerId.mobileNumber),
               }
             : customerData,
       };

@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Length, MinLength } from 'class-validator';
+import { IsEmail, IsString, Length, Matches, MinLength } from 'class-validator';
 
 export class ChangePasswordOTPDto {
   @IsEmail()
@@ -9,6 +9,9 @@ export class ChangePasswordOTPDto {
   otp: string;
 
   @IsString()
-  @MinLength(8)
+  @Length(8, 80, { message: 'password must be at least 8 characters long' })
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/, {
+    message: 'password must contain at least one letter and one number',
+  })
   newPassword: string;
 }
