@@ -9,6 +9,7 @@ import { promisify } from 'node:util';
 const scryptAsync = promisify(scrypt);
 
 const SALT = 'secure-salt-value'; 
+const LEGACY_DEFAULT_PASSWORD = 'super-secret-key';
 
 let key: Buffer;
 let keyPassword: string;
@@ -17,15 +18,19 @@ function getPassword(): string {
   return (
     process.env.ENCRYPTION_SECRET ||
     process.env.ENCRYPTION_SECRET_KEY ||
-    'super-secret-key'
+    LEGACY_DEFAULT_PASSWORD
   );
+}
+
+async function deriveKey(password: string): Promise<Buffer> {
+  return (await scryptAsync(password, SALT, 32)) as Buffer;
 }
 
 async function getKey(): Promise<Buffer> {
   const password = getPassword();
 
   if (!key || keyPassword !== password) {
-    key = (await scryptAsync(password, SALT, 32)) as Buffer;
+    key = await deriveKey(password);
     keyPassword = password;
   }
   return key;
@@ -60,12 +65,22 @@ export async function decrypt(encryptedData: string): Promise<string> {
     throw new Error('Decrypt called with empty value');
   }
 
+  return decryptWithKey(encryptedData, await getKey());
+}
+
+async function decryptWithPassword(
+  encryptedData: string,
+  password: string,
+): Promise<string> {
+  return decryptWithKey(encryptedData, await deriveKey(password));
+}
+
+function decryptWithKey(encryptedData: string, key: Buffer): string {
   const parts = encryptedData.split(':');
   if (parts.length !== 3) {
     throw new Error('Invalid encrypted payload format');
   }
 
-  const key = await getKey();
   const [ivHex, authTagHex, encryptedHex] = parts;
 
   const iv = Buffer.from(ivHex, 'hex');
@@ -91,7 +106,15 @@ export async function safeDecrypt(value: unknown): Promise<string | null> {
   try {
     return await decrypt(value);
   } catch {
-    return null;
+    if (getPassword() === LEGACY_DEFAULT_PASSWORD) {
+      return null;
+    }
+
+    try {
+      return await decryptWithPassword(value, LEGACY_DEFAULT_PASSWORD);
+    } catch {
+      return null;
+    }
   }
 }
 
