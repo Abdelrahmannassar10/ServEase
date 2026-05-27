@@ -8,17 +8,25 @@ import { promisify } from 'node:util';
 
 const scryptAsync = promisify(scrypt);
 
-const PASSWORD =
-  process.env.ENCRYPTION_SECRET ||
-  process.env.ENCRYPTION_SECRET_KEY ||
-  'super-secret-key';
 const SALT = 'secure-salt-value'; 
 
 let key: Buffer;
+let keyPassword: string;
+
+function getPassword(): string {
+  return (
+    process.env.ENCRYPTION_SECRET ||
+    process.env.ENCRYPTION_SECRET_KEY ||
+    'super-secret-key'
+  );
+}
 
 async function getKey(): Promise<Buffer> {
-  if (!key) {
-    key = (await scryptAsync(PASSWORD, SALT, 32)) as Buffer;
+  const password = getPassword();
+
+  if (!key || keyPassword !== password) {
+    key = (await scryptAsync(password, SALT, 32)) as Buffer;
+    keyPassword = password;
   }
   return key;
 }
