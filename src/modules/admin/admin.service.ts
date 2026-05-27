@@ -56,8 +56,6 @@ export class AdminService {
     };
   }
   async getPendingProviders() {
-    const allProviders = await this.providerRepository.find({});
-    console.log('ALL PROVIDERS:', allProviders);
     const pendingProviders = await this.providerRepository.find({
       adminApproved: ProviderStatus.PendingApproval,
     });

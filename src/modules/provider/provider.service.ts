@@ -6,7 +6,7 @@ import {
 import { UpdateProviderDto } from './dto/update-provider.dto';
 import { ProviderRepository } from '@models/index';
 import * as bcrypt from 'bcrypt';
-import { decrypt, isEncrypted, safeDecrypt } from '@common/helper';
+import { safeDecrypt } from '@common/helper';
 
 @Injectable()
 export class ProviderService {
@@ -35,11 +35,8 @@ export class ProviderService {
       adminApproved,
       ...providerData
     } = JSON.parse(JSON.stringify(provider));
-    if (provider.mobileNumber && isEncrypted(provider.mobileNumber)) {
-      providerData.mobileNumber = await safeDecrypt(provider.mobileNumber);
-    } else {
-      providerData.mobileNumber = provider.mobileNumber; // leave as is
-    }
+    providerData.mobileNumber =
+      (await safeDecrypt(providerData.mobileNumber)) ?? null;
     return providerData;
   }
 
@@ -54,20 +51,9 @@ export class ProviderService {
       JSON.stringify(provider),
     );
 
-    let finalMobileNumber = mobileNumber;
-
-    if (mobileNumber && isEncrypted(mobileNumber)) {
-      try {
-        finalMobileNumber = await decrypt(mobileNumber);
-      } catch (error) {
-        console.error('Decryption failed:', error);
-        finalMobileNumber = null;
-      }
-    }
-
     return {
       id: _id,
-      mobileNumber: finalMobileNumber,
+      mobileNumber: (await safeDecrypt(mobileNumber)) ?? null,
       userName,
       profileURL,
       backgroundURL,

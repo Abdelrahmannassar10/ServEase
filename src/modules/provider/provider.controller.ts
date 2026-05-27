@@ -29,8 +29,11 @@ export class ProviderController {
   @Post('profile')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.PROVIDER)
-  updateProfile(@Body() updateProviderDto: UpdateProviderDto, @Req() req: any) {
-    const provider = this.providerFactoryService.updateProvider(
+  async updateProfile(
+    @Body() updateProviderDto: UpdateProviderDto,
+    @Req() req: any,
+  ) {
+    const provider = await this.providerFactoryService.updateProvider(
       updateProviderDto,
       req.user,
     );

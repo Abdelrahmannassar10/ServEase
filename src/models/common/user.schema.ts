@@ -49,7 +49,7 @@ export class User {
 
   @Prop({ type: Boolean, default: false })
   isVerified: boolean;
-  @Prop({ enum: Role, required: true })
+  @Prop({ type: String, enum: Role, required: true })
   role: Role;
   @Prop({ type: String, enum: UserAgent, default: UserAgent.SYSTEM })
   userAgent: UserAgent;

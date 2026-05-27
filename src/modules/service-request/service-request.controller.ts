@@ -25,8 +25,6 @@ export class ServiceRequestController {
   @Roles(Role.CUSTOMER)
   @Post()
   create(@Body() dto: CreateServiceRequestDto, @Request() req: any) {
-    console.log(req.user);
-    
     return this.serviceRequestService.create(dto, req.user._id);
   }
 

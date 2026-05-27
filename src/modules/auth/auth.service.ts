@@ -72,8 +72,6 @@ export class AuthService {
       role: user.role,
       userName: user.userName,
     };
-    // console.log(this.configService.get('JWT_SECRET'));
-
     return {
       access_token: this.jwtService.sign(payload, {
         secret: this.configService.get('JWT_SECRET'),
@@ -360,8 +358,6 @@ export class AuthService {
       role: Role.ADMIN,
       isDeleted: false,
     });
-
-    console.log(admin);
 
     if (!admin) {
       return null;

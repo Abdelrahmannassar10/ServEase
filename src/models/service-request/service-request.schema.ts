@@ -43,9 +43,7 @@ export class ServiceRequest {
   @Prop()
   price?: number;
 
-  @Prop({
-    enum: ServiceStatus,
-  })
+  @Prop({ type: String, enum: ServiceStatus })
   status: ServiceStatus;
   @Prop({ type: String,default: null })
   completionCode?: string | null;
