@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Req,
@@ -12,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ProviderService } from './provider.service';
 import { UpdateProviderDto } from './dto/update-provider.dto';
-import { ProviderFactoryService } from './factory';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '@common/guard';
 import { Role } from '@common/types/enum';
@@ -23,7 +21,6 @@ import { updatePasswordDTO } from './dto/updatePasswordDTO';
 export class ProviderController {
   constructor(
     private readonly providerService: ProviderService,
-    private readonly providerFactoryService: ProviderFactoryService,
   ) {}
 
   @Post('profile')
@@ -33,11 +30,7 @@ export class ProviderController {
     @Body() updateProviderDto: UpdateProviderDto,
     @Req() req: any,
   ) {
-    const provider = await this.providerFactoryService.updateProvider(
-      updateProviderDto,
-      req.user,
-    );
-    return this.providerService.update(req.user._id, provider);
+    return this.providerService.updateProfile(req.user._id, updateProviderDto);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

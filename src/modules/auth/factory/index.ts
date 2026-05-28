@@ -36,7 +36,11 @@ export class AuthFactoryService {
     provider.firstName = providerDTO.firstName;
     provider.lastName = providerDTO.lastName;
     provider.email = providerDTO.email;
-    provider.mobileNumber = await encrypt(providerDTO.mobileNumber);
+    if (providerDTO.mobileNumber) {
+      provider.mobileNumber = await encrypt(providerDTO.mobileNumber);
+    } else {
+      throw new BadRequestException('Mobile number is required for providers');
+    }
     provider.password = await bcrypt.hash(providerDTO.password, 10);
     provider.otp = generateOTP();
     provider.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);

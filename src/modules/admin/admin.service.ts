@@ -3,14 +3,15 @@ import { Admin } from './entities/admin.entity';
 import {
   AdminRepository,
   ProviderRepository,
+  ServiceRequestRepository,
+  TokenRepository,
   UserRepository,
 } from '@models/index';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ProviderStatus, Role } from '@common/types/enum';
-import { profile } from 'console';
 import { RejectProviderDto } from './dto/Reject-provider-dto';
-import { sendMail } from '@common/helper';
+import { safeDecrypt, sendMail } from '@common/helper';
 import { ConfigService } from '@nestjs/config';
 import { GetUsersQueryDto } from './dto/get-users-query-dto';
 import { PipelineStage } from 'mongoose';
@@ -23,6 +24,8 @@ export class AdminService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly userRepository: UserRepository,
+    private readonly tokenRepository: TokenRepository,
+    private readonly serviceRequestRepository: ServiceRequestRepository,
   ) {}
   async createAdmin(admin: Admin) {
     const existingAdmin = await this.adminRepository.findOne({
@@ -117,7 +120,13 @@ export class AdminService {
   }
 
   async getAllCustomers(query: GetUsersQueryDto) {
-    const result = await this.getUsersByRole(query, Role.CUSTOMER, 'customers');
+    const result = await this.getUsers(
+      query,
+      {
+        role: Role.CUSTOMER,
+      },
+      'customers',
+    );
 
     return {
       customers: result.users,
@@ -129,7 +138,13 @@ export class AdminService {
   }
 
   async getAllProviders(query: GetUsersQueryDto) {
-    const result = await this.getUsersByRole(query, Role.PROVIDER, 'providers');
+    const result = await this.getUsers(
+      query,
+      {
+        role: Role.PROVIDER,
+      },
+      'providers',
+    );
 
     return {
       providers: result.users,
@@ -140,10 +155,39 @@ export class AdminService {
     };
   }
 
-  private async getUsersByRole(
+  async getPendingApprovalsDetails(query: GetUsersQueryDto) {
+    const result = await this.getUsers(
+      query,
+      {
+        role: Role.PROVIDER,
+        adminApproved: ProviderStatus.PendingApproval,
+      },
+      'pendingProviders',
+    );
+
+    return {
+      pendingProviders: result.users,
+      totalPendingProviders: result.totalUsers,
+      currentPage: result.currentPage,
+      totalPages: result.totalPages,
+      limit: result.limit,
+    };
+  }
+
+  searchAdmin(query: GetUsersQueryDto) {
+    return this.getUsers(
+      query,
+      {
+        role: Role.ADMIN,
+      },
+      'admins',
+    );
+  }
+
+  private async getUsers(
     query: GetUsersQueryDto,
-    role: Role.CUSTOMER | Role.PROVIDER,
-    facetKey: 'customers' | 'providers',
+    filters: Record<string, unknown>,
+    facetKey: string,
   ) {
     const { state, city, category, search, page = 1, limit = 10 } = query;
 
@@ -155,48 +199,95 @@ export class AdminService {
 
     const pipeline: PipelineStage[] = [];
 
-    // Base filter
+    // Base filters
     const matchStage: Record<string, unknown> = {
-      role,
+      ...filters,
     };
 
     if (state) matchStage.state = state;
+
     if (city) matchStage.city = city;
-    if (role === Role.PROVIDER && category) matchStage.service = category;
 
-    pipeline.push({ $match: matchStage });
+    if (category) {
+      matchStage.service = category;
+    }
 
-    // fullName must be added before the search $match that uses it
+    pipeline.push({
+      $match: matchStage,
+    });
+
+    // Create full name field
     pipeline.push({
       $addFields: {
-        fullName: { $concat: ['$firstName', ' ', '$lastName'] },
+        fullName: {
+          $concat: ['$firstName', ' ', '$lastName'],
+        },
       },
     });
 
-    // Search filter
+    // Search
     if (search) {
       const safeSearch = escapeRegex(search);
+
       pipeline.push({
         $match: {
           $or: [
-            { firstName: { $regex: safeSearch, $options: 'i' } },
-            { lastName: { $regex: safeSearch, $options: 'i' } },
-            { fullName: { $regex: safeSearch, $options: 'i' } },
-            { email: { $regex: safeSearch, $options: 'i' } },
-            { mobileNumber: { $regex: safeSearch, $options: 'i' } },
+            {
+              firstName: {
+                $regex: safeSearch,
+                $options: 'i',
+              },
+            },
+            {
+              lastName: {
+                $regex: safeSearch,
+                $options: 'i',
+              },
+            },
+            {
+              fullName: {
+                $regex: safeSearch,
+                $options: 'i',
+              },
+            },
+            {
+              email: {
+                $regex: safeSearch,
+                $options: 'i',
+              },
+            },
+            {
+              mobileNumber: {
+                $regex: safeSearch,
+                $options: 'i',
+              },
+            },
           ],
         },
       });
     }
 
-    // Single aggregation: count + paginated data in one round-trip
+    // Pagination + Count
     pipeline.push({
       $facet: {
-        metadata: [{ $count: 'total' }],
+        metadata: [
+          {
+            $count: 'total',
+          },
+        ],
+
         [facetKey]: [
-          { $sort: { createdAt: -1 } },
-          { $skip: (pageNumber - 1) * limitNumber },
-          { $limit: limitNumber },
+          {
+            $sort: {
+              createdAt: -1,
+            },
+          },
+          {
+            $skip: (pageNumber - 1) * limitNumber,
+          },
+          {
+            $limit: limitNumber,
+          },
           {
             $project: {
               password: 0,
@@ -208,10 +299,12 @@ export class AdminService {
       },
     });
 
-    const [result] = await this.userRepository.aggregate(pipeline);
+    const [result = { metadata: [], [facetKey]: [] }] =
+      await this.userRepository.aggregate(pipeline);
 
-    const totalUsers: number = result.metadata[0]?.total ?? 0;
-    const users = result[facetKey];
+    const totalUsers = result.metadata[0]?.total ?? 0;
+
+    const users = result[facetKey] ?? [];
 
     return {
       users,
@@ -227,9 +320,53 @@ export class AdminService {
     return admins;
   }
 
+  async userDetails(userId: string) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+    const { password, ...userDetails } = user.toObject();
+    userDetails.mobileNumber = (await safeDecrypt(
+      userDetails.mobileNumber,
+    )) as unknown as string;
+    return userDetails;
+  }
+
   async deleteUser(userId: string) {
     await this.userRepository.deleteById(userId);
 
     return { message: 'User deleted successfully' };
+  }
+
+  async getAllRequests() {
+    return await this.serviceRequestRepository.find(
+      {},
+      {
+        populate: ['customerId', 'providerId'],
+        lean: true,
+        select:
+          'firstName lastName userName dob age profileURL mobileNumber email specialization service dateNeeded startTime endTime status createdAt updatedAt',
+      },
+    );
+  }
+
+  async getRequestDetails(id:any){
+    return await this.serviceRequestRepository.find(
+      {id},
+      {
+        populate: ['customerId', 'providerId'],
+        lean: true,
+        select:
+          'firstName lastName userName dob age profileURL mobileNumber email specialization service dateNeeded startTime endTime status createdAt updatedAt',
+      },
+    );
+  }
+
+  async logout(token: string) {
+    await this.tokenRepository.add(
+      token,
+      new Date(Date.now() + 1000 * 60 * 60),
+    );
+    return { message: 'Logged out successfully' };
   }
 }

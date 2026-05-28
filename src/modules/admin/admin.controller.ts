@@ -78,11 +78,56 @@ export class AdminController {
   async getAllAdmins() {
     return await this.adminService.getAllAdmins();
   }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('user/:userId')
+  async userDetails(@Param('userId') userId: string) {
+    return await this.adminService.userDetails(userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('pending-approvals-details')
+  async getPendingApprovalsDetails(@Query() query: GetUsersQueryDto) {
+    return await this.adminService.getPendingApprovalsDetails(query);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('search-admin')
+  async searchAdmins(@Query() query: GetUsersQueryDto) {
+    return await this.adminService.searchAdmin(query);
+  }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.ADMIN)
   @Post('delete/:Id')
   async deleteUser(@Param('Id') userId: string) {
     return await this.adminService.deleteUser(userId);
-    
+  }
+
+  @Get('requests')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  async getAllRequests() {
+    return await this.adminService.getAllRequests();
+  }
+
+    @Get('request/:id')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(Role.ADMIN)
+   async getRequestDetails(@Param('id') id: string) {
+     return await this.adminService.getRequestDetails(id);
+   }
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post('logout')
+  async logout(@Req() req) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return { message: 'No token provided' };
+    }
+    return await this.adminService.logout(token);
   }
 }

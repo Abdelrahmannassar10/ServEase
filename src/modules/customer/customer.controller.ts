@@ -11,7 +11,6 @@ import {
 import { CustomerService } from './customer.service';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CustomerFactoryService } from './factory';
 import { RolesGuard } from '@common/guard';
 import { Roles } from '@common/decorators';
 import { Role } from '@common/types/enum';
@@ -23,7 +22,6 @@ import { updatePasswordDTO } from './dto/updatePasswordDTO';
 export class CustomerController {
   constructor(
     private readonly customerService: CustomerService,
-    private readonly customerFactoryService: CustomerFactoryService,
   ) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -33,15 +31,7 @@ export class CustomerController {
     @Body() updateCustomerDto: UpdateCustomerDto,
     @Request() req: any,
   ) {
-    const customer = await this.customerFactoryService.updateProfile(
-      updateCustomerDto,
-      req.user,
-    );
-    const updatedCustomer = await this.customerService.updateProfile(
-      customer,
-      req.user._id,
-    );
-    return updatedCustomer;
+    return this.customerService.updateProfile(req.user._id, updateCustomerDto);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

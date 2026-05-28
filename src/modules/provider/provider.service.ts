@@ -6,14 +6,29 @@ import {
 import { UpdateProviderDto } from './dto/update-provider.dto';
 import { ProviderRepository } from '@models/index';
 import * as bcrypt from 'bcrypt';
-import { safeDecrypt } from '@common/helper';
+import { encrypt, safeDecrypt } from '@common/helper';
 
 @Injectable()
 export class ProviderService {
   constructor(private readonly providerRepository: ProviderRepository) {}
 
-  update(id: string, updateProviderDto: UpdateProviderDto) {
-    return this.providerRepository.updateById(id, updateProviderDto);
+  async updateProfile(id: string, updateProviderDto: UpdateProviderDto) {
+    const provider = await this.providerRepository.findById(id);
+    if (!provider) {
+      throw new NotFoundException('Provider not found');
+    }
+
+    const updateData: any = {
+      ...updateProviderDto,
+    };
+
+    if (updateProviderDto.mobileNumber) {
+      updateData.mobileNumber = await encrypt(updateProviderDto.mobileNumber);
+    } else {
+      delete updateData.mobileNumber;
+    }
+
+    return this.providerRepository.updateById(id, updateData);
   }
 
   async getProfile(userid: string) {

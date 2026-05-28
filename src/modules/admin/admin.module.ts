@@ -9,6 +9,7 @@ import { AdminLocalStrategy } from '@common/strategy/admin-local.stratgy';
 import { AuthModule } from '@modules/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GeneralSetting, generalSettingSchema } from '@models/index';
+import { ServiceRequestModule } from '@modules/service-request/service-request.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { GeneralSetting, generalSettingSchema } from '@models/index';
       }),
     }),
     AuthModule,
+    ServiceRequestModule
   ],
   controllers: [AdminController],
   providers: [AdminService, AdminFactoryService, AdminLocalStrategy],

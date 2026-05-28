@@ -3,28 +3,32 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Customer } from './entities/customer.entity';
 import { CustomerRepository } from '@models/index';
-import { safeDecrypt } from '@common/helper';
+import { encrypt, safeDecrypt } from '@common/helper';
 import * as bcrypt from 'bcrypt';
-import { CloudinaryService } from '@common/cloudinary';
 import { getAnotherProfileDTO } from './dto/getAnotherProfileDTO';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
 
 @Injectable()
 export class CustomerService {
-  constructor(
-    private readonly customerRepository: CustomerRepository,
-    private readonly cloudService: CloudinaryService,
-  ) {}
-  async updateProfile(updateProfile: Customer, id: string) {
-    const updatedCustomer =await this.customerRepository.updateById(
-      id,
-      updateProfile,
-    );
-    if (!updatedCustomer) {
+  constructor(private readonly customerRepository: CustomerRepository) {}
+  async updateProfile(id: string, updateCustomerDto: UpdateCustomerDto) {
+    const customer = await this.customerRepository.findById(id);
+    if (!customer) {
       throw new NotFoundException('Customer not found');
     }
-    return updatedCustomer;
+
+    const updateData: any = {
+      ...updateCustomerDto,
+    };
+
+    if (updateCustomerDto.mobileNumber) {
+      updateData.mobileNumber = await encrypt(updateCustomerDto.mobileNumber);
+    } else {
+      delete updateData.mobileNumber;
+    }
+
+    return this.customerRepository.updateById(id, updateData);
   }
 
   async getProfile(userid: string) {
