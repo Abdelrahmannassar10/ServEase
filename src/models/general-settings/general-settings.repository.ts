@@ -9,4 +9,19 @@ export class GeneralSettingRepository extends AbstractRepository<GeneralSettingD
   constructor(@InjectModel(GeneralSetting.name) private readonly generalSettingModel: Model<GeneralSettingDocument>) {
     super(generalSettingModel);
   }
+
+  upsertSettings(
+    settings: Partial<GeneralSetting>,
+  ): Promise<GeneralSettingDocument | null> {
+    return this.generalSettingModel.findOneAndUpdate(
+      {},
+      { $set: settings },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+        runValidators: true,
+      },
+    );
+  }
 }

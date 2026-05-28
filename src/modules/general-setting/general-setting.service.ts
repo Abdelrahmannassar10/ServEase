@@ -2,13 +2,21 @@ import { GeneralSettingRepository } from '@models/index';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { UpdateGeneralSettingDto } from './dto/update-general-setting.dto';
 
+type GeneralSettingsResponse = {
+  webCommission: number;
+  providerDebt: number;
+  providerCancelFee: number;
+  providerCancelCount: number;
+};
+
 @Injectable()
 export class GeneralSettingService implements OnModuleInit {
   constructor(
     private readonly generalSettingRepository: GeneralSettingRepository,
   ) {}
+
   async onModuleInit() {
-    const settings = await this.generalSettingRepository.find({});
+    const settings = await this.generalSettingRepository.findOne({});
 
     if (!settings) {
       await this.generalSettingRepository.create({
@@ -21,32 +29,32 @@ export class GeneralSettingService implements OnModuleInit {
   }
 
   async updateSettings(updateGeneralSettingDto: UpdateGeneralSettingDto) {
-    await this.generalSettingRepository.updateMany(
-      {},
+    const settings = await this.generalSettingRepository.upsertSettings(
       updateGeneralSettingDto,
     );
+
+    return this.serializeSettings(settings);
   }
 
   async getGeneralSettings() {
-    const list = await this.generalSettingRepository.find(
+    const settings = await this.generalSettingRepository.findOne(
       {},
       {
         select: 'webCommission providerDebt providerCancelFee providerCancelCount',
       },
     );
 
-    const data = list[0] ?? {
-      webCommission: 10,
-      providerDebt: 0,
-      providerCancelFee: 0,
-      providerCancelCount: 0,
-    };
+    return this.serializeSettings(settings);
+  }
 
+  private serializeSettings(
+    settings: Partial<GeneralSettingsResponse> | null,
+  ): GeneralSettingsResponse {
     return {
-      webCommission: data.webCommission,
-      providerDebt: data.providerDebt,
-      providerCancelFee: data.providerCancelFee,
-      providerCancelCount: data.providerCancelCount,
+      webCommission: settings?.webCommission ?? 10,
+      providerDebt: settings?.providerDebt ?? 0,
+      providerCancelFee: settings?.providerCancelFee ?? 0,
+      providerCancelCount: settings?.providerCancelCount ?? 0,
     };
   }
 }
