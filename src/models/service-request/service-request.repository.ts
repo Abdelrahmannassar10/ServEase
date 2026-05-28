@@ -30,15 +30,21 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
   }
 
   async findByProviderId(providerId: string) {
-    return this.find(
-      { providerId },
-      {
-        populate: ['customerId'],
-        select: 'firstName lastName userName dob age profileURL mobileNumber email',
-        sort: { createdAt: -1 },
+  return this.serviceRequestModel
+    .find({
+      providerId: {
+        $in: [
+          providerId,
+          new Types.ObjectId(providerId),
+        ],
       },
-    );
-  }
+    })
+    .populate(
+      'customerId',
+      'firstName lastName userName dob age profileURL mobileNumber email',
+    )
+    .sort({ createdAt: -1 });
+}
   async findDuplicateRequest(
     customerId: string| Types.ObjectId,
     providerId: string| Types.ObjectId,
