@@ -694,12 +694,18 @@ async completeService(
 
       if (!provider) continue;
 
-      const cancelFee = Math.round(request.price * 0.2);
+      const settings =
+        await this.generalSettingService.getGeneralSettings();
+
+      const cancelFee = Math.round(
+        request.price * (settings.providerCancelFee / 100),
+      );
 
       await this.providerRepository.updateById(request.providerId.toString(), {
         providerCancelCount: (provider.providerCancelCount || 0) + 1,
 
         providerCancelFees: (provider.providerCancelFees || 0) + cancelFee,
+        debt: (provider.debt || 0) + cancelFee,
       });
 
       await this.serviceRequestRepository.updateById(request._id.toString(), {
