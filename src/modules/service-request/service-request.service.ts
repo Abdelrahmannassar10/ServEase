@@ -427,6 +427,8 @@ export class ServiceRequestService {
 
   provider.providerCancelFees =
     (provider.providerCancelFees || 0) + cancelFee;
+  provider.debt =
+    (provider.debt || 0) + cancelFee;
 
   await this.providerRepository.updateById(
     providerIdValue,
@@ -449,7 +451,14 @@ export class ServiceRequestService {
     ...data
   } = JSON.parse(JSON.stringify(updated));
 
-  return data;
+  return {
+  ...data,
+  providerStats: {
+    providerCancelCount: provider.providerCancelCount,
+    providerCancelFees: provider.providerCancelFees,
+    debt: provider.debt || 0,
+  },
+};
 }
 
 async completeService(
