@@ -3,15 +3,19 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CustomerRepository } from '@models/index';
+import { CustomerRepository, ProviderRepository } from '@models/index';
 import { encrypt, safeDecrypt } from '@common/helper';
 import * as bcrypt from 'bcrypt';
 import { getAnotherProfileDTO } from './dto/getAnotherProfileDTO';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { ProviderStatus } from '@common/types';
 
 @Injectable()
 export class CustomerService {
-  constructor(private readonly customerRepository: CustomerRepository) {}
+  constructor(
+    private readonly customerRepository: CustomerRepository,
+    private readonly providerRepository: ProviderRepository,
+  ) {}
   async updateProfile(id: string, updateCustomerDto: UpdateCustomerDto) {
     const customer = await this.customerRepository.findById(id);
     if (!customer) {
@@ -29,6 +33,20 @@ export class CustomerService {
     }
 
     return this.customerRepository.updateById(id, updateData);
+  }
+
+  async getProvider(service: string) {
+    const providers = await this.providerRepository.find({
+      service,
+      isDeleted: false,
+      adminApproved: ProviderStatus.Active,
+    },{populate: ['service']});
+    return providers.map((provider) => {
+      const { password, ...providerData } = JSON.parse(
+        JSON.stringify(provider),
+      );
+      return providerData;
+    });
   }
 
   async getProfile(userid: string) {
@@ -60,15 +78,26 @@ export class CustomerService {
   }
 
   async getAnotherProfile(getAnotherProfile: getAnotherProfileDTO) {
-    const customer = await this.customerRepository.findById(getAnotherProfile.id);
+    const customer = await this.customerRepository.findById(
+      getAnotherProfile.id,
+    );
     if (!customer) {
       throw new NotFoundException('Customer not found');
     }
-    const { mobileNumber, userName, profileURL, backgroundURL, ...customerData } = JSON.parse(
-      JSON.stringify(customer),
-    );
+    const {
+      mobileNumber,
+      userName,
+      profileURL,
+      backgroundURL,
+      ...customerData
+    } = JSON.parse(JSON.stringify(customer));
     const decryptedMobileNumber = (await safeDecrypt(mobileNumber)) ?? null;
-    return { mobileNumber: decryptedMobileNumber, userName, profileURL, backgroundURL };
+    return {
+      mobileNumber: decryptedMobileNumber,
+      userName,
+      profileURL,
+      backgroundURL,
+    };
   }
 
   async updatePassword(
