@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: be_project
+    runtime: node
+    region: frankfurt
+    plan: free
+    branch: main
+
+    buildCommand: npm install -g pnpm && pnpm install && pnpm run build
+    startCommand: pnpm run start:prod
+
+    healthCheckPath: /
+
+    autoDeploy: true
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 3000
+
+      # MongoDB
+      - key: MONGODB_URI
+        sync: false        # means you set it manually in dashboard (secret)
+
+      # JWT
+      - key: JWT_SECRET
+        sync: false
+
+      # Cloudinary
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+      # Google OAuth
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        value: https://be_project.onrender.com/auth/google/callback
+
+      # Email (Nodemailer / Resend)
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
