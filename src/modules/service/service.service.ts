@@ -4,10 +4,7 @@ import { ServiceRepository } from '@models/service/service.repository';
 
 @Injectable()
 export class ServiceService {
-  constructor(
-    private readonly serviceRepository: ServiceRepository,
-
-  ) {}
+  constructor(private readonly serviceRepository: ServiceRepository) {}
   async create(createServiceDto: CreateServiceDto) {
     const serviceExist = await this.serviceRepository.findOne({
       name: createServiceDto.name,
@@ -19,13 +16,7 @@ export class ServiceService {
     return { message: 'Service created successfully', service: service.name };
   }
   async getServices() {
-    return await this.serviceRepository.find(
-      {},
-      {
-        select: '_id name categoryId',
-        populate: ['categoryId'],
-      },
-    );
+    return await this.serviceRepository.find({});
   }
 
   async deleteService(serviceId: string) {

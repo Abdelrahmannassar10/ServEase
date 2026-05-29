@@ -25,4 +25,10 @@ export class UpdateGeneralSettingDto {
   @IsNumber()
   @Min(0)
   providerCancelCount?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  revenue?: number;
 }

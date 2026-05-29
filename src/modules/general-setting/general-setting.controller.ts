@@ -17,6 +17,8 @@ export class GeneralSettingController {
     return await this.generalSettingService.updateSettings( updateGeneralSettingDto);
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
   @Get()
   async get() {
     return this.generalSettingService.getGeneralSettings();

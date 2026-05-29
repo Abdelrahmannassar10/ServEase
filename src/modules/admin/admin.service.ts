@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { Admin } from './entities/admin.entity';
 import {
   AdminRepository,
+  GeneralSettingRepository,
   ProviderRepository,
   ServiceRequestRepository,
   TokenRepository,
@@ -26,6 +27,7 @@ export class AdminService {
     private readonly userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
     private readonly serviceRequestRepository: ServiceRequestRepository,
+    private readonly generalSettingRepository: GeneralSettingRepository,
   ) {}
   async createAdmin(admin: Admin) {
     const existingAdmin = await this.adminRepository.findOne({
@@ -361,6 +363,24 @@ export class AdminService {
       },
     );
   }
+
+  async dashboardStats() {
+      const totalUsers = await this.userRepository.count({});
+      const totalProviders = await this.providerRepository.count({});
+      const totalServiceRequests = await this.serviceRequestRepository.count({});
+      const pendingApprovals = await this.providerRepository.count({
+        adminApproved: ProviderStatus.PendingApproval,
+      });
+      const generalSettings = await this.generalSettingRepository.findOne({},{select:'-__v -_id -createdAt -updatedAt'});
+
+      return {
+        totalUsers,
+        totalProviders,
+        totalServiceRequests,
+        pendingApprovals,
+        revenue: generalSettings?.revenue || 0,
+      };
+    }
 
   async logout(token: string) {
     await this.tokenRepository.add(

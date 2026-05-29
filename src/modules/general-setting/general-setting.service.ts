@@ -7,6 +7,7 @@ type GeneralSettingsResponse = {
   providerDebt: number;
   providerCancelFee: number;
   providerCancelCount: number;
+  revenue: number;
 };
 
 @Injectable()
@@ -24,6 +25,7 @@ export class GeneralSettingService implements OnModuleInit {
         providerDebt: 0,
         providerCancelFee: 0,
         providerCancelCount: 0,
+        revenue: 0,
       });
     }
   }
@@ -40,7 +42,7 @@ export class GeneralSettingService implements OnModuleInit {
     const settings = await this.generalSettingRepository.findOne(
       {},
       {
-        select: 'webCommission providerDebt providerCancelFee providerCancelCount',
+        select: 'webCommission providerDebt providerCancelFee providerCancelCount revenue',
       },
     );
 
@@ -55,6 +57,7 @@ export class GeneralSettingService implements OnModuleInit {
       providerDebt: settings?.providerDebt ?? 0,
       providerCancelFee: settings?.providerCancelFee ?? 0,
       providerCancelCount: settings?.providerCancelCount ?? 0,
+      revenue: settings?.revenue ?? 0,
     };
   }
 }

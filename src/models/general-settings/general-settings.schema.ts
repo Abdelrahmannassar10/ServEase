@@ -16,6 +16,9 @@ export class GeneralSetting {
 
   @Prop({ type: Number, required: true, default: 0, min: 0 })
   providerCancelCount: number;
+
+  @Prop({ type: Number, required: true, default: 0, min: 0 })
+  revenue: number;
 }
 
 export const generalSettingSchema =

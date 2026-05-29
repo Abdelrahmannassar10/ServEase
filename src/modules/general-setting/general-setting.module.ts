@@ -12,6 +12,6 @@ import { MongooseModule } from '@nestjs/mongoose';
   ],
   controllers: [GeneralSettingController],
   providers: [GeneralSettingService ,GeneralSettingRepository],
-  exports: [GeneralSettingService],
+  exports: [GeneralSettingService ,GeneralSettingRepository],
 })
 export class GeneralSettingModule {}

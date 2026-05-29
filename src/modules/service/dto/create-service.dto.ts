@@ -6,7 +6,4 @@ export class CreateServiceDto {
     @IsNotEmpty()
     name: string;
 
-    @IsNotEmpty()
-    @IsMongoId()
-    categoryId: mongoose.Types.ObjectId;
 }

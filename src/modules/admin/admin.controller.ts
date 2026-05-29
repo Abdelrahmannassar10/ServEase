@@ -37,6 +37,13 @@ export class AdminController {
     return this.adminService.login(req.user);
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('dashboard-stats')
+  async dashboardStats() {
+    return await this.adminService.dashboardStats();
+  }
+
   @Get('pending-providers')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.ADMIN)
@@ -114,12 +121,12 @@ export class AdminController {
     return await this.adminService.getAllRequests();
   }
 
-    @Get('request/:id')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(Role.ADMIN)
-   async getRequestDetails(@Param('id') id: string) {
-     return await this.adminService.getRequestDetails(id);
-   }
+  @Get('request/:id')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  async getRequestDetails(@Param('id') id: string) {
+    return await this.adminService.getRequestDetails(id);
+  }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.ADMIN)
   @Post('logout')

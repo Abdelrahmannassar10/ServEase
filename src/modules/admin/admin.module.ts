@@ -10,6 +10,7 @@ import { AuthModule } from '@modules/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GeneralSetting, generalSettingSchema } from '@models/index';
 import { ServiceRequestModule } from '@modules/service-request/service-request.module';
+import { GeneralSettingModule } from '@modules/general-setting/general-setting.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { ServiceRequestModule } from '@modules/service-request/service-request.m
       }),
     }),
     AuthModule,
-    ServiceRequestModule
+    ServiceRequestModule ,
+    GeneralSettingModule,
   ],
   controllers: [AdminController],
   providers: [AdminService, AdminFactoryService, AdminLocalStrategy],
