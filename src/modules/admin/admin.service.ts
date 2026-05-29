@@ -373,6 +373,23 @@ export class AdminService {
       });
       const generalSettings = await this.generalSettingRepository.findOne({},{select:'-__v -_id -createdAt -updatedAt'});
 
+      const recentRequests = await this.serviceRequestRepository.find(
+        {},
+        {
+          sort: { createdAt: -1 },
+          limit: 1,
+          populate: ['customerId', 'providerId'],
+          select: 'userName',
+        }
+      );
+      const recentCustomer = await this.userRepository.find({
+      role: Role.CUSTOMER,
+    }, {
+      sort: { createdAt: -1 },
+      limit: 1,
+      select: 'userName',  
+      });
+
       return {
         totalUsers,
         totalProviders,
