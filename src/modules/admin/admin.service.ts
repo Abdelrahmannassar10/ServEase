@@ -346,15 +346,14 @@ export class AdminService {
       {
         populate: ['customerId', 'providerId'],
         lean: true,
-        select:
-          'firstName lastName userName service ',
+        select: 'firstName lastName userName service ',
       },
     );
   }
 
-  async getRequestDetails(id:any){
+  async getRequestDetails(id: any) {
     return await this.serviceRequestRepository.find(
-      {id},
+      { id },
       {
         populate: ['customerId', 'providerId'],
         lean: true,
@@ -365,39 +364,127 @@ export class AdminService {
   }
 
   async dashboardStats() {
-      const totalUsers = await this.userRepository.count({});
-      const totalProviders = await this.providerRepository.count({});
-      const totalServiceRequests = await this.serviceRequestRepository.count({});
-      const pendingApprovals = await this.providerRepository.count({
+    const [
+      totalUsers,
+      totalProviders,
+      totalServiceRequests,
+      pendingApprovals,
+      generalSettings,
+      recentUser,
+      recentProvider,
+      recentRequest,
+    ] = await Promise.all([
+      this.userRepository.count({}),
+      this.providerRepository.count({}),
+      this.serviceRequestRepository.count({}),
+      this.providerRepository.count({
         adminApproved: ProviderStatus.PendingApproval,
-      });
-      const generalSettings = await this.generalSettingRepository.findOne({},{select:'-__v -_id -createdAt -updatedAt'});
+      }),
 
-      const recentRequests = await this.serviceRequestRepository.find(
+      this.generalSettingRepository.findOne(
+        {},
+        {
+          select: '-__v -_id -createdAt -updatedAt',
+        },
+      ),
+
+      // Latest Customer
+      this.userRepository.findOne(
         {},
         {
           sort: { createdAt: -1 },
-          limit: 1,
-          populate: ['customerId', 'providerId'],
-          select: 'userName',
-        }
-      );
-      const recentCustomer = await this.userRepository.find({
-      role: Role.CUSTOMER,
-    }, {
-      sort: { createdAt: -1 },
-      limit: 1,
-      select: 'userName',  
-      });
+          select: 'firstName lastName createdAt',
+        },
+      ),
 
-      return {
-        totalUsers,
-        totalProviders,
-        totalServiceRequests,
-        pendingApprovals,
-        revenue: generalSettings?.revenue || 0,
-      };
+      // Latest Provider
+      this.providerRepository.findOne(
+        {},
+        {
+          sort: { createdAt: -1 },
+          select: 'firstName lastName createdAt',
+        },
+      ),
+
+      // Latest Request
+      this.serviceRequestRepository.findOne(
+        {},
+        {
+          sort: { createdAt: -1 },
+          populate: [
+            { path: 'customerId', select: 'firstName lastName' },
+            { path: 'providerId', select: 'firstName lastName' },
+          ],
+          select: 'customerId providerId createdAt',
+        },
+      ),
+    ]);
+
+    const recentActivity: Array<{
+      type: string;
+      message: string;
+      createdAt: any;
+      timeAgo?: string;
+    }> = [];
+
+    const makeTimeAgo = (d: any) => {
+      if (!d) return '';
+      const date = new Date(d);
+      if (isNaN(date.getTime())) return '';
+      const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+      return `${Math.floor(diff / 86400)} days ago`;
+    };
+
+    if (recentUser) {
+      const userName = `${(recentUser as any).firstName || ''} ${(recentUser as any).lastName || ''}`.trim() || ((recentUser as any).userName as any) || 'Customer';
+      recentActivity.push({
+        type: 'Customer Registration',
+        message: userName,
+        createdAt: (recentUser as any).createdAt,
+        timeAgo: makeTimeAgo((recentUser as any).createdAt),
+      });
     }
+
+    if (recentProvider) {
+      const providerName = `${(recentProvider as any).firstName || ''} ${(recentProvider as any).lastName || ''}`.trim() || ((recentProvider as any).userName as any) || 'Provider';
+      recentActivity.push({
+        type: 'Provider Registration',
+        message: providerName,
+        createdAt: (recentProvider as any).createdAt,
+        timeAgo: makeTimeAgo((recentProvider as any).createdAt),
+      });
+    }
+
+    if (recentRequest) {
+      const cust = (recentRequest as any).customerId;
+      const prov = (recentRequest as any).providerId;
+      const custName = cust ? (`${cust.firstName || ''} ${cust.lastName || ''}`.trim() || (cust.userName as any) || 'Customer') : 'Customer';
+      const provName = prov ? (`${prov.firstName || ''} ${prov.lastName || ''}`.trim() || (prov.userName as any) || 'Provider') : 'Provider';
+      recentActivity.push({
+        type: 'New Request',
+        message: `${custName} → ${provName}`,
+        createdAt: (recentRequest as any).createdAt,
+        timeAgo: makeTimeAgo((recentRequest as any).createdAt),
+      });
+    }
+
+    recentActivity.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    return {
+      totalUsers,
+      totalProviders,
+      totalServiceRequests,
+      pendingApprovals,
+      revenue: generalSettings?.revenue || 0,
+      recentActivity,
+    };
+  }
 
   async logout(token: string) {
     await this.tokenRepository.add(
