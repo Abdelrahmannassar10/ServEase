@@ -11,5 +11,6 @@ import { ServiceRepository } from '@models/service/service.repository';
   ],
   controllers: [ServiceController],
   providers: [ServiceService,ServiceRepository],
+  exports: [ServiceService ,ServiceRepository],
 })
 export class ServiceModule {}

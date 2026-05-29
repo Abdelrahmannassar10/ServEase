@@ -36,7 +36,7 @@ export class ProviderController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.PROVIDER)
   @Get('')
-  async getMyProfile(@Req() req: any) {
+  async getMyProfile(@Req() req: any): Promise<any> {
     return await this.providerService.getProfile(req.user._id);
   }
 

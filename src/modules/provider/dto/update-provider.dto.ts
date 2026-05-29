@@ -1,8 +1,9 @@
-import { City, Gender, ServiceCategory, state } from '@common/types/enum';
+import { City, Gender , state } from '@common/types/enum';
 import { Transform } from 'class-transformer';
 import {
   IsDate,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -11,6 +12,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import mongoose from 'mongoose';
 
 export class UpdateProviderDto {
   @IsOptional()
@@ -57,8 +59,8 @@ export class UpdateProviderDto {
   nationalNumber: string;
   
   @IsOptional()
-  @IsEnum(ServiceCategory)
-  service: ServiceCategory;
+  @IsMongoId()
+  service: mongoose.Types.ObjectId;
   
   @IsOptional()
   @IsString()

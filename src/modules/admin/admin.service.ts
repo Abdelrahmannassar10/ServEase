@@ -4,6 +4,7 @@ import {
   AdminRepository,
   GeneralSettingRepository,
   ProviderRepository,
+  ServiceRepository,
   ServiceRequestRepository,
   TokenRepository,
   UserRepository,
@@ -22,6 +23,7 @@ export class AdminService {
   constructor(
     private readonly adminRepository: AdminRepository,
     private readonly providerRepository: ProviderRepository,
+    private readonly serviceRepository: ServiceRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly userRepository: UserRepository,
@@ -61,9 +63,12 @@ export class AdminService {
     };
   }
   async getPendingProviders() {
-    const pendingProviders = await this.providerRepository.find({
-      adminApproved: ProviderStatus.PendingApproval,
-    });
+    const pendingProviders = await this.providerRepository.find(
+      {
+        adminApproved: ProviderStatus.PendingApproval,
+      },
+      { populate: ['service'], lean: true },
+    );
 
     return pendingProviders.map((p) => ({
       id: p._id,
@@ -306,7 +311,8 @@ export class AdminService {
 
     const totalUsers = result.metadata[0]?.total ?? 0;
 
-    const users = result[facetKey] ?? [];
+    let users = result[facetKey] ?? [];
+    users = await this.populateServiceForUsers(users);
 
     return {
       users,
@@ -315,6 +321,36 @@ export class AdminService {
       totalPages: Math.ceil(totalUsers / limitNumber),
       limit: limitNumber,
     };
+  }
+
+  private async populateServiceForUsers(users: any[]) {
+    const serviceIds = Array.from(
+      new Set(
+        users
+          .filter((user) => user?.service)
+          .map((user) => user.service.toString()),
+      ),
+    );
+
+    if (!serviceIds.length) {
+      return users;
+    }
+
+    const services = await this.serviceRepository.find(
+      { _id: { $in: serviceIds } },
+      { lean: true, select: '_id name icon_text' },
+    );
+    const serviceMap = new Map(
+      services.map((service) => [service._id.toString(), service]),
+    );
+
+    return users.map((user) => ({
+      ...user,
+      service:
+        user?.service && serviceMap.get(user.service.toString())
+          ? serviceMap.get(user.service.toString())
+          : user.service,
+    }));
   }
 
   async getAllAdmins() {

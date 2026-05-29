@@ -14,7 +14,7 @@ export class TasksService {
 
 
 
-  @Cron('* * 6 * * *')
+  @Cron('0 0 */6 * * *')
   async handleCron() {
     this.logger.debug('Called when the current second is 45');
     log('Called when the current second is 45');
@@ -24,7 +24,7 @@ export class TasksService {
     );
   }
 
-  @Cron('* * 6 * * *')
+  @Cron('0 0 */6 * * *')
   async softDeleteCron() {
     this.logger.debug('Called when the current second is 45');
     log('Called when the current second is 45');

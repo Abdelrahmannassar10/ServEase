@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, IsString } from "class-validator";
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import mongoose from "mongoose";
 
 export class CreateServiceDto {
@@ -6,4 +6,7 @@ export class CreateServiceDto {
     @IsNotEmpty()
     name: string;
 
+    @IsOptional()
+    @IsString()
+    icon_text?: string;
 }

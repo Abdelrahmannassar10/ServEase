@@ -8,6 +8,7 @@ import { ProviderRegisterDto } from './dto/register.dto';
 import {
   CustomerRepository,
   ProviderRepository,
+  ServiceRepository,
   UserRepository,
 } from '@models/index';
 import { generateOTP, sendMail } from '@common/helper';
@@ -34,6 +35,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly serviceRepository: ServiceRepository,
   ) {}
   async validateUser(email: string, pass: string) {
     const user = await this.userRepository.findOne({ email });
@@ -136,6 +138,13 @@ export class AuthService {
       );
     }
 
+    const service = await this.serviceRepository.findById(
+      providerRegisterDTO.service as unknown as string,
+    );
+    if (!service) {
+      throw new BadRequestException('Invalid service ID');
+    }
+
     let cvUrl: string | undefined = undefined;
     if (cvFile) {
       const upload = await this.cloudinaryService.uploadPdf(
@@ -158,8 +167,12 @@ export class AuthService {
       html: templates.providerRegister.body(provider.otp),
     });
 
+    const createdProvider = await this.providerRepository.findById(
+      provider._id as unknown as string,
+      { populate: ['service'], lean: true },
+    );
     const { password, otp, otpExpiry, ...createdObj } = JSON.parse(
-      JSON.stringify(provider),
+      JSON.stringify(createdProvider ?? provider),
     );
 
     const payload = {

@@ -2,6 +2,7 @@ import {
   IsDate,
   IsEmail,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -11,7 +12,8 @@ import {
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { City, Gender, ServiceCategory, state } from '@common/types/enum';
+import { City, Gender,  state } from '@common/types/enum';
+import mongoose from 'mongoose';
 
 export class ProviderRegisterDto {
   @IsString()
@@ -67,8 +69,9 @@ export class ProviderRegisterDto {
   @Matches(/^\d+$/, { message: 'nationalNumber must contain only digits' })
   nationalNumber: string;
 
-  @IsEnum(ServiceCategory)
-  service: ServiceCategory;
+  @IsNotEmpty()
+  @IsMongoId()
+  service: mongoose.Types.ObjectId;
 
   @IsString()
   specialization: string;

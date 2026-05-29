@@ -1,4 +1,5 @@
-import { Gender, ServiceCategory, state } from "@common/types/enum";
+import { Gender, state } from "@common/types/enum";
+import { Types } from "mongoose";
 
 export class Provider {
 
@@ -20,7 +21,7 @@ export class Provider {
       nationalNumber: string;
     
 
-      service: ServiceCategory;
+      service: Types.ObjectId;
   
       specialization: string;
       gender: Gender;

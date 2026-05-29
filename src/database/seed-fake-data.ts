@@ -18,9 +18,11 @@ import {
   customerSchema,
   Provider,
   providerSchema,
+  Service,
   User,
   userSchema,
 } from '@models/index';
+import { serviceSchema } from '@models/service/service.schema';
 
 const DEMO_PASSWORD = 'Password123';
 const CUSTOMERS_COUNT = 100;
@@ -39,12 +41,37 @@ type FakeCustomer = {
 
 type FakeProvider = FakeCustomer & {
   nationalNumber: string;
-  service: ServiceCategory;
+  serviceId: mongoose.Types.ObjectId;
+  serviceName: string;
   specialization: string;
   writtenCv: string;
   averageRating: number;
   reviewsCount: number;
 };
+
+type SeedService = {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+};
+
+const homeServiceNames: string[] = [
+  'Plumbing',
+  'Electrical',
+  'Carpentry',
+  'Cleaning',
+  'Painting',
+  'AC Technician',
+  'Internet Technician',
+  'Appliance Repair',
+  'Handyman',
+  'CCTV Installation',
+  'Furniture Moving',
+  'Gardening',
+  'Pest Control',
+  'Water Heater Technician',
+  'Satellite Technician',
+  'Locksmith',
+];
 
 const baseCustomers: FakeCustomer[] = [
   {
@@ -109,7 +136,7 @@ const baseCustomers: FakeCustomer[] = [
   },
 ];
 
-const baseProviders: FakeProvider[] = [
+const baseProviders: any[] = [
   {
     firstName: 'Ahmed',
     lastName: 'Sayed',
@@ -120,7 +147,7 @@ const baseProviders: FakeProvider[] = [
     state: state.HELIOPOLIS,
     gender: Gender.MALE,
     nationalNumber: '3000101000001',
-    service: ServiceCategory.PLUMBING,
+    service: ServiceCategory.PLUMBER,
     specialization: 'Emergency leak repair and bathroom installations',
     writtenCv:
       'Experienced plumber handling pipe leaks, mixers, toilets, heaters, and bathroom maintenance for apartments and villas.',
@@ -137,7 +164,7 @@ const baseProviders: FakeProvider[] = [
     state: state.MADINAT_SITTAH_UKTUBAR,
     gender: Gender.MALE,
     nationalNumber: '3000101000002',
-    service: ServiceCategory.ELECTRICAL,
+    service: ServiceCategory.ELECTRICIAN,
     specialization: 'Home wiring, breakers, sockets, and lighting',
     writtenCv:
       'Certified electrician for apartment rewiring, breaker panels, socket replacement, lighting, and fault diagnosis.',
@@ -171,7 +198,7 @@ const baseProviders: FakeProvider[] = [
     state: state.MONTAZA,
     gender: Gender.FEMALE,
     nationalNumber: '3000101000004',
-    service: ServiceCategory.PAINTING,
+    service: ServiceCategory.PAINTER,
     specialization: 'Interior painting and wall finishing',
     writtenCv:
       'Interior painter offering apartment repainting, accent walls, crack filling, sanding, and clean finishing.',
@@ -188,7 +215,7 @@ const baseProviders: FakeProvider[] = [
     state: state.SHUBRA,
     gender: Gender.MALE,
     nationalNumber: '3000101000005',
-    service: ServiceCategory.CARPENTRY,
+    service: ServiceCategory.CARPENTER,
     specialization: 'Door repair, cabinets, shelves, and furniture assembly',
     writtenCv:
       'Carpenter for doors, hinges, wardrobes, shelves, kitchen cabinets, custom repairs, and ready-made furniture assembly.',
@@ -205,7 +232,7 @@ const baseProviders: FakeProvider[] = [
     state: state.ZAMALEK,
     gender: Gender.FEMALE,
     nationalNumber: '3000101000006',
-    service: ServiceCategory.OTHER,
+    service: ServiceCategory.HANDYMAN,
     specialization: 'Appliance setup and small home maintenance jobs',
     writtenCv:
       'General home maintenance provider for curtain rods, appliance setup, small fixes, silicone sealing, and wall-mounted items.',
@@ -410,11 +437,11 @@ const locations = [
   { city: City.SUEZ, state: state.AIN_SUKHNA },
 ];
 
-const serviceProfiles: Record<
-  ServiceCategory,
+const serviceProfiles: Partial<Record<
+  string,
   { specialization: string; writtenCv: string }[]
-> = {
-  [ServiceCategory.PLUMBING]: [
+>> = {
+  Plumbing: [
     {
       specialization: 'Emergency leak repair and bathroom installations',
       writtenCv:
@@ -436,7 +463,7 @@ const serviceProfiles: Record<
         'Plumber with experience in bathroom renovation support, toilet replacement, shower mixers, and urgent home repairs.',
     },
   ],
-  [ServiceCategory.ELECTRICAL]: [
+  Electrical: [
     {
       specialization: 'Home wiring, breakers, sockets, and lighting',
       writtenCv:
@@ -458,7 +485,7 @@ const serviceProfiles: Record<
         'Diagnoses repeated breaker trips, weak sockets, appliance lines, doorbells, and lighting faults in homes.',
     },
   ],
-  [ServiceCategory.CARPENTRY]: [
+  Carpentry: [
     {
       specialization: 'Door repair, cabinets, shelves, and furniture assembly',
       writtenCv:
@@ -480,7 +507,7 @@ const serviceProfiles: Record<
         'Provides furniture assembly, curtain box fitting, simple decorative woodwork, and practical home carpentry repairs.',
     },
   ],
-  [ServiceCategory.CLEANING]: [
+  Cleaning: [
     {
       specialization: 'Deep cleaning, move-in cleaning, and kitchens',
       writtenCv:
@@ -502,7 +529,7 @@ const serviceProfiles: Record<
         'Reliable home cleaner for weekly visits, guest preparation, bedroom organization, bathroom cleaning, and surface care.',
     },
   ],
-  [ServiceCategory.PAINTING]: [
+  Painting: [
     {
       specialization: 'Interior painting and wall finishing',
       writtenCv:
@@ -524,7 +551,7 @@ const serviceProfiles: Record<
         'Helps customers choose practical colors, prepares walls, paints bedrooms and living rooms, and leaves spaces tidy.',
     },
   ],
-  [ServiceCategory.OTHER]: [
+  Handyman: [
     {
       specialization: 'Appliance setup and small home maintenance jobs',
       writtenCv:
@@ -546,10 +573,130 @@ const serviceProfiles: Record<
         'Handles bathroom accessory installation, mirrors, hooks, silicone sealing, loose fixtures, and move-in setup tasks.',
     },
   ],
+  'AC Technician': [
+    {
+      specialization: 'AC installation and maintenance',
+      writtenCv:
+        'Skilled AC technician for installation, filter replacement, and refrigerant servicing.',
+    },
+    {
+      specialization: 'AC troubleshooting and gas refill',
+      writtenCv:
+        'Expert in cooling issues, compressor faults, and gas refills for residential air conditioners.',
+    },
+  ],
+  'Internet Technician': [
+    {
+      specialization: 'Home internet setup and router installation',
+      writtenCv:
+        'Internet technician for router setup, Wi-Fi signal optimization, and modem troubleshooting.',
+    },
+    {
+      specialization: 'Network troubleshooting and cable management',
+      writtenCv:
+        'Fixes home networking issues, slow connections, and cable organization for stable Wi-Fi coverage.',
+    },
+  ],
+  'Appliance Repair': [
+    {
+      specialization: 'Washing machine and refrigerator repair',
+      writtenCv:
+        'Appliance repair specialist for refrigerators, washers, dryers, and kitchen appliances.',
+    },
+    {
+      specialization: 'Microwave and oven servicing',
+      writtenCv:
+        'Performs inspection and repair of ovens, microwaves, and small home appliances.',
+    },
+  ],
+  'CCTV Installation': [
+    {
+      specialization: 'Security camera installation and setup',
+      writtenCv:
+        'CCTV specialist for camera placement, wiring, and surveillance configuration.',
+    },
+  ],
+  'Furniture Moving': [
+    {
+      specialization: 'Household furniture relocation',
+      writtenCv:
+        'Experienced moving provider for safe furniture and home item transport.',
+    },
+  ],
+  Gardening: [
+    {
+      specialization: 'Garden maintenance and plant care',
+      writtenCv:
+        'Gardener offering lawn care, planting, pruning, and garden tidying.',
+    },
+  ],
+  'Pest Control': [
+    {
+      specialization: 'Insect and rodent control services',
+      writtenCv:
+        'Pest control expert for safe home treatment of insects, rodents, and pests.',
+    },
+  ],
+  'Water Heater Technician': [
+    {
+      specialization: 'Water heater inspection and repair',
+      writtenCv:
+        'Specialist for heater faults, leak repairs, and pressure issues in water heaters.',
+    },
+  ],
+  'Satellite Technician': [
+      {
+      specialization: 'Satellite dish alignment and TV setup',
+      writtenCv:
+        'Satellite technician for dish installation, alignment, and TV signal optimization.',
+    },
+  ],
+  Locksmith: [
+    {
+      specialization: 'Lock change and security upgrade',
+      writtenCv:
+        'Locksmith for lock replacement, key duplication, and home security access.',
+    },
+  ],
 };
 
 function pick<T>(items: T[], index: number): T {
   return items[index % items.length];
+}
+
+function getServiceProfile(service: string) {
+  return (
+    serviceProfiles[service] ?? [
+      {
+        specialization: `${service.toLowerCase().replace(/_/g, ' ')}`,
+        writtenCv: `Experienced ${service.toLowerCase().replace(/_/g, ' ')} specialist for home service needs.`,
+      },
+    ]
+  );
+}
+
+function buildServices(): SeedService[] {
+  return homeServiceNames.map((name) => ({
+    name,
+    _id: new mongoose.Types.ObjectId(),
+  }));
+}
+
+async function seedServices(serviceModel: mongoose.Model<any>) {
+  const services = buildServices();
+  const operations = services.map((service) => ({
+    updateOne: {
+      filter: { name: service.name },
+      update: { $set: { name: service.name } },
+      upsert: true,
+    },
+  }));
+
+  await serviceModel.bulkWrite(operations);
+
+  return serviceModel.find({
+    name: { $in: services.map((service) => service.name) },
+  }).lean();
 }
 
 function dateFromAge(age: number, offset: number): Date {
@@ -584,9 +731,7 @@ function buildCustomers(count: number): FakeCustomer[] {
   });
 }
 
-function buildProviders(count: number): FakeProvider[] {
-  const services = Object.values(ServiceCategory);
-
+function buildProviders(count: number, services: SeedService[]): FakeProvider[] {
   return Array.from({ length: count }, (_, index) => {
     const gender = index % 2 === 0 ? Gender.MALE : Gender.FEMALE;
     const genderKey = gender === Gender.MALE ? 'male' : 'female';
@@ -594,20 +739,21 @@ function buildProviders(count: number): FakeProvider[] {
     const lastName = pick(lastNames, index + 5);
     const location = pick(locations, index + 2);
     const service = pick(services, index);
-    const profile = pick(serviceProfiles[service], index);
+    const profile = pick(getServiceProfile(service.name), index);
     const number = String(index + 1).padStart(3, '0');
 
     return {
       firstName,
       lastName,
-      email: `${slug(firstName)}.${slug(lastName)}.${service.toLowerCase()}.provider${number}@servease.test`,
+      email: `${slug(firstName)}.${slug(lastName)}.${slug(service.name)}.provider${number}@servease.test`,
       mobileNumber: `0112${String(index + 1).padStart(7, '0')}`,
       dob: dateFromAge(25 + (index % 25), index),
       city: location.city,
       state: location.state,
       gender,
       nationalNumber: `3000101${String(index + 1).padStart(7, '0')}`,
-      service,
+      serviceId: service._id,
+      serviceName: service.name,
       specialization: profile.specialization,
       writtenCv: profile.writtenCv,
       averageRating: Number((4.1 + (index % 9) * 0.1).toFixed(1)),
@@ -670,8 +816,7 @@ async function seedCustomers(password: string) {
   return mongoose.model(Customer.name).bulkWrite(operations);
 }
 
-async function seedProviders(password: string) {
-  const providers = buildProviders(PROVIDERS_COUNT);
+async function seedProviders(password: string, providers: FakeProvider[]) {
   const operations = await Promise.all(
     providers.map(async (provider) => {
       const user = await buildUserData(provider, password, Role.PROVIDER);
@@ -684,7 +829,7 @@ async function seedProviders(password: string) {
               ...user,
               role: Role.PROVIDER,
               adminApproved: ProviderStatus.Active,
-              service: provider.service,
+              service: provider.serviceId,
               specialization: provider.specialization,
               writtenCv: provider.writtenCv,
               averageRating: provider.averageRating,
@@ -727,11 +872,15 @@ async function bootstrap() {
     userModel.discriminator(Provider.name, providerSchema);
   }
 
+  const serviceModel = mongoose.models[Service.name] ?? mongoose.model(Service.name, serviceSchema);
+  const seededServices = await seedServices(serviceModel as mongoose.Model<any>);
+
   const deleteResult = await deletePreviousFakeData();
   const password = await bcrypt.hash(DEMO_PASSWORD, 10);
+  const providers = buildProviders(PROVIDERS_COUNT, seededServices as SeedService[]);
   const [customerResult, providerResult] = await Promise.all([
     seedCustomers(password),
-    seedProviders(password),
+    seedProviders(password, providers),
   ]);
 
   console.log('Fake data seed completed');

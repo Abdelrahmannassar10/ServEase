@@ -13,6 +13,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BlacklistToken, BlacklistTokenSchema } from '@models/token/token.schema';
 import { TokenRepository } from '@models/token/token.repository';
 import { CloudinaryService } from '@common/cloudinary';
+import { ServiceModule } from '@modules/service/service.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CloudinaryService } from '@common/cloudinary';
       }),
     }),
     MongooseModule.forFeature([{ name: BlacklistToken.name, schema: BlacklistTokenSchema }]),
+    ServiceModule
   ],
   controllers: [AuthController],
   providers: [

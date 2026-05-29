@@ -19,32 +19,36 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
   }
 
   async findByCustomerId(customerId: string) {
-    return this.find(
-      { customerId },
-      {
-        populate: ['providerId'],
-        select: 'firstName lastName userName dob age profileURL averageRating reviewsCount',
-        sort: { createdAt: -1 },
-      },
-    );
+    return this.serviceRequestModel
+      .find({ customerId })
+      .populate({
+        path: 'providerId',
+        select:
+          'firstName lastName userName dob age profileURL averageRating reviewsCount service',
+        populate: {
+          path: 'service',
+          select: '_id name icon_text',
+        },
+      })
+      .sort({ createdAt: -1 });
   }
 
   async findByProviderId(providerId: string) {
-  return this.serviceRequestModel
-    .find({
-      providerId: {
-        $in: [
-          providerId,
-          new Types.ObjectId(providerId),
-        ],
-      },
-    })
-    .populate(
-      'customerId',
-      'firstName lastName userName dob age profileURL mobileNumber email',
-    )
-    .sort({ createdAt: -1 });
-}
+    return this.serviceRequestModel
+      .find({
+        providerId: {
+          $in: [
+            providerId,
+            new Types.ObjectId(providerId),
+          ],
+        },
+      })
+      .populate(
+        'customerId',
+        'firstName lastName userName dob age profileURL mobileNumber email',
+      )
+      .sort({ createdAt: -1 });
+  }
   async findDuplicateRequest(
     customerId: string| Types.ObjectId,
     providerId: string| Types.ObjectId,
@@ -72,12 +76,24 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
   }
 
   async findByIdWithUsers(id: string) {
-    return this.findById(id, {
-      populate: ['providerId', 'customerId'],
-      select: 'firstName lastName userName dob age profileURL mobileNumber email',
-    });
+    return this.serviceRequestModel
+      .findById(id)
+      .populate({
+        path: 'providerId',
+        select:
+          'firstName lastName userName dob age profileURL mobileNumber email service',
+        populate: {
+          path: 'service',
+          select: '_id name icon_text',
+        },
+      })
+      .populate({
+        path: 'customerId',
+        select: 'firstName lastName userName dob age profileURL mobileNumber email',
+      });
   }
-async findOutdatedConfirmedRequests(date: Date) {
+
+  async findOutdatedConfirmedRequests(date: Date) {
   return this.serviceRequestModel.find({
     status: ServiceStatus.CONFIRMED,
     scheduledEndAt: { $lte: date },

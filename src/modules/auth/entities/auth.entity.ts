@@ -1,4 +1,4 @@
-import {  City, Gender, ProviderStatus, ServiceCategory, state } from '@common/types/enum';
+import {  City, Gender, ProviderStatus, state } from '@common/types/enum';
 import { Types } from 'mongoose';
 
 
@@ -37,7 +37,7 @@ export class Provider {
   writtenCv: string;
   adminApproved: ProviderStatus;
   nationalNumber: string;
-  service:ServiceCategory;
+  service: Types.ObjectId;
   specialization: string;
   gender:Gender;
   profileURL: string;

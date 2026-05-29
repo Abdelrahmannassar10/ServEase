@@ -114,6 +114,13 @@ export class ServiceRequestService {
           ...serviceData
         } = req;
 
+        if (!providerId) {
+          return {
+            ...serviceData,
+            provider: null,
+          };
+        }
+
         const {
           password,
           otp,
@@ -157,6 +164,23 @@ export class ServiceRequestService {
             providerId,
             ...serviceData
           } = req;
+
+          if (!customerId) {
+            const settings =
+              await this.generalSettingService.getGeneralSettings();
+            const commissionPercentage = settings.webCommission;
+            const commission = Math.round(
+              (req.price || 0) * (commissionPercentage / 100),
+            );
+            const earnings = (req.price || 0) - commission;
+
+            return {
+              ...serviceData,
+              commission,
+              earnings,
+              customer: null,
+            };
+          }
 
           const {
             password,

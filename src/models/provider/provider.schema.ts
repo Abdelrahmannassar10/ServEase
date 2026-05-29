@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import {
   City,
   Gender,
   ProviderStatus,
   Role,
-  ServiceCategory,
   state,
   UserAgent,
 } from '@common/types/enum';
@@ -93,8 +92,8 @@ export class Provider {
   })
   adminApproved: ProviderStatus;
 
-  @Prop({ type: String, enum: ServiceCategory })
-  service: ServiceCategory;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true })
+  service: mongoose.Types.ObjectId;
 
   @Prop({ type: String })
   specialization: string;

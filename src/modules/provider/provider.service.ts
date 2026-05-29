@@ -4,13 +4,65 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UpdateProviderDto } from './dto/update-provider.dto';
-import { ProviderRepository } from '@models/index';
+import { ProviderRepository, ServiceRepository } from '@models/index';
 import * as bcrypt from 'bcrypt';
 import { encrypt, safeDecrypt } from '@common/helper';
 
 @Injectable()
 export class ProviderService {
-  constructor(private readonly providerRepository: ProviderRepository) {}
+  constructor(
+    private readonly providerRepository: ProviderRepository,
+    private readonly serviceRepository: ServiceRepository,
+  ) {}
+
+  private async populateProviderService(provider: any) {
+    if (!provider || !provider.service) {
+      return provider;
+    }
+
+    if (typeof provider.service === 'object' && provider.service.name) {
+      return provider;
+    }
+
+    const service = await this.serviceRepository.findById(
+      provider.service.toString(),
+      { lean: true, select: '_id name icon_text' },
+    );
+
+    return {
+      ...provider,
+      service: service ?? provider.service,
+    };
+  }
+
+  private async populateProvidersService(providers: any[]) {
+    const ids = Array.from(
+      new Set(
+        providers
+          .filter((p) => p?.service)
+          .map((p) => p.service.toString()),
+      ),
+    );
+    if (!ids.length) {
+      return providers;
+    }
+
+    const services = await this.serviceRepository.find(
+      { _id: { $in: ids } },
+      { lean: true, select: '_id name icon_text' },
+    );
+    const serviceMap = new Map(
+      services.map((service) => [service._id.toString(), service]),
+    );
+
+    return providers.map((provider) => ({
+      ...provider,
+      service:
+        provider?.service && serviceMap.get(provider.service.toString())
+          ? serviceMap.get(provider.service.toString())
+          : provider.service,
+    }));
+  }
 
   async updateProfile(id: string, updateProviderDto: UpdateProviderDto) {
     const provider = await this.providerRepository.findById(id);
@@ -28,14 +80,24 @@ export class ProviderService {
       delete updateData.mobileNumber;
     }
 
-    return this.providerRepository.updateById(id, updateData);
+    await this.providerRepository.updateById(id, updateData);
+    const updatedProvider = await this.providerRepository.findById(id, {
+      populate: ['service'],
+      lean: true,
+    });
+
+    return this.populateProviderService(updatedProvider);
   }
 
-  async getProfile(userid: string) {
-    const provider = await this.providerRepository.findById(userid);
+  async getProfile(userid: string): Promise<any> {
+    const provider = await this.providerRepository.findById(userid, {
+      populate: ['service'],
+      lean: true,
+    });
     if (!provider) {
       throw new NotFoundException('Provider not found');
     }
+
     const {
       password,
       isVerified,
@@ -44,27 +106,28 @@ export class ProviderService {
       __v,
       userAgent,
       role,
-      _id,
-      updatedAt,
-      createdAt,
       adminApproved,
       ...providerData
-    } = JSON.parse(JSON.stringify(provider));
-    providerData.mobileNumber =
+    } = provider;
+    const mobileNumber =
       (await safeDecrypt(providerData.mobileNumber)) ?? null;
-    return providerData;
+    return {
+      ...providerData,
+      mobileNumber,
+    };
   }
 
   async searchProfile(id: string) {
-    const provider = await this.providerRepository.findById(id);
+    const provider = await this.providerRepository.findById(id, {
+      populate: ['service'],
+      lean: true,
+    });
 
     if (!provider) {
       throw new NotFoundException('Provider not found');
     }
 
-    const { _id,mobileNumber, userName, profileURL, backgroundURL } = JSON.parse(
-      JSON.stringify(provider),
-    );
+    const { _id, mobileNumber, userName, profileURL, backgroundURL } = provider;
 
     return {
       id: _id,
