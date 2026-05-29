@@ -345,7 +345,7 @@ export class AdminService {
         populate: ['customerId', 'providerId'],
         lean: true,
         select:
-          'firstName lastName userName dob age profileURL mobileNumber email specialization service dateNeeded startTime endTime status createdAt updatedAt',
+          'firstName lastName userName service ',
       },
     );
   }
