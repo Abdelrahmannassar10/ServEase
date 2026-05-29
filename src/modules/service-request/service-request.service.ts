@@ -374,141 +374,176 @@ export class ServiceRequestService {
   }
 
   async providerCancel(id: string, providerId: Types.ObjectId) {
-    const request = await this.findOneForUser(id, providerId, 'providerId');
+  const request = await this.findOneForUser(
+    id,
+    providerId,
+    'providerId',
+  );
 
-    if (request.status !== ServiceStatus.CONFIRMED) {
-      throw new BadRequestException(
-        'Provider can only cancel confirmed service',
-      );
-    }
-
-    if (!request.price) {
-      throw new BadRequestException(
-        'Cannot calculate cancel fee because price is missing',
-      );
-    }
-
-    if (!request.providerId) {
-      throw new BadRequestException('Provider is missing');
-    }
-
-    const provider = await this.providerRepository.findById(
-      request.providerId.toString(),
+  if (request.status !== ServiceStatus.CONFIRMED) {
+    throw new BadRequestException(
+      'Provider can only cancel confirmed service',
     );
-
-    if (!provider) {
-      throw new NotFoundException('Provider not found');
-    }
-
-    const settings = await this.generalSettingService.getGeneralSettings();
-    const cancelFee = Math.round(
-      request.price * (settings.providerCancelFee / 100),
-    );
-
-    if (
-      provider.providerCancelFees + cancelFee >= settings.providerCancelFee ||
-      provider.providerCancelCount + 1 >= settings.providerCancelCount
-    ) {
-      provider.adminApproved = ProviderStatus.Banned;
-    }
-
-    provider.providerCancelCount = (provider.providerCancelCount || 0) + 1;
-    provider.providerCancelFees = provider.providerCancelFees + cancelFee;
-
-    await this.providerRepository.updateById(
-      request.providerId.toString(),
-      provider,
-    );
-
-    const updated = await this.serviceRequestRepository.updateById(id, {
-      status: ServiceStatus.REFUSED,
-      addedToProviderCalendar: false,
-      completionCode: null,
-    });
-
-    const {
-      __v,
-      isDeleted,
-      addedToProviderCalendar,
-      completionCode,
-      createdAt,
-      updatedAt,
-      ...data
-    } = JSON.parse(JSON.stringify(updated));
-
-    return data;
   }
 
-  async completeService(
-    id: string,
-    dto: UpdateServiceRequestDto,
-    customerId: Types.ObjectId,
+  if (!request.price) {
+    throw new BadRequestException(
+      'Cannot calculate cancel fee because price is missing',
+    );
+  }
+
+  if (!request.providerId) {
+    throw new BadRequestException('Provider is missing');
+  }
+
+  const providerIdValue = this.getId(request.providerId);
+
+  const provider = await this.providerRepository.findById(
+    providerIdValue,
+  );
+
+  if (!provider) {
+    throw new NotFoundException('Provider not found');
+  }
+
+  const settings =
+    await this.generalSettingService.getGeneralSettings();
+
+  const cancelFee = Math.round(
+    request.price * (settings.providerCancelFee / 100),
+  );
+
+  if (
+    (provider.providerCancelFees || 0) + cancelFee >=
+      settings.providerCancelFee ||
+    (provider.providerCancelCount || 0) + 1 >=
+      settings.providerCancelCount
   ) {
-    const request = await this.findOneForUser(id, customerId, 'customerId');
-
-    if (request.status !== ServiceStatus.CONFIRMED) {
-      throw new BadRequestException('Only confirmed service can be completed');
-    }
-
-    if (!dto.completionCode) {
-      throw new BadRequestException('Completion code is required');
-    }
-
-    if (dto.completionCode !== request.completionCode) {
-      throw new BadRequestException('Invalid completion code');
-    }
-
-    if (!request.price) {
-      throw new BadRequestException(
-        'Cannot calculate provider debt because price is missing',
-      );
-    }
-
-    if (!request.providerId) {
-      throw new BadRequestException('Provider is missing');
-    }
-
-    const provider = await this.providerRepository.findById(
-      request.providerId.toString(),
-    );
-
-    if (!provider) {
-      throw new NotFoundException('Provider not found');
-    }
-
-    const settings = await this.generalSettingService.getGeneralSettings();
-
-    const debtAmount = Math.round(
-      request.price * (settings.webCommission / 100),
-    );
-    provider.debt = (provider.debt || 0) + debtAmount;
-    if (provider.debt > settings.providerDebt) {
-      provider.adminApproved = ProviderStatus.Stopped;
-    }
-    provider.providerCancelCount = 0;
-    await this.providerRepository.updateById(
-      request.providerId.toString(),
-      provider,
-    );
-
-    const updated = await this.serviceRequestRepository.updateById(id, {
-      status: ServiceStatus.COMPLETED,
-      completionCode: null,
-      addedToProviderCalendar: false,
-    });
-
-    const {
-      __v,
-      isDeleted,
-      addedToProviderCalendar,
-      completionCode,
-      createdAt,
-      updatedAt,
-      ...data
-    } = JSON.parse(JSON.stringify(updated));
-
-    return data;
+    provider.adminApproved = ProviderStatus.Banned;
   }
+
+  provider.providerCancelCount =
+    (provider.providerCancelCount || 0) + 1;
+
+  provider.providerCancelFees =
+    (provider.providerCancelFees || 0) + cancelFee;
+  provider.debt =
+    (provider.debt || 0) + cancelFee;
+
+  await this.providerRepository.updateById(
+    providerIdValue,
+    provider,
+  );
+
+  const updated = await this.serviceRequestRepository.updateById(id, {
+    status: ServiceStatus.REFUSED,
+    addedToProviderCalendar: false,
+    completionCode: null,
+  });
+
+  const {
+    __v,
+    isDeleted,
+    addedToProviderCalendar,
+    completionCode,
+    createdAt,
+    updatedAt,
+    ...data
+  } = JSON.parse(JSON.stringify(updated));
+
+  return {
+  ...data,
+  providerStats: {
+    providerCancelCount: provider.providerCancelCount,
+    providerCancelFees: provider.providerCancelFees,
+    debt: provider.debt || 0,
+  },
+};
+}
+
+async completeService(
+  id: string,
+  dto: UpdateServiceRequestDto,
+  customerId: Types.ObjectId,
+) {
+  const request = await this.findOneForUser(
+    id,
+    customerId,
+    'customerId',
+  );
+
+  if (request.status !== ServiceStatus.CONFIRMED) {
+    throw new BadRequestException(
+      'Only confirmed service can be completed',
+    );
+  }
+
+  if (!dto.completionCode) {
+    throw new BadRequestException('Completion code is required');
+  }
+
+  if (dto.completionCode !== request.completionCode) {
+    throw new BadRequestException('Invalid completion code');
+  }
+
+  if (!request.price) {
+    throw new BadRequestException(
+      'Cannot calculate provider debt because price is missing',
+    );
+  }
+
+  if (!request.providerId) {
+    throw new BadRequestException('Provider is missing');
+  }
+
+  const providerIdValue = this.getId(request.providerId);
+
+  const provider = await this.providerRepository.findById(
+    providerIdValue,
+  );
+
+  if (!provider) {
+    throw new NotFoundException('Provider not found');
+  }
+
+  const settings =
+    await this.generalSettingService.getGeneralSettings();
+
+  const debtAmount = Math.round(
+    request.price * (settings.webCommission / 100),
+  );
+
+  provider.debt = (provider.debt || 0) + debtAmount;
+
+  if (provider.debt > settings.providerDebt) {
+    provider.adminApproved = ProviderStatus.Stopped;
+  }
+
+  provider.providerCancelCount = 0;
+
+  await this.providerRepository.updateById(
+    providerIdValue,
+    provider,
+  );
+
+  const updated = await this.serviceRequestRepository.updateById(id, {
+    status: ServiceStatus.COMPLETED,
+    completionCode: null,
+    addedToProviderCalendar: false,
+  });
+
+  const {
+    __v,
+    isDeleted,
+    addedToProviderCalendar,
+    completionCode,
+    createdAt,
+    updatedAt,
+    ...data
+  } = JSON.parse(JSON.stringify(updated));
+
+  return data;
+}
   async getProviderCalendar(providerId: Types.ObjectId) {
     const requests =
       await this.serviceRequestRepository.findProviderCalendarRequests(
@@ -659,12 +694,18 @@ export class ServiceRequestService {
 
       if (!provider) continue;
 
-      const cancelFee = Math.round(request.price * 0.2);
+      const settings =
+        await this.generalSettingService.getGeneralSettings();
+
+      const cancelFee = Math.round(
+        request.price * (settings.providerCancelFee / 100),
+      );
 
       await this.providerRepository.updateById(request.providerId.toString(), {
         providerCancelCount: (provider.providerCancelCount || 0) + 1,
 
         providerCancelFees: (provider.providerCancelFees || 0) + cancelFee,
+        debt: (provider.debt || 0) + cancelFee,
       });
 
       await this.serviceRequestRepository.updateById(request._id.toString(), {
