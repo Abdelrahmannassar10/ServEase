@@ -475,7 +475,10 @@ export class AdminService {
     };
 
     if (recentUser) {
-      const userName = `${(recentUser as any).firstName || ''} ${(recentUser as any).lastName || ''}`.trim() || ((recentUser as any).userName as any) || 'Customer';
+      const userName =
+        `${(recentUser as any).firstName || ''} ${(recentUser as any).lastName || ''}`.trim() ||
+        ((recentUser as any).userName as any) ||
+        'Customer';
       recentActivity.push({
         type: 'Customer Registration',
         message: userName,
@@ -485,7 +488,10 @@ export class AdminService {
     }
 
     if (recentProvider) {
-      const providerName = `${(recentProvider as any).firstName || ''} ${(recentProvider as any).lastName || ''}`.trim() || ((recentProvider as any).userName as any) || 'Provider';
+      const providerName =
+        `${(recentProvider as any).firstName || ''} ${(recentProvider as any).lastName || ''}`.trim() ||
+        ((recentProvider as any).userName as any) ||
+        'Provider';
       recentActivity.push({
         type: 'Provider Registration',
         message: providerName,
@@ -497,8 +503,16 @@ export class AdminService {
     if (recentRequest) {
       const cust = (recentRequest as any).customerId;
       const prov = (recentRequest as any).providerId;
-      const custName = cust ? (`${cust.firstName || ''} ${cust.lastName || ''}`.trim() || (cust.userName as any) || 'Customer') : 'Customer';
-      const provName = prov ? (`${prov.firstName || ''} ${prov.lastName || ''}`.trim() || (prov.userName as any) || 'Provider') : 'Provider';
+      const custName = cust
+        ? `${cust.firstName || ''} ${cust.lastName || ''}`.trim() ||
+          (cust.userName as any) ||
+          'Customer'
+        : 'Customer';
+      const provName = prov
+        ? `${prov.firstName || ''} ${prov.lastName || ''}`.trim() ||
+          (prov.userName as any) ||
+          'Provider'
+        : 'Provider';
       recentActivity.push({
         type: 'New Request',
         message: `${custName} → ${provName}`,
