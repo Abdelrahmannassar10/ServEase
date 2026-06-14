@@ -16,6 +16,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ReviewModule } from './modules/review/review.module';
 import { ServiceRequestModule } from '@modules/service-request/service-request.module';
 import { GeneralSettingModule } from './modules/general-setting/general-setting.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { GeneralSettingModule } from './modules/general-setting/general-setting.
     ReviewModule,
     ServiceRequestModule,
     GeneralSettingModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService,TasksService],
