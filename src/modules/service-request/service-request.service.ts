@@ -6,11 +6,24 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
+import { CreateBroadcastRequestDto } from './dto/create-broadcast-request.dto';
+import { ProviderRespondBroadcastDto, BroadcastResponseAction } from './dto/provider-respond-broadcast.dto';
+import { CustomerSelectOfferDto } from './dto/customer-select-offer.dto';
+import { CompleteHourlyServiceDto } from './dto/complete-hourly-service.dto';
+import { CancelBroadcastRequestDto } from './dto/cancel-broadcast-request.dto';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
 import { UpdateServiceRequestDto } from './dto/update-service-request.dto';
-import { ProviderStatus, Role, ServiceStatus } from '../../common/types/enum';
+import {
+  OfferStatus,
+  PaymentMode,
+  ProviderStatus,
+  RequestType,
+  Role,
+  ServiceStatus,
+} from '../../common/types/enum';
 import { ServiceRequestFactoryService } from './factory';
 import { ServiceRequestRepository } from '../../models/service-request/service-request.repository';
+import { ProviderOfferRepository } from '../../models/provider-offer/provider-offer.repository';
 import { generateCode, safeDecrypt } from '../../common/helper';
 import { ProviderRepository } from '@models/index';
 import { GeneralSettingService } from '@modules/general-setting/general-setting.service';
@@ -22,6 +35,7 @@ export class ServiceRequestService {
     private readonly serviceRequestFactory: ServiceRequestFactoryService,
     private readonly providerRepository: ProviderRepository,
     private readonly generalSettingService: GeneralSettingService,
+    private readonly providerOfferRepository: ProviderOfferRepository,
   ) {}
 
   async create(dto: CreateServiceRequestDto, customerId: Types.ObjectId) {
@@ -58,6 +72,389 @@ export class ServiceRequestService {
 
     return data;
   }
+
+  private async confirmBroadcastRequest(params: {
+    request: any;
+    offer: any;
+    confirmedProviderId: Types.ObjectId;
+    price: number | null;
+  }) {
+    const { request, offer, confirmedProviderId, price } = params;
+
+    const scheduledEndAt = new Date(request.dateNeeded);
+    const [hours, minutes] = offer.offeredEndTime.split(':').map(Number);
+    scheduledEndAt.setHours(hours, minutes, 0, 0);
+
+    const completionCode = generateCode();
+
+    const updated = await this.serviceRequestRepository.updateById(request._id.toString(), {
+      status: ServiceStatus.CONFIRMED,
+      providerId: confirmedProviderId,
+      price: price ?? null,
+      endTime: offer.offeredEndTime,
+      scheduledEndAt,
+      completionCode,
+      addedToProviderCalendar: true,
+    });
+
+    await this.providerOfferRepository.expireOtherOffers(
+      request._id.toString(),
+      confirmedProviderId.toString(),
+    );
+
+    // Fetch updated request with provider data populated
+    const confirmedRequest = await this.findOne(request._id.toString());
+    const {
+      __v,
+      isDeleted,
+      addedToProviderCalendar: cal,
+      createdAt,
+      updatedAt,
+      ...data
+    } = JSON.parse(JSON.stringify(confirmedRequest));
+
+    return {
+      ...data,
+      message: 'Request confirmed successfully',
+    };
+  }
+
+  async createBroadcastRequest(
+    dto: CreateBroadcastRequestDto,
+    customerId: Types.ObjectId,
+  ) {
+    const matchParams = {
+      serviceId: dto.serviceId,
+      locationScope: dto.locationScope,
+      governorate: dto.governorate,
+      district: dto.city,
+      matchByTopRated: dto.matchByTopRated,
+      topRatedMinRating: 4.0,
+    };
+
+    const matchedProviders = await this.providerRepository.findMatchingProviders(
+      matchParams,
+    );
+
+    if (!matchedProviders.length) {
+      throw new BadRequestException(
+        'No active providers found matching your filters. Try switching from DISTRICT to GOVERNORATE scope, or disable the top-rated filter.',
+      );
+    }
+
+    const requestData = this.serviceRequestFactory.createBroadcastServiceRequest(
+      dto,
+      customerId,
+    );
+    const created = await this.serviceRequestRepository.create(requestData);
+
+    const offerDocs = matchedProviders.map((p) => ({
+      serviceRequestId: created._id,
+      providerId: p._id,
+      status: OfferStatus.PENDING,
+    }));
+    await this.providerOfferRepository.createMany(offerDocs);
+
+    const {
+      __v,
+      isDeleted,
+      completionCode,
+      addedToProviderCalendar,
+      createdAt,
+      updatedAt,
+      ...data
+    } = JSON.parse(JSON.stringify(created));
+
+    return {
+      request: { ...data, provider: null },
+      notifiedProviders: matchedProviders.length,
+    };
+  }
+
+  async getAvailableBroadcastRequests(providerId: Types.ObjectId) {
+    const pendingOffers = await this.providerOfferRepository.findPendingByProviderId(
+      providerId.toString(),
+    );
+
+    return pendingOffers
+      .filter((offer: any) => offer.serviceRequestId !== null)
+      .map((offer: any) => ({
+        offerId: offer._id,
+        request: JSON.parse(JSON.stringify(offer.serviceRequestId)),
+      }));
+  }
+
+  async providerRespondToBroadcast(
+    dto: ProviderRespondBroadcastDto,
+    providerId: Types.ObjectId,
+  ) {
+    const offer = await this.providerOfferRepository.findByRequestAndProvider(
+      dto.requestId,
+      providerId.toString(),
+    );
+    if (!offer) throw new NotFoundException('No offer found for this request');
+    if (offer.status !== OfferStatus.PENDING) {
+      throw new BadRequestException('You have already responded to this request');
+    }
+
+    const request = await this.findOne(dto.requestId);
+    if (request.status !== ServiceStatus.OPEN) {
+      throw new BadRequestException('This request is no longer open for offers');
+    }
+
+    const provider = await this.providerRepository.findById(providerId.toString());
+    if (!provider) throw new NotFoundException('Provider not found');
+    if (provider.adminApproved === ProviderStatus.Banned) {
+      throw new BadRequestException('You are banned. Contact the support team.');
+    }
+    if (provider.adminApproved === ProviderStatus.Stopped) {
+      throw new BadRequestException('Your account is stopped. Pay your debt or contact support.');
+    }
+
+    if (dto.action === BroadcastResponseAction.REFUSE) {
+      await this.providerOfferRepository.updateById(offer._id.toString(), {
+        status: OfferStatus.REFUSED,
+        respondedAt: new Date(),
+      });
+      return { message: 'Request refused' };
+    }
+
+    if ((request as any).paymentMode === PaymentMode.HOURLY) {
+      if (dto.action === BroadcastResponseAction.COUNTER_OFFER) {
+        throw new BadRequestException(
+          'Counter-offers are not allowed for hourly payment requests',
+        );
+      }
+      if (!provider.hourPrice) {
+        throw new BadRequestException(
+          'You have not set an hourly rate. Update your profile with hourPrice before accepting hourly requests.',
+        );
+      }
+      await this.providerOfferRepository.updateById(offer._id.toString(), {
+        status: OfferStatus.ACCEPTED,
+        offeredEndTime: dto.offeredEndTime,
+        respondedAt: new Date(),
+      });
+      return this.confirmBroadcastRequest({
+        request,
+        offer: { ...JSON.parse(JSON.stringify(offer)), offeredEndTime: dto.offeredEndTime },
+        confirmedProviderId: providerId,
+        price: null,
+      });
+    }
+
+    if (dto.action === BroadcastResponseAction.ACCEPT) {
+      await this.providerOfferRepository.updateById(offer._id.toString(), {
+        status: OfferStatus.ACCEPTED,
+        offeredPrice: (request as any).preferredPrice,
+        offeredEndTime: dto.offeredEndTime,
+        respondedAt: new Date(),
+      });
+      return this.confirmBroadcastRequest({
+        request,
+        offer: { ...JSON.parse(JSON.stringify(offer)), offeredEndTime: dto.offeredEndTime },
+        confirmedProviderId: providerId,
+        price: (request as any).preferredPrice,
+      });
+    }
+
+    if (dto.action === BroadcastResponseAction.COUNTER_OFFER) {
+      if (!dto.offeredPrice) {
+        throw new BadRequestException('offeredPrice is required for a counter-offer');
+      }
+      await this.providerOfferRepository.updateById(offer._id.toString(), {
+        status: OfferStatus.COUNTER_OFFER,
+        offeredPrice: dto.offeredPrice,
+        offeredEndTime: dto.offeredEndTime,
+        respondedAt: new Date(),
+      });
+      return {
+        message: 'Counter-offer submitted. The customer will be notified to review it.',
+      };
+    }
+  }
+
+  async getOffersSummary(requestId: string, customerId: Types.ObjectId) {
+    const request = await this.findOneForUser(requestId, customerId, 'customerId');
+
+    if ((request as any).requestType !== RequestType.BROADCAST) {
+      throw new BadRequestException('This is not a broadcast request');
+    }
+
+    if (
+      request.status === ServiceStatus.CONFIRMED ||
+      request.status === ServiceStatus.COMPLETED
+    ) {
+      throw new BadRequestException('This request has already been confirmed');
+    }
+
+    const offers = await this.providerOfferRepository.findActiveByRequestId(requestId);
+
+    const hasDirectAccept = offers.some((o: any) => o.status === OfferStatus.ACCEPTED);
+
+    return {
+      requestStatus: request.status,
+      selectionRequired: !hasDirectAccept,
+      preferredPrice: (request as any).preferredPrice,
+      paymentMode: (request as any).paymentMode,
+      offers: offers.map((o: any) => {
+        const provider = o.providerId;
+        const {
+          password,
+          otp,
+          otpExpiry,
+          isVerified,
+          isDeleted: providerIsDeleted,
+          __v: providerV,
+          createdAt: providerCreatedAt,
+          updatedAt: providerUpdatedAt,
+          role,
+          mobileNumber,
+          debt,
+          providerCancelFees,
+          providerCancelCount,
+          ...cleanProvider
+        } = JSON.parse(JSON.stringify(provider));
+
+        return {
+          offerId: o._id,
+          provider: cleanProvider,
+          offerStatus: o.status,
+          offeredPrice: o.offeredPrice,
+          offeredEndTime: o.offeredEndTime,
+          respondedAt: o.respondedAt,
+        };
+      }),
+    };
+  }
+
+  async customerSelectOffer(dto: CustomerSelectOfferDto, customerId: Types.ObjectId) {
+    const request = await this.findOneForUser(dto.requestId, customerId, 'customerId');
+
+    if (request.status !== ServiceStatus.OPEN) {
+      throw new BadRequestException('Only open requests can have an offer selected manually');
+    }
+
+    const offer = await this.providerOfferRepository.findById(dto.offerId);
+    if (!offer) throw new NotFoundException('Offer not found');
+    if (offer.serviceRequestId.toString() !== dto.requestId) {
+      throw new BadRequestException('This offer does not belong to the given request');
+    }
+    if (offer.status !== OfferStatus.COUNTER_OFFER) {
+      throw new BadRequestException('You can only select a counter-offer');
+    }
+
+    return this.confirmBroadcastRequest({
+      request,
+      offer,
+      confirmedProviderId: offer.providerId as Types.ObjectId,
+      price: offer.offeredPrice ?? null,
+    });
+  }
+
+  async completeHourlyService(dto: CompleteHourlyServiceDto, customerId: Types.ObjectId) {
+    const request = await this.findOneForUser(dto.requestId, customerId, 'customerId');
+
+    if (request.status !== ServiceStatus.CONFIRMED) {
+      throw new BadRequestException('Only confirmed requests can be completed');
+    }
+    if ((request as any).paymentMode !== PaymentMode.HOURLY) {
+      throw new BadRequestException('Use the standard /complete endpoint for fixed-price requests');
+    }
+    if (!dto.completionCode || dto.completionCode !== request.completionCode) {
+      throw new BadRequestException('Invalid completion code (OTP)');
+    }
+    if (!request.providerId) {
+      throw new BadRequestException('Provider is missing on this request');
+    }
+
+    const providerIdValue = this.getId(request.providerId);
+    const provider = await this.providerRepository.findById(providerIdValue);
+    if (!provider) throw new NotFoundException('Provider not found');
+    if (!provider.hourPrice) {
+      throw new BadRequestException('Provider does not have an hourly rate set. Contact support.');
+    }
+
+    const price = dto.hoursWorked * provider.hourPrice;
+
+    const settings = await this.generalSettingService.getGeneralSettings();
+    const debtAmount = Math.round(price * (settings.webCommission / 100));
+
+    provider.debt = (provider.debt || 0) + debtAmount;
+    if (provider.debt > settings.providerDebt) {
+      provider.adminApproved = ProviderStatus.Stopped;
+    }
+    provider.providerCancelCount = 0;
+
+    await this.providerRepository.updateById(providerIdValue, provider);
+    await this.generalSettingService.updateSettings({
+      revenue: settings.revenue + debtAmount,
+    });
+
+    const updated = await this.serviceRequestRepository.updateById(dto.requestId, {
+      status: ServiceStatus.COMPLETED,
+      price,
+      hoursWorked: dto.hoursWorked,
+      completionCode: null,
+      addedToProviderCalendar: false,
+    });
+
+    const completed = await this.findOne(dto.requestId);
+    const {
+      __v,
+      isDeleted,
+      addedToProviderCalendar,
+      completionCode,
+      createdAt,
+      updatedAt,
+      ...data
+    } = JSON.parse(JSON.stringify(completed));
+
+    return { ...data };
+  }
+
+  async cancelBroadcastRequest(
+    dto: CancelBroadcastRequestDto,
+    customerId: Types.ObjectId,
+  ) {
+    const request = await this.findOneForUser(dto.requestId, customerId, 'customerId');
+
+    if ((request as any).requestType !== RequestType.BROADCAST) {
+      throw new BadRequestException('This is not a broadcast request');
+    }
+
+    if (request.status !== ServiceStatus.OPEN) {
+      throw new BadRequestException(
+        'Only open broadcast requests can be cancelled. This request has already been confirmed or completed.',
+      );
+    }
+
+    // Expire all pending/counter-offer offers for this request
+    await this.providerOfferRepository.expireAllOffers(dto.requestId);
+
+    // Mark the request as cancelled
+    await this.serviceRequestRepository.updateById(dto.requestId, {
+      status: ServiceStatus.CANCELLED,
+    });
+
+    const cancelled = await this.findOne(dto.requestId);
+    const {
+      __v,
+      isDeleted,
+      addedToProviderCalendar,
+      completionCode,
+      createdAt,
+      updatedAt,
+      ...data
+    } = JSON.parse(JSON.stringify(cancelled));
+
+    return {
+      ...data,
+      provider: null,
+      message: 'Broadcast request cancelled successfully. All providers have been notified.',
+    };
+  }
+
   private getId(value: any): string {
     return value?._id ? value._id.toString() : value?.toString();
   }
@@ -687,7 +1084,18 @@ export class ServiceRequestService {
       );
 
     for (const request of requests) {
-      if (!request.price || !request.providerId) continue;
+      if (!request.providerId) continue;
+
+      if ((request as any).paymentMode === PaymentMode.HOURLY) {
+        await this.serviceRequestRepository.updateById(request._id.toString(), {
+          status: ServiceStatus.OUTDATED,
+          addedToProviderCalendar: false,
+          completionCode: null,
+        });
+        continue;
+      }
+
+      if (!request.price) continue;
 
       const provider = await this.providerRepository.findById(
         request.providerId.toString(),
@@ -703,7 +1111,6 @@ export class ServiceRequestService {
 
       await this.providerRepository.updateById(request.providerId.toString(), {
         providerCancelCount: (provider.providerCancelCount || 0) + 1,
-
         providerCancelFees: (provider.providerCancelFees || 0) + cancelFee,
         debt: (provider.debt || 0) + cancelFee,
       });

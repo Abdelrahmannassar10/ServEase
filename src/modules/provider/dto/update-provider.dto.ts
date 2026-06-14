@@ -11,6 +11,8 @@ import {
   Matches,
   MaxLength,
   MinLength,
+  Min,
+  IsNumber,
 } from 'class-validator';
 import mongoose from 'mongoose';
 
@@ -66,8 +68,14 @@ export class UpdateProviderDto {
   @IsString()
   specialization: string;
 
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  hourPrice?: number;
+
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @IsEnum(Gender)
-  gender: Gender;
+  gender?: Gender;
 }

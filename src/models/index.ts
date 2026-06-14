@@ -24,6 +24,8 @@ export * from './reviews/review.schema';
 
 export * from './service-request/service-request.repository';
 export * from './service-request/service-request.schema';
+export * from './provider-offer/provider-offer.repository';
+export * from './provider-offer/provider-offer.schema';
 
 export * from './token/token.repository';
 export * from './token/token.schema';

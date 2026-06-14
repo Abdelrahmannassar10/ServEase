@@ -33,6 +33,12 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
       .sort({ createdAt: -1 });
   }
 
+  async findBroadcastsByCustomerId(customerId: string) {
+    return this.serviceRequestModel
+      .find({ customerId, requestType: 'BROADCAST' })
+      .sort({ createdAt: -1 });
+  }
+
   async findByProviderId(providerId: string) {
     return this.serviceRequestModel
       .find({

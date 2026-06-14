@@ -1,18 +1,19 @@
-import { IsNotEmpty, IsString, IsDate, Matches, IsMongoId } from 'class-validator';
+import { IsNotEmpty, IsString, IsDate, Matches, IsMongoId, IsEnum } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { City, state } from '../../../common/types/enum';
 
 export class CreateServiceRequestDto {
   @IsMongoId()
   @IsNotEmpty()
   providerId: string;
 
-  @IsString()
+  @IsEnum(City)
   @IsNotEmpty()
-  governorate: string;
+  governorate: City;
 
-  @IsString()
+  @IsEnum(state)
   @IsNotEmpty()
-  city: string;
+  city: state;
 
   @IsString()
   @IsNotEmpty()

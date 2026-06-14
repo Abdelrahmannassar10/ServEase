@@ -22,7 +22,7 @@ export class ReviewService {
       { status: ReviewType.GLOBAL },
       {
         populate: ['userId'],
-        select: 'firstName lastName userName dob age profileUrl',
+        select: 'firstName lastName userName dob age profileURL',
       },
     );
   }
@@ -58,7 +58,7 @@ export class ReviewService {
       { ProviderId: providerId, status: ReviewType.REQUEST },
       {
         populate: ['userId'],
-        select: 'firstName lastName userName dob age profileUrl',
+        select: 'firstName lastName userName dob age profileURL',
       },
     );
   }
@@ -68,7 +68,7 @@ export class ReviewService {
       { status: ReviewType.REQUEST },
       {
         populate: ['userId', 'ProviderId'],
-        select: 'firstName lastName userName dob age profileUrl name profileUrl',
+        select: 'firstName lastName userName dob age profileURL name',
       },
     );
   }

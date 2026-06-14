@@ -272,7 +272,10 @@ export enum ServiceStatus {
   REFUSED = 'REFUSED',
   COMPLETED = 'COMPLETED',
   IN_PROGRESS = 'IN_PROGRESS',
-  OUTDATED = 'OUTDATED'
+  OUTDATED = 'OUTDATED',
+  OPEN = 'OPEN',
+  PENDING_SELECTION = 'PENDING_SELECTION',
+  CANCELLED = 'CANCELLED',
 }
 
 export enum ReviewType {
@@ -285,4 +288,29 @@ export enum ProviderStatus {
     Stopped = "Stopped",
     PendingApproval = "PendingApproval",
     Rejected = "Rejected"
+}
+
+// ── Broadcast Feature ────────────────────────────────────────────────────────
+
+export enum RequestType {
+  DIRECT = 'DIRECT',
+  BROADCAST = 'BROADCAST',
+}
+
+export enum PaymentMode {
+  FIXED = 'FIXED',
+  HOURLY = 'HOURLY',
+}
+
+export enum LocationScope {
+  GOVERNORATE = 'GOVERNORATE',
+  DISTRICT = 'DISTRICT',
+}
+
+export enum OfferStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  COUNTER_OFFER = 'COUNTER_OFFER',
+  REFUSED = 'REFUSED',
+  EXPIRED = 'EXPIRED',
 }

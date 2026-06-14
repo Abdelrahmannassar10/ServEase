@@ -35,18 +35,49 @@ export class CustomerService {
     return this.customerRepository.updateById(id, updateData);
   }
 
-  async getProvider(service: string) {
-    const providers = await this.providerRepository.find({
-      service,
+  async getProvider(service: string, userId?: string) {
+    const filter: any = {
       isDeleted: false,
       adminApproved: ProviderStatus.Active,
-    },{populate: ['service']});
-    return providers.map((provider) => {
-      const { password, ...providerData } = JSON.parse(
-        JSON.stringify(provider),
-      );
-      return providerData;
+    };
+    if (service && service !== 'all') filter.service = service;
+
+    const providers = await this.providerRepository.find(filter, { populate: ['service'] });
+
+    const plainProviders = providers.map((provider) => {
+      const { password, ...providerData } = JSON.parse(JSON.stringify(provider));
+      return providerData as any;
     });
+
+    if (!userId) {
+      return plainProviders.sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0));
+    }
+
+    const customer = await this.customerRepository.findById(userId);
+    const userCity = customer?.city ?? null;
+    const userState = customer?.state ?? null;
+
+    if (!userCity && !userState) {
+      return plainProviders.sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0));
+    }
+
+    const exact: any[] = [];
+    const sameState: any[] = [];
+    const others: any[] = [];
+
+    for (const p of plainProviders) {
+      if (userCity && userState && p.city === userCity && p.state === userState) {
+        exact.push(p);
+      } else if (userState && p.state === userState) {
+        sameState.push(p);
+      } else {
+        others.push(p);
+      }
+    }
+
+    const sortByRating = (x: any, y: any) => (y.averageRating ?? 0) - (x.averageRating ?? 0);
+
+    return [...exact.sort(sortByRating), ...sameState.sort(sortByRating), ...others.sort(sortByRating)];
   }
 
   async getProfile(userid: string) {

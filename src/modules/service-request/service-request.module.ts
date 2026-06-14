@@ -6,10 +6,15 @@ import { ServiceRequestController } from './service-request.controller';
 import { ServiceRequestService } from './service-request.service';
 import { ServiceRequestFactoryService } from './factory';
 import { ServiceRequestRepository } from '../../models/service-request/service-request.repository';
+import { ProviderOfferRepository } from '../../models/provider-offer/provider-offer.repository';
 import {
   ServiceRequest,
   serviceRequestSchema,
 } from '../../models/service-request/service-request.schema';
+import {
+  ProviderOffer,
+  providerOfferSchema,
+} from '../../models/provider-offer/provider-offer.schema';
 
 @Module({
   imports: [
@@ -20,6 +25,10 @@ import {
         name: ServiceRequest.name,
         schema: serviceRequestSchema,
       },
+      {
+        name: ProviderOffer.name,
+        schema: providerOfferSchema,
+      },
     ]),
   ],
   controllers: [ServiceRequestController],
@@ -27,7 +36,8 @@ import {
     ServiceRequestService,
     ServiceRequestFactoryService,
     ServiceRequestRepository,
+    ProviderOfferRepository,
   ],
-  exports: [ServiceRequestService ,ServiceRequestRepository],
+  exports: [ServiceRequestService, ServiceRequestRepository, ProviderOfferRepository],
 })
 export class ServiceRequestModule {}

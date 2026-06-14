@@ -12,6 +12,11 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateBroadcastRequestDto } from './dto/create-broadcast-request.dto';
+import { CustomerSelectOfferDto } from './dto/customer-select-offer.dto';
+import { CompleteHourlyServiceDto } from './dto/complete-hourly-service.dto';
+import { CancelBroadcastRequestDto } from './dto/cancel-broadcast-request.dto';
+import { ProviderRespondBroadcastDto } from './dto/provider-respond-broadcast.dto';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
 import { ServiceRequestService } from './service-request.service';
 
@@ -118,6 +123,70 @@ completeService(
 @Roles(Role.PROVIDER)
 getProviderCalendar(@Request() req: any) {
   return this.serviceRequestService.getProviderCalendar(req.user._id);
+}
+
+@Post('broadcast')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.CUSTOMER)
+createBroadcast(
+  @Body() dto: CreateBroadcastRequestDto,
+  @Request() req: any,
+) {
+  return this.serviceRequestService.createBroadcastRequest(dto, req.user._id);
+}
+
+@Get('broadcast/available')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.PROVIDER)
+getAvailableBroadcasts(@Request() req: any) {
+  return this.serviceRequestService.getAvailableBroadcastRequests(req.user._id);
+}
+
+@Post('broadcast/respond')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.PROVIDER)
+respondToBroadcast(
+  @Body() dto: ProviderRespondBroadcastDto,
+  @Request() req: any,
+) {
+  return this.serviceRequestService.providerRespondToBroadcast(dto, req.user._id);
+}
+
+@Get('broadcast/:id/offers')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.CUSTOMER)
+getOffersSummary(@Param('id') id: string, @Request() req: any) {
+  return this.serviceRequestService.getOffersSummary(id, req.user._id);
+}
+
+@Patch('broadcast/select-offer')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.CUSTOMER)
+selectOffer(
+  @Body() dto: CustomerSelectOfferDto,
+  @Request() req: any,
+) {
+  return this.serviceRequestService.customerSelectOffer(dto, req.user._id);
+}
+
+@Patch('broadcast/complete-hourly')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.CUSTOMER)
+completeHourly(
+  @Body() dto: CompleteHourlyServiceDto,
+  @Request() req: any,
+) {
+  return this.serviceRequestService.completeHourlyService(dto, req.user._id);
+}
+
+@Patch('broadcast/cancel')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.CUSTOMER)
+cancelBroadcast(
+  @Body() dto: CancelBroadcastRequestDto,
+  @Request() req: any,
+) {
+  return this.serviceRequestService.cancelBroadcastRequest(dto, req.user._id);
 }
 
 

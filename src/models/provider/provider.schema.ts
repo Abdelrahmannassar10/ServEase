@@ -115,6 +115,9 @@ export class Provider {
 
   @Prop({ type: Number, default: 0, min: 0 })
   reviewsCount: number;
+
+  @Prop({ type: Number, default: null, min: 0 })
+  hourPrice?: number;
 }
 export const providerSchema = SchemaFactory.createForClass(Provider);
 export type HProviderDocument = HydratedDocument<Provider>;
