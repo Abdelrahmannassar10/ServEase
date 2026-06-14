@@ -7,7 +7,7 @@ import {
   ServiceRequest,
   HServiceRequestDocument,
 } from './service-request.schema';
-import { ServiceStatus } from '@common/types/enum';
+import { RequestType, ServiceStatus } from '@common/types/enum';
 
 @Injectable()
 export class ServiceRequestRepository extends AbstractRepository<HServiceRequestDocument> {
@@ -35,7 +35,7 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
 
   async findBroadcastsByCustomerId(customerId: string) {
     return this.serviceRequestModel
-      .find({ customerId, requestType: 'BROADCAST' })
+      .find({ customerId, requestType: RequestType.BROADCAST })
       .sort({ createdAt: -1 });
   }
 
