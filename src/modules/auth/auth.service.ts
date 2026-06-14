@@ -356,7 +356,7 @@ export class AuthService {
       { password: hashedPassword, otp: null, otpExpiry: null },
     );
     return { message: 'Password changed successfully' };
-  }
+  } 
 
   async logout(token: string) {
     await this.tokenRepository.add(

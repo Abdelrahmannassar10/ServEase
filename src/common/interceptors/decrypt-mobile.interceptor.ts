@@ -19,28 +19,33 @@ export class DecryptMobileInterceptor implements NestInterceptor {
   }
 }
 
-async function decryptMobileFields(value: any): Promise<void> {
+async function decryptMobileFields(value: any, visited = new WeakSet()): Promise<void> {
   if (value === null || value === undefined) return;
 
+  // primitives (string/number/boolean/symbol) can't contain mobileNumber keys
+  if (typeof value !== 'object') return;
+
+  // avoid revisiting the same object (protects against circular refs)
+  if (visited.has(value)) return;
+  visited.add(value);
+
   if (Array.isArray(value)) {
-    await Promise.all(value.map((item) => decryptMobileFields(item)));
+    await Promise.all(value.map((item) => decryptMobileFields(item, visited)));
     return;
   }
 
-  if (typeof value === 'object') {
-    const entries = Object.entries(value);
-    await Promise.all(
-      entries.map(async ([k, v]) => {
-        if (k === 'mobileNumber') {
-          try {
-            value[k] = await safeDecrypt(v);
-          } catch {
-            value[k] = null;
-          }
-        } else {
-          await decryptMobileFields(v);
+  const entries = Object.entries(value);
+  await Promise.all(
+    entries.map(async ([k, v]) => {
+      if (k === 'mobileNumber') {
+        try {
+          value[k] = await safeDecrypt(v);
+        } catch {
+          value[k] = null;
         }
-      }),
-    );
-  }
+      } else {
+        await decryptMobileFields(v, visited);
+      }
+    }),
+  );
 }

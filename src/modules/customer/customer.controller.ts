@@ -72,6 +72,13 @@ export class CustomerController {
   }
   
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.CUSTOMER) 
+  @Get('providers/:serviceId')
+  async getProvidersByService(@Param('serviceId') service: string) {
+    return await this.customerService.getProvider(service);
+  }
+
   @Post('delete-account')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.CUSTOMER)
