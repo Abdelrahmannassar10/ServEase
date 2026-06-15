@@ -54,6 +54,7 @@ export class AuthFactoryService {
     provider.service = providerDTO.service;
     provider.specialization = providerDTO.specialization;
     provider.gender = providerDTO.gender;
+    provider.hourPrice = providerDTO.hourPrice;
     provider.profileURL = getDefaultProfileImage(
       Role.PROVIDER,
       providerDTO.gender,

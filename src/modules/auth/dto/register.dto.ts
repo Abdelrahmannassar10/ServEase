@@ -10,8 +10,10 @@ import {
   Matches,
   MaxLength,
   MinLength,
+  Min,
+  IsNumber,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { City, Gender,  state } from '@common/types/enum';
 import mongoose from 'mongoose';
 
@@ -80,6 +82,12 @@ export class ProviderRegisterDto {
   @IsNotEmpty()
   @IsEnum(Gender)
   gender: Gender;
+
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  hourPrice: number;
 }
 
 ///////////////////////////////////////////

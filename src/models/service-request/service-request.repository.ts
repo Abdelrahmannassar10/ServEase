@@ -24,7 +24,7 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
       .populate({
         path: 'providerId',
         select:
-          'firstName lastName userName dob age profileURL averageRating reviewsCount service',
+          'firstName lastName userName dob age profileURL averageRating reviewsCount service hourPrice',
         populate: {
           path: 'service',
           select: '_id name icon_text',
@@ -87,7 +87,7 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
       .populate({
         path: 'providerId',
         select:
-          'firstName lastName userName dob age profileURL mobileNumber email service',
+          'firstName lastName userName dob age profileURL mobileNumber email service hourPrice',
         populate: {
           path: 'service',
           select: '_id name icon_text',

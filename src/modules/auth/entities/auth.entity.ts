@@ -41,4 +41,5 @@ export class Provider {
   specialization: string;
   gender:Gender;
   profileURL: string;
+  hourPrice: number;
 }
