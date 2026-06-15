@@ -6,7 +6,7 @@ services:
     plan: free
     branch: main
 
-    buildCommand: npm install -g pnpm && pnpm install && pnpm run build
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm run build
     startCommand: pnpm run start:prod
 
     healthCheckPath: /
@@ -16,6 +16,9 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+
+      - key: NODE_VERSION
+        value: 22.22.0
 
       - key: PORT
         value: 3000
