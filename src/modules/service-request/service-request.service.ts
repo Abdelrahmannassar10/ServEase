@@ -649,24 +649,47 @@ export class ServiceRequestService {
       );
     }
 
-    if (!dto.price || !dto.endTime) {
-      throw new BadRequestException('Price and end time are required');
+    if (!dto.endTime) {
+      throw new BadRequestException('End time is required');
     }
-    if (dto.price <= 150) {
-      throw new BadRequestException('Price must be greater than 150');
+
+    const paymentMode = (request as any).paymentMode ?? PaymentMode.FIXED;
+
+    if (paymentMode === PaymentMode.FIXED) {
+      if (!dto.price) {
+        throw new BadRequestException(
+          'Price is required for fixed-price requests',
+        );
+      }
+      if (dto.price <= 150) {
+        throw new BadRequestException('Price must be greater than 150');
+      }
     }
+
+    if (paymentMode === PaymentMode.HOURLY) {
+      if (!provider.hourPrice) {
+        throw new BadRequestException(
+          'You have not set an hourly rate. Update your profile with hourPrice before accepting hourly requests.',
+        );
+      }
+    }
+
     const date = new Date(request.dateNeeded);
     const [hours, minutes] = dto.endTime.split(':').map(Number);
-
     date.setHours(hours, minutes, 0, 0);
 
-    const updated = await this.serviceRequestRepository.updateById(id, {
+    const updatePayload: Record<string, any> = {
       providerId,
-      price: dto.price,
       endTime: dto.endTime,
       scheduledEndAt: date,
       status: ServiceStatus.PENDING,
-    });
+    };
+
+    if (paymentMode === PaymentMode.FIXED) {
+      updatePayload.price = dto.price;
+    }
+
+    const updated = await this.serviceRequestRepository.updateById(id, updatePayload);
 
     const {
       __v,
@@ -801,22 +824,50 @@ export class ServiceRequestService {
       );
     }
 
-    if (!request.price) {
-      throw new BadRequestException(
-        'Cannot calculate cancel fee because price is missing',
-      );
-    }
-
     if (!request.providerId) {
       throw new BadRequestException('Provider is missing');
     }
 
     const providerIdValue = this.getId(request.providerId);
-
     const provider = await this.providerRepository.findById(providerIdValue);
 
     if (!provider) {
       throw new NotFoundException('Provider not found');
+    }
+
+    const paymentMode = (request as any).paymentMode ?? PaymentMode.FIXED;
+
+    if (paymentMode === PaymentMode.HOURLY) {
+      const updated = await this.serviceRequestRepository.updateById(id, {
+        status: ServiceStatus.REFUSED,
+        addedToProviderCalendar: false,
+        completionCode: null,
+      });
+
+      const {
+        __v,
+        isDeleted,
+        addedToProviderCalendar,
+        completionCode,
+        createdAt,
+        updatedAt,
+        ...data
+      } = JSON.parse(JSON.stringify(updated));
+
+      return {
+        ...data,
+        providerStats: {
+          providerCancelCount: provider.providerCancelCount,
+          providerCancelFees: provider.providerCancelFees,
+          debt: provider.debt || 0,
+        },
+      };
+    }
+
+    if (!request.price) {
+      throw new BadRequestException(
+        'Cannot calculate cancel fee because price is missing',
+      );
     }
 
     const settings = await this.generalSettingService.getGeneralSettings();
@@ -834,7 +885,6 @@ export class ServiceRequestService {
     }
 
     provider.providerCancelCount = (provider.providerCancelCount || 0) + 1;
-
     provider.providerCancelFees =
       (provider.providerCancelFees || 0) + cancelFee;
     provider.debt = (provider.debt || 0) + cancelFee;
@@ -884,6 +934,12 @@ export class ServiceRequestService {
 
     if (dto.completionCode !== request.completionCode) {
       throw new BadRequestException('Invalid completion code');
+    }
+
+    if ((request as any).paymentMode === PaymentMode.HOURLY) {
+      throw new BadRequestException(
+        'This is an hourly-rate request. Use PATCH /service-requests/complete-hourly instead.',
+      );
     }
 
     if (!request.price) {
@@ -1053,6 +1109,13 @@ export class ServiceRequestService {
 
         ...serviceData
       } = req;
+
+      if (!providerId) {
+        return {
+          ...serviceData,
+          provider: null,
+        };
+      }
 
       const {
         password,

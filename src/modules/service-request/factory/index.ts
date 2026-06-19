@@ -27,6 +27,12 @@ export class ServiceRequestFactoryService {
     request.customerId = customerId;
     request.providerId = new Types.ObjectId(dto.providerId);
 
+    request.paymentMode = dto.paymentMode ?? PaymentMode.FIXED;
+    request.preferredPrice =
+      (dto.paymentMode ?? PaymentMode.FIXED) === PaymentMode.FIXED
+        ? dto.preferredPrice ?? null
+        : null;
+
     return request;
   }
 

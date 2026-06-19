@@ -75,10 +75,10 @@ export class ServiceRequest {
   paymentMode: PaymentMode;
 
   @Prop({ type: Number, default: null })
-  preferredPrice?: number;
+  preferredPrice?: number | null;
 
   @Prop({ type: Number, default: null })
-  hoursWorked?: number;
+  hoursWorked?: number | null;
 }
 export const serviceRequestSchema =SchemaFactory.createForClass(ServiceRequest);
 export type HServiceRequestDocument =HydratedDocument<ServiceRequest>;

@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsBoolean,
   IsEnum,
+  Min,
   ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
@@ -59,5 +60,6 @@ export class CreateBroadcastRequestDto {
 
   @ValidateIf((o) => o.paymentMode === PaymentMode.FIXED)
   @IsNumber()
+  @Min(50)
   preferredPrice?: number;
 }

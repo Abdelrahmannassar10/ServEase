@@ -18,6 +18,7 @@ import { CompleteHourlyServiceDto } from './dto/complete-hourly-service.dto';
 import { CancelBroadcastRequestDto } from './dto/cancel-broadcast-request.dto';
 import { ProviderRespondBroadcastDto } from './dto/provider-respond-broadcast.dto';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
+import { DirectProviderAcceptDto } from './dto/direct-provider-accept.dto';
 import { ServiceRequestService } from './service-request.service';
 
 @Controller('service-requests')
@@ -45,15 +46,25 @@ findRequests(@Request() req: any) {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.PROVIDER)
   providerAccept(
-  @Body() body: { id: string; price: number; endTime: string },
-  @Request() req: any,
-) {
-  return this.serviceRequestService.providerAccept(
-    body.id,
-    body,
-    req.user._id,
-  );
-}
+    @Body() dto: DirectProviderAcceptDto,
+    @Request() req: any,
+  ) {
+    return this.serviceRequestService.providerAccept(
+      dto.id,
+      dto,
+      req.user._id,
+    );
+  }
+
+  @Patch('complete-hourly')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.CUSTOMER)
+  completeHourlyDirect(
+    @Body() dto: CompleteHourlyServiceDto,
+    @Request() req: any,
+  ) {
+    return this.serviceRequestService.completeHourlyService(dto, req.user._id);
+  }
 
   @Patch('provider-reject')
 @UseGuards(AuthGuard('jwt'), RolesGuard)

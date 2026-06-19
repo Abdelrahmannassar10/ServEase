@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsString,
   Matches,
+  Min,
   ValidateIf,
 } from 'class-validator';
 
@@ -29,5 +30,6 @@ export class ProviderRespondBroadcastDto {
 
   @ValidateIf((o) => o.action === BroadcastResponseAction.COUNTER_OFFER)
   @IsNumber()
+  @Min(150)
   offeredPrice?: number;
 }

@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsString, IsDate, Matches, IsMongoId, IsEnum } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsDate, Matches, IsMongoId, IsNumber, Min, ValidateIf } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { City, state } from '../../../common/types/enum';
+import { City, state, PaymentMode } from '../../../common/types/enum';
 
 export class CreateServiceRequestDto {
   @IsMongoId()
@@ -35,4 +35,16 @@ export class CreateServiceRequestDto {
   @IsNotEmpty()
   @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
   startTime: string;
+
+  // ── Payment Mode ─────────────────────────────────────────────────────────────
+
+  @IsOptional()
+  @IsEnum(PaymentMode)
+  paymentMode?: PaymentMode;
+
+  @ValidateIf((o) => !o.paymentMode || o.paymentMode === PaymentMode.FIXED)
+  @IsOptional()
+  @IsNumber()
+  @Min(50)
+  preferredPrice?: number;
 }
