@@ -3,8 +3,8 @@ import {
   Controller,
   Get,
   Post,
-  Redirect,
   Query,
+  Redirect,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -16,38 +16,23 @@ import { PaymentService } from './payment.service';
 
 @Controller('payments')
 export class PaymentController {
-  constructor(
-    private readonly paymentService: PaymentService,
-  ) {}
-  @Get('paymob-redirect')
-  @Redirect()
-  paymobRedirect(@Query() query: any) {
-    return this.paymentService.handlePaymobRedirect(query);
-  }
+  constructor(private readonly paymentService: PaymentService) {}
 
   @Post('provider-debt')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.PROVIDER)
   createProviderDebtPayment(@Request() req: any) {
-    return this.paymentService.createProviderDebtPayment(
-      req.user._id,
-    );
-  }
-
-  @Post('provider-debt/confirm')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.PROVIDER)
-  confirmProviderDebtPayment(@Request() req: any) {
-    return this.paymentService.confirmProviderDebtPayment(
-      req.user._id,
-    );
+    return this.paymentService.createProviderDebtPayment(req.user._id);
   }
 
   @Post('paymob-webhook')
-  paymobWebhook(
-    @Body() body: any,
-    @Query('hmac') hmac: string,
-  ) {
+  paymobWebhook(@Body() body: any, @Query('hmac') hmac: string) {
     return this.paymentService.handlePaymobWebhook(body, hmac);
+  }
+
+  @Get('paymob-redirect')
+  @Redirect()
+  paymobRedirect(@Query() query: any) {
+    return this.paymentService.handlePaymobRedirect(query);
   }
 }

@@ -167,7 +167,7 @@ export class PaymentService {
     };
   }
 
-  async confirmProviderDebtPayment(providerId: string) {
+  private async confirmProviderDebtPayment(providerId: string) {
     const provider = await this.providerRepository.findById(providerId);
 
     if (!provider) {
@@ -264,15 +264,61 @@ export class PaymentService {
 
     return this.confirmProviderDebtPayment(providerId);
   }
-  async handlePaymobRedirect(query: any) {
-  console.log('PAYMOB REDIRECT HIT');
-  console.log('QUERY:', query);
+ private verifyPaymobRedirectHmac(query: any): boolean {
+  const receivedHmac = query.hmac;
+
+  if (!this.hmacSecret || !receivedHmac) {
+    return false;
+  }
+
+  const values = [
+    query.amount_cents,
+    query.created_at,
+    query.currency,
+    query.error_occured,
+    query.has_parent_transaction,
+    query.id,
+    query.integration_id,
+    query.is_3d_secure,
+    query.is_auth,
+    query.is_capture,
+    query.is_refund,
+    query.is_standalone_payment,
+    query.is_void,
+    query.order,
+    query.owner,
+    query.pending,
+    query['source_data.pan'],
+    query['source_data.sub_type'],
+    query['source_data.type'],
+    query.success,
+  ];
+
+  const concatenated = values
+    .map((value) => String(value ?? ''))
+    .join('');
+
+  const calculatedHmac = crypto
+    .createHmac('sha512', this.hmacSecret)
+    .update(concatenated)
+    .digest('hex');
+
+  return calculatedHmac === receivedHmac;
+}
+async handlePaymobRedirect(query: any) {
+  const isValidHmac = this.verifyPaymobRedirectHmac(query);
+
+  if (!isValidHmac) {
+    return {
+      url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=invalid',
+    };
+  }
 
   const success = query.success === 'true' || query.success === true;
 
   if (!success) {
     return {
-      url: 'https://serv-ease-stiu.vercel.app/provider/billing',
+      url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=failed',
     };
   }
 
@@ -280,7 +326,7 @@ export class PaymentService {
 
   if (!merchantOrderId) {
     return {
-      url: 'https://serv-ease-stiu.vercel.app/provider/billing',
+      url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=missing-order',
     };
   }
 
@@ -290,14 +336,14 @@ export class PaymentService {
 
   if (!providerId) {
     return {
-      url: 'https://serv-ease-stiu.vercel.app/provider/billing',
+      url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=missing-provider',
     };
   }
 
   await this.confirmProviderDebtPayment(providerId);
 
   return {
-    url: 'https://serv-ease-stiu.vercel.app/provider/billing',
+    url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=success',
   };
 }
 }
