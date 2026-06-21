@@ -272,7 +272,7 @@ export class PaymentService {
 
   if (!success) {
     return {
-      url: 'https://servease-stiu.vercel.app/payment-failed',
+      url: 'https://serv-ease-stiu.vercel.app/provider/billing',
     };
   }
 
@@ -280,7 +280,7 @@ export class PaymentService {
 
   if (!merchantOrderId) {
     return {
-      url: 'https://servease-stiu.vercel.app/payment-failed',
+      url: 'https://serv-ease-stiu.vercel.app/provider/billing',
     };
   }
 
@@ -290,14 +290,14 @@ export class PaymentService {
 
   if (!providerId) {
     return {
-      url: 'https://servease-stiu.vercel.app/payment-failed',
+      url: 'https://serv-ease-stiu.vercel.app/provider/billing',
     };
   }
 
   await this.confirmProviderDebtPayment(providerId);
 
   return {
-    url: 'https://servease-stiu.vercel.app/payment-success',
+    url: 'https://serv-ease-stiu.vercel.app/provider/billing',
   };
 }
 }
