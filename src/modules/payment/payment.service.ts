@@ -282,9 +282,9 @@ export class PaymentService {
     query.is_3d_secure,
     query.is_auth,
     query.is_capture,
-    query.is_refund,
+    query.is_refunded,
     query.is_standalone_payment,
-    query.is_void,
+    query.is_voided,
     query.order,
     query.owner,
     query.pending,
@@ -302,7 +302,6 @@ export class PaymentService {
     .createHmac('sha512', this.hmacSecret)
     .update(concatenated)
     .digest('hex');
-    
 
   return calculatedHmac === receivedHmac;
 }
