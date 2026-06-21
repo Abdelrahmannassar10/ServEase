@@ -265,6 +265,9 @@ export class PaymentService {
     return this.confirmProviderDebtPayment(providerId);
   }
  private verifyPaymobRedirectHmac(query: any): boolean {
+  console.log('PAYMOB_HMAC:', process.env.PAYMOB_HMAC);
+console.log('RECEIVED HMAC:', query.hmac);
+console.log('QUERY:', query); 
   const receivedHmac = query.hmac;
 
   if (!this.hmacSecret || !receivedHmac) {
@@ -302,6 +305,12 @@ export class PaymentService {
     .createHmac('sha512', this.hmacSecret)
     .update(concatenated)
     .digest('hex');
+
+    console.log('CALCULATED HMAC:', calculatedHmac);
+console.log(
+  'MATCH:',
+  calculatedHmac.toLowerCase() === receivedHmac.toLowerCase(),
+);
 
   return calculatedHmac === receivedHmac;
 }
