@@ -30,9 +30,4 @@ export class PaymentController {
     return this.paymentService.handlePaymobWebhook(body, hmac);
   }
 
-  @Get('paymob-redirect')
-  @Redirect()
-  paymobRedirect(@Query() query: any) {
-    return this.paymentService.handlePaymobRedirect(query);
-  }
 }

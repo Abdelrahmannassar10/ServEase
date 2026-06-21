@@ -31,9 +31,7 @@ export class PaymentService {
   }
 
   private get integrationId(): number {
-    return Number(
-      this.configService.get<string>('PAYMOB.INTEGRATION_ID'),
-    );
+    return Number(this.configService.get<string>('PAYMOB.INTEGRATION_ID'));
   }
 
   private get iframeId(): string {
@@ -41,12 +39,14 @@ export class PaymentService {
   }
 
   private get hmacSecret(): string {
-    return this.configService.get<string>('PAYMOB.HMAC')!;
+    return this.configService.get<string>('PAYMOB.HMAC') || '';
+  }
+
+  private get frontendBillingUrl(): string {
+    return 'https://serv-ease-lilac.vercel.app/provider/billing';
   }
 
   private async getAuthToken(): Promise<string> {
-    console.log('BASE URL:', this.baseUrl);
-    console.log('API KEY EXISTS:', !!this.apiKey);
     const response = await fetch(`${this.baseUrl}/auth/tokens`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -144,14 +144,9 @@ export class PaymentService {
     }
 
     const authToken = await this.getAuthToken();
-
     const amountCents = Math.round(provider.debt * 100);
 
-    const order = await this.createOrder(
-      authToken,
-      amountCents,
-      providerId,
-    );
+    const order = await this.createOrder(authToken, amountCents, providerId);
 
     const paymentToken = await this.createPaymentKey(
       authToken,
@@ -216,22 +211,17 @@ export class PaymentService {
       obj.success,
     ];
 
-    const concatenated = values
-      .map((value) => String(value ?? ''))
-      .join('');
+    const concatenated = values.map((value) => String(value ?? '')).join('');
 
     const calculatedHmac = crypto
       .createHmac('sha512', this.hmacSecret)
       .update(concatenated)
       .digest('hex');
 
-    return calculatedHmac === hmac;
+    return calculatedHmac.toLowerCase() === hmac.toLowerCase();
   }
 
   async handlePaymobWebhook(body: any, hmac: string) {
-    console.log('PAYMOB WEBHOOK HIT');
-    console.log('HMAC:', hmac);
-    console.log('BODY:', JSON.stringify(body, null, 2));
     const obj = body.obj;
 
     if (!obj) {
@@ -254,9 +244,9 @@ export class PaymentService {
       throw new BadRequestException('Missing merchant order id');
     }
 
-    const parts = merchantOrderId.split('-');
-
-    const providerId = parts[2];
+    const providerId = merchantOrderId
+      .replace('provider-debt-', '')
+      .split('-')[0];
 
     if (!providerId) {
       throw new BadRequestException('Missing provider id');
@@ -264,95 +254,6 @@ export class PaymentService {
 
     return this.confirmProviderDebtPayment(providerId);
   }
- private verifyPaymobRedirectHmac(query: any): boolean {
-  console.log('PAYMOB_HMAC:', process.env.PAYMOB_HMAC);
-console.log('RECEIVED HMAC:', query.hmac);
-console.log('QUERY:', query); 
-  const receivedHmac = query.hmac;
 
-  if (!this.hmacSecret || !receivedHmac) {
-    return false;
-  }
 
-  const values = [
-    query.amount_cents,
-    query.created_at,
-    query.currency,
-    query.error_occured,
-    query.has_parent_transaction,
-    query.id,
-    query.integration_id,
-    query.is_3d_secure,
-    query.is_auth,
-    query.is_capture,
-    query.is_refunded,
-    query.is_standalone_payment,
-    query.is_voided,
-    query.order,
-    query.owner,
-    query.pending,
-    query['source_data.pan'],
-    query['source_data.sub_type'],
-    query['source_data.type'],
-    query.success,
-  ];
-
-  const concatenated = values
-    .map((value) => String(value ?? ''))
-    .join('');
-
-  const calculatedHmac = crypto
-    .createHmac('sha512', this.hmacSecret)
-    .update(concatenated)
-    .digest('hex');
-
-    console.log('CALCULATED HMAC:', calculatedHmac);
-console.log(
-  'MATCH:',
-  calculatedHmac.toLowerCase() === receivedHmac.toLowerCase(),
-);
-
-  return calculatedHmac === receivedHmac;
-}
-async handlePaymobRedirect(query: any) {
-  const isValidHmac = this.verifyPaymobRedirectHmac(query);
-
-  if (!isValidHmac) {
-    return {
-      url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=invalid',
-    };
-  }
-
-  const success = query.success === 'true' || query.success === true;
-
-  if (!success) {
-    return {
-      url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=failed',
-    };
-  }
-
-  const merchantOrderId = query.merchant_order_id;
-
-  if (!merchantOrderId) {
-    return {
-      url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=missing-order',
-    };
-  }
-
-  const providerId = merchantOrderId
-    .replace('provider-debt-', '')
-    .split('-')[0];
-
-  if (!providerId) {
-    return {
-      url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=missing-provider',
-    };
-  }
-
-  await this.confirmProviderDebtPayment(providerId);
-
-  return {
-    url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=success',
-  };
-}
 }
