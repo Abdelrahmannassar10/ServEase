@@ -319,7 +319,7 @@ async handlePaymobRedirect(query: any) {
 
   if (!isValidHmac) {
     return {
-      url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=invalid',
+      url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=invalid',
     };
   }
 
@@ -327,7 +327,7 @@ async handlePaymobRedirect(query: any) {
 
   if (!success) {
     return {
-      url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=failed',
+      url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=failed',
     };
   }
 
@@ -335,7 +335,7 @@ async handlePaymobRedirect(query: any) {
 
   if (!merchantOrderId) {
     return {
-      url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=missing-order',
+      url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=missing-order',
     };
   }
 
@@ -345,14 +345,14 @@ async handlePaymobRedirect(query: any) {
 
   if (!providerId) {
     return {
-      url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=missing-provider',
+      url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=missing-provider',
     };
   }
 
   await this.confirmProviderDebtPayment(providerId);
 
   return {
-    url: 'https://serv-ease-stiu.vercel.app/provider/billing?payment=success',
+    url: 'https://serv-ease-lilac.vercel.app/provider/billing?payment=success',
   };
 }
 }
