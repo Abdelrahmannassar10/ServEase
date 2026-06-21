@@ -41,7 +41,7 @@ export class PaymentService {
   }
 
   private get hmacSecret(): string {
-    return process.env.PAYMOB_HMAC!;
+    return this.configService.get<string>('PAYMOB.HMAC')!;
   }
 
   private async getAuthToken(): Promise<string> {
