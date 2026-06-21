@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ProviderRepository } from '@models/index';
 import { ProviderStatus } from '@common/types/enum';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class PaymentService {
@@ -14,17 +15,42 @@ export class PaymentService {
     private readonly providerRepository: ProviderRepository,
   ) {}
 
-  private get baseUrl() {
-    return this.configService.get<string>('PAYMOB_BASE_URL');
+  private get baseUrl(): string {
+    return (
+      this.configService.get<string>('PAYMOB.BASE_URL') ||
+      'https://accept.paymob.com/api'
+    );
   }
 
-  private async getAuthToken() {
+  private get currency(): string {
+    return this.configService.get<string>('PAYMOB.CURRENCY') || 'EGP';
+  }
+
+  private get apiKey(): string {
+    return this.configService.get<string>('PAYMOB.API_KEY')!;
+  }
+
+  private get integrationId(): number {
+    return Number(
+      this.configService.get<string>('PAYMOB.INTEGRATION_ID'),
+    );
+  }
+
+  private get iframeId(): string {
+    return this.configService.get<string>('PAYMOB.IFRAME_ID')!;
+  }
+
+  private get hmacSecret(): string {
+    return this.configService.get<string>('PAYMOB.HMAC')!;
+  }
+
+  private async getAuthToken(): Promise<string> {
+    console.log('BASE URL:', this.baseUrl);
+    console.log('API KEY EXISTS:', !!this.apiKey);
     const response = await fetch(`${this.baseUrl}/auth/tokens`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: this.configService.get<string>('PAYMOB_API_KEY'),
-      }),
+      body: JSON.stringify({ api_key: this.apiKey }),
     });
 
     const data = await response.json();
@@ -48,7 +74,7 @@ export class PaymentService {
         auth_token: authToken,
         delivery_needed: false,
         amount_cents: amountCents,
-        currency: this.configService.get<string>('PAYMOB_CURRENCY') || 'EGP',
+        currency: this.currency,
         merchant_order_id: `provider-debt-${providerId}-${Date.now()}`,
         items: [],
       }),
@@ -68,7 +94,7 @@ export class PaymentService {
     orderId: number,
     amountCents: number,
     provider: any,
-  ) {
+  ): Promise<string> {
     const response = await fetch(`${this.baseUrl}/acceptance/payment_keys`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -92,10 +118,8 @@ export class PaymentService {
           country: 'EG',
           state: provider.state || 'NA',
         },
-        currency: this.configService.get<string>('PAYMOB_CURRENCY') || 'EGP',
-        integration_id: Number(
-          this.configService.get<string>('PAYMOB_INTEGRATION_ID'),
-        ),
+        currency: this.currency,
+        integration_id: this.integrationId,
       }),
     });
 
@@ -120,6 +144,7 @@ export class PaymentService {
     }
 
     const authToken = await this.getAuthToken();
+
     const amountCents = Math.round(provider.debt * 100);
 
     const order = await this.createOrder(
@@ -135,12 +160,10 @@ export class PaymentService {
       provider,
     );
 
-    const iframeId = this.configService.get<string>('PAYMOB_IFRAME_ID');
-
     return {
       amount: provider.debt,
       orderId: order.id,
-      paymentUrl: `https://accept.paymob.com/api/acceptance/iframes/${iframeId}?payment_token=${paymentToken}`,
+      paymentUrl: `${this.baseUrl}/acceptance/iframes/${this.iframeId}?payment_token=${paymentToken}`,
     };
   }
 
@@ -163,5 +186,79 @@ export class PaymentService {
       providerCancelFees: provider.providerCancelFees,
       adminApproved: provider.adminApproved,
     };
+  }
+
+  private verifyPaymobHmac(obj: any, hmac: string): boolean {
+    if (!this.hmacSecret || !hmac || !obj) {
+      return false;
+    }
+
+    const values = [
+      obj.amount_cents,
+      obj.created_at,
+      obj.currency,
+      obj.error_occured,
+      obj.has_parent_transaction,
+      obj.id,
+      obj.integration_id,
+      obj.is_3d_secure,
+      obj.is_auth,
+      obj.is_capture,
+      obj.is_refunded,
+      obj.is_standalone_payment,
+      obj.is_voided,
+      obj.order?.id,
+      obj.owner,
+      obj.pending,
+      obj.source_data?.pan,
+      obj.source_data?.sub_type,
+      obj.source_data?.type,
+      obj.success,
+    ];
+
+    const concatenated = values
+      .map((value) => String(value ?? ''))
+      .join('');
+
+    const calculatedHmac = crypto
+      .createHmac('sha512', this.hmacSecret)
+      .update(concatenated)
+      .digest('hex');
+
+    return calculatedHmac === hmac;
+  }
+
+  async handlePaymobWebhook(body: any, hmac: string) {
+    const obj = body.obj;
+
+    if (!obj) {
+      throw new BadRequestException('Invalid webhook body');
+    }
+
+    const isValidHmac = this.verifyPaymobHmac(obj, hmac);
+
+    if (!isValidHmac) {
+      throw new BadRequestException('Invalid Paymob HMAC');
+    }
+
+    if (obj.success !== true) {
+      return { message: 'Payment not successful' };
+    }
+
+    const merchantOrderId = obj.order?.merchant_order_id;
+
+    if (!merchantOrderId) {
+      throw new BadRequestException('Missing merchant order id');
+    }
+
+    const parts = merchantOrderId.split('-');
+
+    const providerId = parts[2];
+
+    if (!providerId) {
+      throw new BadRequestException('Missing provider id');
+    }
+
+    return this.confirmProviderDebtPayment(providerId);
   }
 }

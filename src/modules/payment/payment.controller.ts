@@ -1,6 +1,9 @@
 import {
+  Body,
   Controller,
+  Get,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -12,7 +15,14 @@ import { PaymentService } from './payment.service';
 
 @Controller('payments')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+  ) {}
+  @Get('test')
+  test() {
+    console.log('PAYMENT TEST ENTERED');
+    return { message: 'payment controller works' };
+  }
 
   @Post('provider-debt')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -23,12 +33,13 @@ export class PaymentController {
     );
   }
 
-  @Post('provider-debt/confirm')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.PROVIDER)
-  confirmProviderDebtPayment(@Request() req: any) {
-    return this.paymentService.confirmProviderDebtPayment(
-      req.user._id,
-    );
+ 
+
+  @Post('paymob-webhook')
+  paymobWebhook(
+    @Body() body: any,
+    @Query('hmac') hmac: string,
+  ) {
+    return this.paymentService.handlePaymobWebhook(body, hmac);
   }
 }

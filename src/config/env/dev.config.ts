@@ -16,6 +16,7 @@ export default () => ({
   IFRAME_ID: process.env.PAYMOB_IFRAME_ID,
   BASE_URL: process.env.PAYMOB_BASE_URL,
   CURRENCY: process.env.PAYMOB_CURRENCY,
+  HMAC: process.env.PAYMOB_HMAC,
 },
 
   EMAIL_TEMPLATES: {
