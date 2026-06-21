@@ -302,10 +302,7 @@ export class PaymentService {
     .createHmac('sha512', this.hmacSecret)
     .update(concatenated)
     .digest('hex');
-  console.log('RECEIVED HMAC:', receivedHmac);
-  console.log('CALCULATED HMAC:', calculatedHmac);
-  console.log('HMAC MATCH:', calculatedHmac === receivedHmac);
-  console.log('HMAC STRING:', concatenated);
+    
 
   return calculatedHmac === receivedHmac;
 }
