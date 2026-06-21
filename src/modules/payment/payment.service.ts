@@ -267,6 +267,10 @@ export class PaymentService {
  private verifyPaymobRedirectHmac(query: any): boolean {
   const receivedHmac = query.hmac;
 
+  if (!this.hmacSecret || !receivedHmac) {
+    return false;
+  }
+
   const values = [
     query.amount_cents,
     query.created_at,
@@ -290,13 +294,14 @@ export class PaymentService {
     query.success,
   ];
 
-  const concatenated = values.map((v) => String(v ?? '')).join('');
+  const concatenated = values
+    .map((value) => String(value ?? ''))
+    .join('');
 
   const calculatedHmac = crypto
     .createHmac('sha512', this.hmacSecret)
     .update(concatenated)
     .digest('hex');
-
   console.log('RECEIVED HMAC:', receivedHmac);
   console.log('CALCULATED HMAC:', calculatedHmac);
   console.log('HMAC MATCH:', calculatedHmac === receivedHmac);
