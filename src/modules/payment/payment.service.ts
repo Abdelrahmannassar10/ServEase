@@ -229,6 +229,9 @@ export class PaymentService {
   }
 
   async handlePaymobWebhook(body: any, hmac: string) {
+    console.log('PAYMOB WEBHOOK HIT');
+    console.log('HMAC:', hmac);
+    console.log('BODY:', JSON.stringify(body, null, 2));
     const obj = body.obj;
 
     if (!obj) {
@@ -261,4 +264,40 @@ export class PaymentService {
 
     return this.confirmProviderDebtPayment(providerId);
   }
+  async handlePaymobRedirect(query: any) {
+  console.log('PAYMOB REDIRECT HIT');
+  console.log('QUERY:', query);
+
+  const success = query.success === 'true' || query.success === true;
+
+  if (!success) {
+    return {
+      url: 'https://servease-stiu.vercel.app/payment-failed',
+    };
+  }
+
+  const merchantOrderId = query.merchant_order_id;
+
+  if (!merchantOrderId) {
+    return {
+      url: 'https://servease-stiu.vercel.app/payment-failed',
+    };
+  }
+
+  const providerId = merchantOrderId
+    .replace('provider-debt-', '')
+    .split('-')[0];
+
+  if (!providerId) {
+    return {
+      url: 'https://servease-stiu.vercel.app/payment-failed',
+    };
+  }
+
+  await this.confirmProviderDebtPayment(providerId);
+
+  return {
+    url: 'https://servease-stiu.vercel.app/payment-success',
+  };
+}
 }

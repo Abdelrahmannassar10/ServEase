@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Redirect,
   Query,
   Request,
   UseGuards,
@@ -18,10 +19,10 @@ export class PaymentController {
   constructor(
     private readonly paymentService: PaymentService,
   ) {}
-  @Get('test')
-  test() {
-    console.log('PAYMENT TEST ENTERED');
-    return { message: 'payment controller works' };
+  @Get('paymob-redirect')
+  @Redirect()
+  paymobRedirect(@Query() query: any) {
+    return this.paymentService.handlePaymobRedirect(query);
   }
 
   @Post('provider-debt')
@@ -33,7 +34,14 @@ export class PaymentController {
     );
   }
 
- 
+  @Post('provider-debt/confirm')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.PROVIDER)
+  confirmProviderDebtPayment(@Request() req: any) {
+    return this.paymentService.confirmProviderDebtPayment(
+      req.user._id,
+    );
+  }
 
   @Post('paymob-webhook')
   paymobWebhook(
