@@ -273,24 +273,6 @@ export class PaymentService {
     };
   }
 
-  const merchantOrderId = query.merchant_order_id;
-
-  if (!merchantOrderId) {
-    return {
-      url: 'https://serv-ease-lilac.vercel.app/payment-failed',
-    };
-  }
-
-  const providerId = merchantOrderId
-    .replace('provider-debt-', '')
-    .split('-')[0];
-
-  if (!providerId) {
-    return {
-      url: 'https://serv-ease-lilac.vercel.app/payment-failed',
-    };
-  }
-
   return {
     url: 'https://serv-ease-lilac.vercel.app/payment-success',
   };
