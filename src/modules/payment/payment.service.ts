@@ -269,7 +269,7 @@ export class PaymentService {
 
   if (!success) {
     return {
-      url: 'https://serv-ease-lilac.vercel.app/payment-success',
+      url: 'https://serv-ease-lilac.vercel.app/payment-failed',
     };
   }
 
