@@ -157,6 +157,7 @@ export class PaymentService {
 
     return {
       amount: provider.debt,
+      status: provider.adminApproved,
       orderId: order.id,
       paymentUrl: `${this.baseUrl}/acceptance/iframes/${this.iframeId}?payment_token=${paymentToken}`,
     };
@@ -255,5 +256,43 @@ export class PaymentService {
     return this.confirmProviderDebtPayment(providerId);
   }
 
+  async handlePaymobRedirect(query: any) {
+  const isValidHmac = this.verifyPaymobHmac(query, query.hmac);
 
+  if (!isValidHmac) {
+    return {
+      url: 'https://serv-ease-lilac.vercel.app/provider/payment-failed',
+    };
+  }
+
+  const success = query.success === 'true' || query.success === true;
+
+  if (!success) {
+    return {
+      url: 'https://serv-ease-lilac.vercel.app/provider/payment-failed',
+    };
+  }
+
+  const merchantOrderId = query.merchant_order_id;
+
+  if (!merchantOrderId) {
+    return {
+      url: 'https://serv-ease-lilac.vercel.app/provider/payment-failed',
+    };
+  }
+
+  const providerId = merchantOrderId
+    .replace('provider-debt-', '')
+    .split('-')[0];
+
+  if (!providerId) {
+    return {
+      url: 'https://serv-ease-lilac.vercel.app/provider/payment-failed',
+    };
+  }
+
+  return {
+    url: 'https://serv-ease-lilac.vercel.app/provider/payment-success',
+  };
+}
 }
