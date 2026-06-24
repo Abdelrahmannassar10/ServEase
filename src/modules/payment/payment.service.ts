@@ -257,24 +257,31 @@ export class PaymentService {
   }
 
   async handlePaymobRedirect(query: any) {
-  const isValidHmac = this.verifyPaymobHmac(query, query.hmac);
+  const merchantOrderId = query.merchant_order_id;
 
-  if (!isValidHmac) {
+  if (!merchantOrderId) {
     return {
       url: 'https://serv-ease-lilac.vercel.app/payment-failed',
     };
   }
 
-  const success = query.success === 'true' || query.success === true;
+  const providerId = merchantOrderId
+    .replace('provider-debt-', '')
+    .split('-')[0];
 
-  if (!success) {
+  const provider = await this.providerRepository.findById(providerId);
+
+  if (!provider) {
     return {
       url: 'https://serv-ease-lilac.vercel.app/payment-failed',
     };
   }
 
   return {
-    url: 'https://serv-ease-lilac.vercel.app/payment-success',
+    url:
+      provider.debt === 0
+        ? 'https://serv-ease-lilac.vercel.app/payment-success'
+        : 'https://serv-ease-lilac.vercel.app/payment-failed',
   };
 }
 }
