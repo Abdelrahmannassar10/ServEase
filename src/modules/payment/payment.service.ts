@@ -261,7 +261,7 @@ export class PaymentService {
 
   if (!isValidHmac) {
     return {
-      url: 'https://serv-ease-lilac.vercel.app/provider/payment-failed',
+      url: 'https://serv-ease-lilac.vercel.app/payment-failed',
     };
   }
 
@@ -269,7 +269,7 @@ export class PaymentService {
 
   if (!success) {
     return {
-      url: 'https://serv-ease-lilac.vercel.app/provider/payment-failed',
+      url: 'https://serv-ease-lilac.vercel.app/payment-failed',
     };
   }
 
@@ -277,7 +277,7 @@ export class PaymentService {
 
   if (!merchantOrderId) {
     return {
-      url: 'https://serv-ease-lilac.vercel.app/provider/payment-failed',
+      url: 'https://serv-ease-lilac.vercel.app/payment-failed',
     };
   }
 
@@ -287,12 +287,12 @@ export class PaymentService {
 
   if (!providerId) {
     return {
-      url: 'https://serv-ease-lilac.vercel.app/provider/payment-failed',
+      url: 'https://serv-ease-lilac.vercel.app/payment-failed',
     };
   }
 
   return {
-    url: 'https://serv-ease-lilac.vercel.app/provider/payment-success',
+    url: 'https://serv-ease-lilac.vercel.app/payment-success',
   };
 }
 }

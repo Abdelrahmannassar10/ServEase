@@ -106,7 +106,6 @@ export class ProviderService {
       __v,
       userAgent,
       role,
-      adminApproved,
       ...providerData
     } = provider;
     const mobileNumber =
