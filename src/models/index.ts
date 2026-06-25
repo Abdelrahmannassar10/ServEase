@@ -30,5 +30,8 @@ export * from './provider-offer/provider-offer.schema';
 export * from './token/token.repository';
 export * from './token/token.schema';
 
+export * from './chat/chat-session.repository';
+export * from './chat/chat-session.schema';
+
 export * from './general-settings/general-settings.repository';
 export * from './general-settings/general-settings.schema';

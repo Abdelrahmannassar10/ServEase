@@ -118,10 +118,17 @@ export class AuthService {
   async providerRegister(
     providerRegisterDTO: ProviderRegisterDto,
     cvFile?: Express.Multer.File,
+    idCardFrontFile?: Express.Multer.File,
+    idCardBackFile?: Express.Multer.File,
   ) {
     if (!providerRegisterDTO.writtenCv && !cvFile) {
       throw new BadRequestException(
         'Provider must provide CV text or upload a CV file.',
+      );
+    }
+    if (!idCardFrontFile || !idCardBackFile) {
+      throw new BadRequestException(
+        'Provider must upload front and back ID card files.',
       );
     }
 
@@ -154,11 +161,25 @@ export class AuthService {
 
       cvUrl = upload.secure_url;
     }
+    const [frontIdUpload, backIdUpload] = await Promise.all([
+      this.cloudinaryService.uploadImage(
+        idCardFrontFile,
+        `ServEase/Provider/${providerRegisterDTO.email}/id-card`,
+        'front',
+      ),
+      this.cloudinaryService.uploadImage(
+        idCardBackFile,
+        `ServEase/Provider/${providerRegisterDTO.email}/id-card`,
+        'back',
+      ),
+    ]);
 
     const provider = await this.providerRepository.create({
       ...providerRegisterDTO,
       writtenCv: providerRegisterDTO.writtenCv || undefined,
       cvUrl,
+      idCardFrontUrl: frontIdUpload.secure_url,
+      idCardBackUrl: backIdUpload.secure_url,
     });
     const templates = this.configService.get('EMAIL_TEMPLATES');
     sendMail({

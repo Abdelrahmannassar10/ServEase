@@ -42,4 +42,6 @@ export class Provider {
   gender:Gender;
   profileURL: string;
   hourPrice: number;
+  idCardFrontUrl: string;
+  idCardBackUrl: string;
 }
