@@ -85,6 +85,8 @@ export class AdminService {
       profileURL: p.profileURL,
       backgroundURL: p.backgroundURL,
       cvUrl: p.cvUrl,
+      idCardFrontUrl: p.idCardFrontUrl,
+      idCardBackUrl: p.idCardBackUrl,
     }));
   }
 

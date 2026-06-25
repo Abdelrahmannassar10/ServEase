@@ -7,7 +7,7 @@ import {
   Request,
   Req,
   UseInterceptors,
-  UploadedFile,
+  UploadedFiles,
   Response,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -16,7 +16,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '@common/decorators';
 import { Role } from '@common/types/enum';
 import { GoogleAuthGuard, RolesGuard } from '@common/guard';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import {
   ChangePasswordOTPDto,
@@ -46,19 +46,30 @@ export class AuthController {
   }
   @Post('register/provider')
   @UseInterceptors(
-    FileInterceptor('cvFile', {
+    FileFieldsInterceptor([
+      { name: 'cvFile', maxCount: 1 },
+      { name: 'idCardFrontFile', maxCount: 1 },
+      { name: 'idCardBackFile', maxCount: 1 },
+    ], {
       storage: multer.memoryStorage(),
     }),
   )
   async registerProvider(
     @Body() providerRegisterDto: ProviderRegisterDto,
-    @UploadedFile() cvFile?: Express.Multer.File,
+    @UploadedFiles()
+    files?: {
+      cvFile?: Express.Multer.File[];
+      idCardFrontFile?: Express.Multer.File[];
+      idCardBackFile?: Express.Multer.File[];
+    },
   ) {
     const provider =
       await this.authFactoryService.createProvider(providerRegisterDto);
     const { access_token, user } = await this.authService.providerRegister(
       provider,
-      cvFile,
+      files?.cvFile?.[0],
+      files?.idCardFrontFile?.[0],
+      files?.idCardBackFile?.[0],
     );
 
     return { access_token, user };

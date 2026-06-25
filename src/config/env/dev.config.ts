@@ -9,6 +9,8 @@ export default () => ({
   EMAIL_PASS: process.env.EMAIL_PASS,
 
   JWT_SECRET: process.env.JWT_SECRET,
+  CHATBOT_API_URL: process.env.CHATBOT_API_URL,
+  FRONTEND_URL: process.env.FRONTEND_URL,
 
   PAYMOB: {
   API_KEY: process.env.PAYMOB_API_KEY,

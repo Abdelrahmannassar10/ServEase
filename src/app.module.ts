@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksService } from '@common/helper/cron-job.helper';
 import { UserMongooseModule } from '@shared/modules';
+import { ChatModule } from './modules/chat/chat.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { ProviderModule } from './modules/provider/provider.module';
 import { CommonModule } from './modules/common/common.module';
@@ -43,6 +44,8 @@ import { PaymentModule } from './modules/payment/payment.module';
     ServiceRequestModule,
     GeneralSettingModule,
     PaymentModule,
+    // Chat feature
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService,TasksService],

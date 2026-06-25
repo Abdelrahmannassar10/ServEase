@@ -101,6 +101,12 @@ export class Provider {
   @Prop({ type: String })
   cvUrl: string;
 
+  @Prop({ type: String, required: true })
+  idCardFrontUrl: string;
+
+  @Prop({ type: String, required: true })
+  idCardBackUrl: string;
+
   @Prop({ default: 0, min: 0 })
   providerCancelCount: number;
 
