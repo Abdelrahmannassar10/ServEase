@@ -682,8 +682,16 @@ export class ServiceRequestService {
       providerId,
       endTime: dto.endTime,
       scheduledEndAt: date,
-      status: ServiceStatus.PENDING,
+      status:
+        paymentMode === PaymentMode.HOURLY
+          ? ServiceStatus.CONFIRMED
+          : ServiceStatus.PENDING,
     };
+
+    if (paymentMode === PaymentMode.HOURLY) {
+      updatePayload.completionCode = generateCode();
+      updatePayload.addedToProviderCalendar = true;
+    }
 
     if (paymentMode === PaymentMode.FIXED) {
       updatePayload.price = dto.price;
