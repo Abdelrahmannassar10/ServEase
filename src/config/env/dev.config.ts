@@ -228,6 +228,90 @@ export default () => ({
 </html>`,
     },
 
+    providerApproved: {
+      subject: 'Your account has been approved — ServEase',
+      body: (name: string): string => `
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account approved</title>
+  ${sharedStyles()}
+</head>
+<body>
+  ${wrapper(`
+    ${header('✅', 'Account Approved', '#15803d', '#16a34a')}
+    <tr><td class="eb">
+      <p class="lead">Hello ${name}, your account is now active</p>
+      <p class="txt">
+        Your account has been approved by the admin team. You can now sign in and use your dashboard normally.
+      </p>
+      ${ctaButton('Open dashboard →', '#15803d')}
+      <p class="txt hint">Welcome to ServEase.</p>
+    </td></tr>
+    ${footer()}
+  `)}
+</body>
+</html>`,
+    },
+
+    accountDeleted: {
+      subject: 'Your account was updated by the admin — ServEase',
+      body: (name: string, role: string): string => `
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account notice</title>
+  ${sharedStyles()}
+</head>
+<body>
+  ${wrapper(`
+    ${header('ℹ️', 'Account Update', '#0f766e', '#0891b2')}
+    <tr><td class="eb">
+      <p class="lead">Hello ${name}, your ${role} account has been removed</p>
+      <p class="txt">
+        This action was performed by an administrator. If you believe this was a mistake, please contact support for assistance.
+      </p>
+      ${ctaButton('Contact support →', '#0f766e')}
+      <p class="txt hint">Thank you for using ServEase.</p>
+    </td></tr>
+    ${footer()}
+  `)}
+</body>
+</html>`,
+    },
+
+    serviceDeleted: {
+      subject: 'A service has been removed — ServEase',
+      body: (name: string, serviceName: string): string => `
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service removed</title>
+  ${sharedStyles()}
+</head>
+<body>
+  ${wrapper(`
+    ${header('🛠️', 'Service Update', '#b45309', '#d97706')}
+    <tr><td class="eb">
+      <p class="lead">Hello ${name}, the service "${serviceName}" is no longer available</p>
+      <p class="txt">
+        This service has been removed by the admin team. You may need to update your listings or choose a different category.
+      </p>
+      ${ctaButton('Contact support →', '#b45309')}
+      <p class="txt hint">Thank you for using ServEase.</p>
+    </td></tr>
+    ${footer()}
+  `)}
+</body>
+</html>`,
+    },
+
     directRequestCreatedProvider: {
       subject: 'New service request - ServEase',
       body: (providerName: string, customerName: string, details: any): string =>

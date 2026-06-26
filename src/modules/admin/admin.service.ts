@@ -97,6 +97,25 @@ export class AdminService {
     }
     provider.adminApproved = ProviderStatus.Active;
     await this.providerRepository.updateById(providerId, provider);
+
+    const templates = this.configService.get('EMAIL_TEMPLATES');
+    if (provider.email) {
+      try {
+        await sendMail({
+          to: provider.email,
+          subject: templates.providerApproved.subject,
+          html: templates.providerApproved.body(
+            provider.firstName || provider.userName || 'there',
+          ),
+        });
+      } catch (error) {
+        console.error(
+          `Failed to send provider approval email to ${provider.email}:`,
+          error,
+        );
+      }
+    }
+
     return { message: 'Provider approved successfully' };
   }
 
@@ -373,7 +392,28 @@ export class AdminService {
   }
 
   async deleteUser(userId: string) {
+    const user = await this.userRepository.findById(userId);
+
     await this.userRepository.deleteById(userId);
+
+    if (user?.email) {
+      const templates = this.configService.get('EMAIL_TEMPLATES');
+      try {
+        await sendMail({
+          to: user.email,
+          subject: templates.accountDeleted.subject,
+          html: templates.accountDeleted.body(
+            user.firstName || user.userName || 'there',
+            user.role || 'account',
+          ),
+        });
+      } catch (error) {
+        console.error(
+          `Failed to send account deletion email to ${user.email}:`,
+          error,
+        );
+      }
+    }
 
     return { message: 'User deleted successfully' };
   }
