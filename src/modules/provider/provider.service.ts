@@ -8,6 +8,7 @@ import { ProviderRepository, ServiceRepository, ServiceRequestRepository } from 
 import * as bcrypt from 'bcrypt';
 import { encrypt, safeDecrypt } from '@common/helper';
 import { ServiceStatus } from '@common/types/enum';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class ProviderService {
@@ -101,14 +102,19 @@ export class ProviderService {
     throw new NotFoundException('Provider not found');
   }
 
-  const completedRequests = await this.serviceRequestRepository.find(
-  {
-    provider: userid,
-    status: ServiceStatus.COMPLETED,
-  },
-  {
-    lean: true,
-  },
+  
+  const completedRequests = await this.serviceRequestRepository.find({
+   providerId: new Types.ObjectId(userid),   // ✅ matches schema
+   status: ServiceStatus.COMPLETED,
+});
+const allRequests = await this.serviceRequestRepository.find({
+  providerId: new Types.ObjectId(userid),
+});
+console.log('ALL REQUESTS FOR PROVIDER:', allRequests.length, allRequests.map(r => r.status));
+
+console.log(
+ 'COMPLETED REQUESTS:',
+ completedRequests.length
 );
 
   const totalEarnings = completedRequests.reduce(
@@ -118,6 +124,10 @@ export class ProviderService {
 
   const completedServices =
     completedRequests.length;
+    console.log(
+  'COMPLETED REQUESTS:',
+  completedRequests.length,
+);
 
   const monthlyMap =
     new Map<string, number>();
