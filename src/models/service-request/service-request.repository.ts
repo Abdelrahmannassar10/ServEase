@@ -68,6 +68,39 @@ export class ServiceRequestRepository extends AbstractRepository<HServiceRequest
       startTime,
     });
   }
+
+  async findConfirmedProviderTimeConflict(
+    providerId: string | Types.ObjectId,
+    dateNeeded: Date,
+    startTime: string,
+  ) {
+    const dayStart = new Date(dateNeeded);
+    dayStart.setHours(0, 0, 0, 0);
+
+    const dayEnd = new Date(dateNeeded);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    return this.serviceRequestModel.findOne({
+      providerId: {
+        $in: [
+          providerId,
+          new Types.ObjectId(providerId.toString()),
+        ],
+      },
+      status: ServiceStatus.CONFIRMED,
+      dateNeeded: {
+        $gte: dayStart,
+        $lte: dayEnd,
+      },
+      $or: [
+        { startTime },
+        {
+          startTime: { $lte: startTime },
+          endTime: { $gt: startTime },
+        },
+      ],
+    });
+  }
   async findProviderCalendarRequests(providerId: string) {
     return this.find(
       {

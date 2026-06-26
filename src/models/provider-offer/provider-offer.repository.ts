@@ -43,7 +43,7 @@ export class ProviderOfferRepository extends AbstractRepository<HProviderOfferDo
       })
       .populate(
         'providerId',
-        'firstName lastName userName profileURL averageRating service hourPrice city state',
+        'firstName lastName userName email profileURL averageRating service hourPrice city state',
       )
       .sort({ createdAt: -1 });
   }
