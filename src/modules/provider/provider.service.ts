@@ -4,15 +4,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UpdateProviderDto } from './dto/update-provider.dto';
-import { ProviderRepository, ServiceRepository } from '@models/index';
+import { ProviderRepository, ServiceRepository, ServiceRequestRepository } from '@models/index';
 import * as bcrypt from 'bcrypt';
 import { encrypt, safeDecrypt } from '@common/helper';
+import { ServiceStatus } from '@common/types/enum';
 
 @Injectable()
 export class ProviderService {
   constructor(
     private readonly providerRepository: ProviderRepository,
     private readonly serviceRepository: ServiceRepository,
+    private readonly serviceRequestRepository: ServiceRequestRepository,
   ) {}
 
   private async populateProviderService(provider: any) {
@@ -90,31 +92,115 @@ export class ProviderService {
   }
 
   async getProfile(userid: string): Promise<any> {
-    const provider = await this.providerRepository.findById(userid, {
-      populate: ['service'],
-      lean: true,
-    });
-    if (!provider) {
-      throw new NotFoundException('Provider not found');
-    }
+  const provider = await this.providerRepository.findById(userid, {
+    populate: ['service'],
+    lean: true,
+  });
 
-    const {
-      password,
-      isVerified,
-      otpExpiry,
-      otp,
-      __v,
-      userAgent,
-      role,
-      ...providerData
-    } = provider;
-    const mobileNumber =
-      (await safeDecrypt(providerData.mobileNumber)) ?? null;
-    return {
-      ...providerData,
-      mobileNumber,
-    };
+  if (!provider) {
+    throw new NotFoundException('Provider not found');
   }
+
+  const completedRequests = await this.serviceRequestRepository.find(
+  {
+    provider: userid,
+    status: ServiceStatus.COMPLETED,
+  },
+  {
+    lean: true,
+  },
+);
+
+  const totalEarnings = completedRequests.reduce(
+    (sum, request) => sum + (request.price || 0),
+    0,
+  );
+
+  const completedServices =
+    completedRequests.length;
+
+  const monthlyMap =
+    new Map<string, number>();
+
+  for (const request of completedRequests) {
+      const date =
+   (request as any).updatedAt ??
+   (request as any).createdAt;
+
+
+    const month =
+      new Date(date).toLocaleString(
+        'en-US',
+        {
+          month: 'short',
+          year: 'numeric',
+        },
+      );
+
+    monthlyMap.set(
+      month,
+      (monthlyMap.get(month) || 0) +
+      (request.price || 0),
+    );
+  }
+
+  const monthlyEarnings =
+    Array.from(
+      monthlyMap.entries(),
+    ).map(([month, amount]) => ({
+      month,
+      amount,
+    }));
+
+  const recentTransactions =
+    completedRequests
+      .slice(0, 5)
+      .map((request) => ({
+        serviceRequestId:
+          request._id,
+
+        title:
+          request.serviceNeeded ||
+          'Completed Service',
+
+        amount:
+          request.price || 0,
+
+        type: 'earning',
+
+        date:
+          (request as any).updatedAt ||
+          (request as any).createdAt,
+      }));
+
+  const {
+    password,
+    isVerified,
+    otpExpiry,
+    otp,
+    __v,
+    userAgent,
+    role,
+    ...providerData
+  } = provider;
+
+  const mobileNumber =
+    (await safeDecrypt(
+      providerData.mobileNumber,
+    )) ?? null;
+
+  return {
+    ...providerData,
+    mobileNumber,
+
+    totalEarnings,
+    completedServices,
+
+    monthlyEarnings,
+
+    recentTransactions,
+  };
+}
 
   async searchProfile(id: string) {
     const provider = await this.providerRepository.findById(id, {
