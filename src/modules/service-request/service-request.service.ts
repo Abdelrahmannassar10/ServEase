@@ -4,7 +4,9 @@ import {
   NotFoundException,
   ConflictException,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Types } from 'mongoose';
 import { CreateBroadcastRequestDto } from './dto/create-broadcast-request.dto';
 import { ProviderRespondBroadcastDto, BroadcastResponseAction } from './dto/provider-respond-broadcast.dto';
@@ -24,18 +26,21 @@ import {
 import { ServiceRequestFactoryService } from './factory';
 import { ServiceRequestRepository } from '../../models/service-request/service-request.repository';
 import { ProviderOfferRepository } from '../../models/provider-offer/provider-offer.repository';
-import { generateCode, safeDecrypt } from '../../common/helper';
+import { generateCode, safeDecrypt, sendMail } from '../../common/helper';
 import { ProviderRepository } from '@models/index';
 import { GeneralSettingService } from '@modules/general-setting/general-setting.service';
 
 @Injectable()
 export class ServiceRequestService {
+  private readonly logger = new Logger(ServiceRequestService.name);
+
   constructor(
     private readonly serviceRequestRepository: ServiceRequestRepository,
     private readonly serviceRequestFactory: ServiceRequestFactoryService,
     private readonly providerRepository: ProviderRepository,
     private readonly generalSettingService: GeneralSettingService,
     private readonly providerOfferRepository: ProviderOfferRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(dto: CreateServiceRequestDto, customerId: Types.ObjectId) {
@@ -51,6 +56,20 @@ export class ServiceRequestService {
         'You already sent a request to this provider at the same date and time',
       );
     }
+
+    const providerTimeConflict =
+      await this.serviceRequestRepository.findConfirmedProviderTimeConflict(
+        new Types.ObjectId(dto.providerId),
+        dto.dateNeeded,
+        dto.startTime,
+      );
+
+    if (providerTimeConflict) {
+      throw new ConflictException(
+        'You cannot send this request because the provider is busy at this time',
+      );
+    }
+
     const serviceRequest = this.serviceRequestFactory.createServiceRequest(
       dto,
       customerId,
@@ -58,6 +77,9 @@ export class ServiceRequestService {
 
     serviceRequest.status = ServiceStatus.WAITING;
     const created = await this.serviceRequestRepository.create(serviceRequest);
+    const createdRequest = await this.findOne(created._id.toString());
+
+    await this.notifyDirectRequestCreated(createdRequest);
 
     const {
       __v,
@@ -104,6 +126,7 @@ export class ServiceRequestService {
 
     // Fetch updated request with provider data populated
     const confirmedRequest = await this.findOne(request._id.toString());
+    await this.notifyRequestConfirmed(confirmedRequest);
     const {
       __v,
       isDeleted,
@@ -154,6 +177,8 @@ export class ServiceRequestService {
       status: OfferStatus.PENDING,
     }));
     await this.providerOfferRepository.createMany(offerDocs);
+    const createdRequest = await this.findOne(created._id.toString());
+    await this.notifyBroadcastRequestCreated(createdRequest, matchedProviders);
 
     const {
       __v,
@@ -216,6 +241,7 @@ export class ServiceRequestService {
         status: OfferStatus.REFUSED,
         respondedAt: new Date(),
       });
+      await this.notifyCustomerProviderRefused(request, provider);
       return { message: 'Request refused' };
     }
 
@@ -267,6 +293,10 @@ export class ServiceRequestService {
         offeredPrice: dto.offeredPrice,
         offeredEndTime: dto.offeredEndTime,
         respondedAt: new Date(),
+      });
+      await this.notifyCustomerCounterOffer(request, provider, {
+        offeredPrice: dto.offeredPrice,
+        offeredEndTime: dto.offeredEndTime,
       });
       return {
         message: 'Counter-offer submitted. The customer will be notified to review it.',
@@ -400,6 +430,7 @@ export class ServiceRequestService {
     });
 
     const completed = await this.findOne(dto.requestId);
+    await this.notifyRequestCompleted(completed);
     const {
       __v,
       isDeleted,
@@ -428,6 +459,8 @@ export class ServiceRequestService {
         'Only open broadcast requests can be cancelled. This request has already been confirmed or completed.',
       );
     }
+
+    await this.notifyBroadcastRequestCancelled(request);
 
     // Expire all pending/counter-offer offers for this request
     await this.providerOfferRepository.expireAllOffers(dto.requestId);
@@ -698,6 +731,9 @@ export class ServiceRequestService {
     }
 
     const updated = await this.serviceRequestRepository.updateById(id, updatePayload);
+    const latestRequest = await this.findOne(id);
+
+    await this.notifyCustomerProviderAccepted(latestRequest);
 
     const {
       __v,
@@ -725,6 +761,10 @@ export class ServiceRequestService {
     const update = await this.serviceRequestRepository.updateById(id, {
       status: ServiceStatus.REFUSED,
     });
+    const latestRequest = await this.findOne(id);
+
+    await this.notifyCustomerProviderRejected(latestRequest);
+
     const {
       __v,
       isDeleted,
@@ -756,6 +796,9 @@ export class ServiceRequestService {
       completionCode,
       addedToProviderCalendar: true,
     });
+    const latestRequest = await this.findOne(id);
+
+    await this.notifyRequestConfirmed(latestRequest);
 
     const {
       __v,
@@ -782,6 +825,10 @@ export class ServiceRequestService {
     const update = await this.serviceRequestRepository.updateById(id, {
       status: ServiceStatus.REFUSED,
     });
+    const latestRequest = await this.findOne(id);
+
+    await this.notifyProviderCustomerRejected(latestRequest);
+
     const {
       __v,
       isDeleted,
@@ -808,6 +855,10 @@ export class ServiceRequestService {
       addedToProviderCalendar: false,
       completionCode: null,
     });
+    const latestRequest = await this.findOne(id);
+
+    await this.notifyProviderCustomerCancelled(latestRequest);
+
     const {
       __v,
       isDeleted,
@@ -851,6 +902,9 @@ export class ServiceRequestService {
         addedToProviderCalendar: false,
         completionCode: null,
       });
+      const latestRequest = await this.findOne(id);
+
+      await this.notifyCustomerProviderCancelled(latestRequest);
 
       const {
         __v,
@@ -904,6 +958,9 @@ export class ServiceRequestService {
       addedToProviderCalendar: false,
       completionCode: null,
     });
+    const latestRequest = await this.findOne(id);
+
+    await this.notifyCustomerProviderCancelled(latestRequest);
 
     const {
       __v,
@@ -993,6 +1050,9 @@ export class ServiceRequestService {
       completionCode: null,
       addedToProviderCalendar: false,
     });
+    const latestRequest = await this.findOne(id);
+
+    await this.notifyRequestCompleted(latestRequest);
 
     const {
       __v,
@@ -1006,6 +1066,265 @@ export class ServiceRequestService {
 
     return data;
   }
+
+  private getTemplates(): any {
+    return this.configService.get('EMAIL_TEMPLATES') ?? {};
+  }
+
+  private userName(user: any, fallback: string): string {
+    if (!user) return fallback;
+    const firstName = user.firstName ?? '';
+    const lastName = user.lastName ?? '';
+    const fullName = `${firstName} ${lastName}`.trim();
+    return fullName || user.userName || fallback;
+  }
+
+  private requestDetails(request: any, extra: Record<string, unknown> = {}) {
+    return {
+      serviceNeeded: request.serviceNeeded,
+      dateNeeded: request.dateNeeded,
+      startTime: request.startTime,
+      endTime: request.endTime,
+      governorate: request.governorate,
+      city: request.city,
+      street: request.street,
+      exactLocation: request.exactLocation,
+      paymentMode: request.paymentMode,
+      preferredPrice: request.preferredPrice,
+      price: request.price,
+      completionCode: request.completionCode,
+      ...extra,
+    };
+  }
+
+  private async sendRequestNotification(
+    to: string | undefined,
+    template: any,
+    ...bodyArgs: unknown[]
+  ) {
+    if (!to || !template?.subject || typeof template.body !== 'function') return;
+
+    try {
+      await sendMail({
+        to,
+        subject: template.subject,
+        html: template.body(...bodyArgs),
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Email notification failed for ${to}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  private async notifyDirectRequestCreated(request: any) {
+    const templates = this.getTemplates();
+    const provider = request.providerId;
+    const customer = request.customerId;
+
+    await this.sendRequestNotification(
+      provider?.email,
+      templates.directRequestCreatedProvider,
+      this.userName(provider, 'Provider'),
+      this.userName(customer, 'Customer'),
+      this.requestDetails(request),
+    );
+  }
+
+  private async notifyBroadcastRequestCreated(
+    request: any,
+    providers: { _id: Types.ObjectId }[],
+  ) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+
+    await Promise.all(
+      providers.map(async (providerRef) => {
+        const provider = await this.providerRepository.findById(
+          providerRef._id.toString(),
+        );
+
+        await this.sendRequestNotification(
+          provider?.email,
+          templates.broadcastRequestCreatedProvider,
+          this.userName(provider, 'Provider'),
+          this.userName(customer, 'Customer'),
+          this.requestDetails(request),
+        );
+      }),
+    );
+  }
+
+  private async notifyCustomerProviderAccepted(request: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+    const provider = request.providerId;
+
+    await this.sendRequestNotification(
+      customer?.email,
+      templates.providerAcceptedRequestCustomer,
+      this.userName(customer, 'Customer'),
+      this.userName(provider, 'Provider'),
+      this.requestDetails(request),
+    );
+  }
+
+  private async notifyCustomerProviderRejected(request: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+    const provider = request.providerId;
+
+    await this.sendRequestNotification(
+      customer?.email,
+      templates.providerRejectedRequestCustomer,
+      this.userName(customer, 'Customer'),
+      this.userName(provider, 'Provider'),
+      this.requestDetails(request),
+    );
+  }
+
+  private async notifyCustomerProviderRefused(request: any, provider: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+
+    await this.sendRequestNotification(
+      customer?.email,
+      templates.providerRejectedRequestCustomer,
+      this.userName(customer, 'Customer'),
+      this.userName(provider, 'Provider'),
+      this.requestDetails(request),
+    );
+  }
+
+  private async notifyCustomerCounterOffer(
+    request: any,
+    provider: any,
+    offer: { offeredPrice?: number; offeredEndTime?: string },
+  ) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+
+    await this.sendRequestNotification(
+      customer?.email,
+      templates.providerCounterOfferCustomer,
+      this.userName(customer, 'Customer'),
+      this.userName(provider, 'Provider'),
+      this.requestDetails(request, offer),
+    );
+  }
+
+  private async notifyRequestConfirmed(request: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+    const provider = request.providerId;
+    const details = this.requestDetails(request);
+
+    await Promise.all([
+      this.sendRequestNotification(
+        customer?.email,
+        templates.requestConfirmedCustomer,
+        this.userName(customer, 'Customer'),
+        this.userName(provider, 'Provider'),
+        details,
+      ),
+      this.sendRequestNotification(
+        provider?.email,
+        templates.requestConfirmedProvider,
+        this.userName(provider, 'Provider'),
+        this.userName(customer, 'Customer'),
+        details,
+      ),
+    ]);
+  }
+
+  private async notifyProviderCustomerRejected(request: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+    const provider = request.providerId;
+
+    await this.sendRequestNotification(
+      provider?.email,
+      templates.customerRejectedOfferProvider,
+      this.userName(provider, 'Provider'),
+      this.userName(customer, 'Customer'),
+      this.requestDetails(request),
+    );
+  }
+
+  private async notifyProviderCustomerCancelled(request: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+    const provider = request.providerId;
+
+    await this.sendRequestNotification(
+      provider?.email,
+      templates.customerCancelledRequestProvider,
+      this.userName(provider, 'Provider'),
+      this.userName(customer, 'Customer'),
+      this.requestDetails(request),
+    );
+  }
+
+  private async notifyCustomerProviderCancelled(request: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+    const provider = request.providerId;
+
+    await this.sendRequestNotification(
+      customer?.email,
+      templates.providerCancelledRequestCustomer,
+      this.userName(customer, 'Customer'),
+      this.userName(provider, 'Provider'),
+      this.requestDetails(request),
+    );
+  }
+
+  private async notifyBroadcastRequestCancelled(request: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+    const offers = await this.providerOfferRepository.findActiveByRequestId(
+      request._id.toString(),
+    );
+
+    await Promise.all(
+      offers.map((offer: any) =>
+        this.sendRequestNotification(
+          offer.providerId?.email,
+          templates.broadcastRequestCancelledProvider,
+          this.userName(offer.providerId, 'Provider'),
+          this.userName(customer, 'Customer'),
+          this.requestDetails(request),
+        ),
+      ),
+    );
+  }
+
+  private async notifyRequestCompleted(request: any) {
+    const templates = this.getTemplates();
+    const customer = request.customerId;
+    const provider = request.providerId;
+    const details = this.requestDetails(request);
+
+    await Promise.all([
+      this.sendRequestNotification(
+        customer?.email,
+        templates.requestCompletedCustomer,
+        this.userName(customer, 'Customer'),
+        this.userName(provider, 'Provider'),
+        details,
+      ),
+      this.sendRequestNotification(
+        provider?.email,
+        templates.requestCompletedProvider,
+        this.userName(provider, 'Provider'),
+        this.userName(customer, 'Customer'),
+        details,
+      ),
+    ]);
+  }
+
   async getProviderCalendar(providerId: Types.ObjectId) {
     const requests =
       await this.serviceRequestRepository.findProviderCalendarRequests(

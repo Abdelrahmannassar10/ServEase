@@ -227,12 +227,75 @@ export default () => ({
 </body>
 </html>`,
     },
+
+    directRequestCreatedProvider: {
+      subject: 'New service request - ServEase',
+      body: (providerName: string, customerName: string, details: any): string =>
+        requestNotificationEmail('New Request', 'Hi ' + providerName + ', you have a new request', customerName + ' requested your service. Review the details and respond from your dashboard.', details, '#0f766e', '#0284c7', 'Review request'),
+    },
+    broadcastRequestCreatedProvider: {
+      subject: 'New matching request available - ServEase',
+      body: (providerName: string, customerName: string, details: any): string =>
+        requestNotificationEmail('Matching Request', 'Hi ' + providerName + ', a matching request is open', customerName + ' posted a request that matches your service area. Accept it or send an offer while it is still available.', details, '#2563eb', '#0891b2', 'View available request'),
+    },
+    providerAcceptedRequestCustomer: {
+      subject: 'Your provider responded - ServEase',
+      body: (customerName: string, providerName: string, details: any): string =>
+        requestNotificationEmail('Provider Response', 'Hi ' + customerName + ', ' + providerName + ' accepted your request', 'Review the provider response and confirm the request to add it to the provider calendar.', details, '#16a34a', '#0284c7', 'Review response'),
+    },
+    providerRejectedRequestCustomer: {
+      subject: 'Provider declined your request - ServEase',
+      body: (customerName: string, providerName: string, details: any): string =>
+        requestNotificationEmail('Request Declined', 'Hi ' + customerName + ', ' + providerName + ' declined this request', 'You can create a new request or choose another available provider.', details, '#991b1b', '#dc2626', 'Find another provider'),
+    },
+    providerCounterOfferCustomer: {
+      subject: 'You received a counter-offer - ServEase',
+      body: (customerName: string, providerName: string, details: any): string =>
+        requestNotificationEmail('Counter-Offer', 'Hi ' + customerName + ', ' + providerName + ' sent a counter-offer', 'Review the updated price and end time before selecting the offer.', details, '#7c3aed', '#2563eb', 'Review counter-offer'),
+    },
+    requestConfirmedCustomer: {
+      subject: 'Your request is confirmed - ServEase',
+      body: (customerName: string, providerName: string, details: any): string =>
+        requestNotificationEmail('Request Confirmed', 'Hi ' + customerName + ', your request is confirmed', providerName + ' is scheduled for your service. Keep your completion code private until the job is done.', details, '#16a34a', '#0f766e'),
+    },
+    requestConfirmedProvider: {
+      subject: 'A request was confirmed - ServEase',
+      body: (providerName: string, customerName: string, details: any): string =>
+        requestNotificationEmail('Request Confirmed', 'Hi ' + providerName + ', ' + customerName + ' confirmed the request', 'The request has been added to your calendar. Ask the customer for the completion code after finishing the service.', details, '#16a34a', '#0f766e'),
+    },
+    customerRejectedOfferProvider: {
+      subject: 'Customer declined your offer - ServEase',
+      body: (providerName: string, customerName: string, details: any): string =>
+        requestNotificationEmail('Offer Declined', 'Hi ' + providerName + ', ' + customerName + ' declined your offer', 'This request is no longer waiting for your offer.', details, '#991b1b', '#dc2626'),
+    },
+    customerCancelledRequestProvider: {
+      subject: 'Customer cancelled a request - ServEase',
+      body: (providerName: string, customerName: string, details: any): string =>
+        requestNotificationEmail('Request Cancelled', 'Hi ' + providerName + ', ' + customerName + ' cancelled the request', 'The request has been removed from your active calendar.', details, '#b45309', '#dc2626'),
+    },
+    providerCancelledRequestCustomer: {
+      subject: 'Provider cancelled your request - ServEase',
+      body: (customerName: string, providerName: string, details: any): string =>
+        requestNotificationEmail('Provider Cancelled', 'Hi ' + customerName + ', ' + providerName + ' cancelled this request', 'You can book another provider for the same service.', details, '#b45309', '#dc2626', 'Book another provider'),
+    },
+    broadcastRequestCancelledProvider: {
+      subject: 'A broadcast request was cancelled - ServEase',
+      body: (providerName: string, customerName: string, details: any): string =>
+        requestNotificationEmail('Broadcast Cancelled', 'Hi ' + providerName + ', ' + customerName + ' cancelled a broadcast request', 'No action is needed. The request is no longer available for offers.', details, '#b45309', '#dc2626'),
+    },
+    requestCompletedCustomer: {
+      subject: 'Your service is complete - ServEase',
+      body: (customerName: string, providerName: string, details: any): string =>
+        requestNotificationEmail('Service Completed', 'Hi ' + customerName + ', your service is complete', 'Thanks for using ServEase with ' + providerName + '. You can now leave a review for this request.', details, '#16a34a', '#0284c7', 'Review service'),
+    },
+    requestCompletedProvider: {
+      subject: 'Service marked complete - ServEase',
+      body: (providerName: string, customerName: string, details: any): string =>
+        requestNotificationEmail('Service Completed', 'Hi ' + providerName + ', ' + customerName + "'s service is complete", 'The request has been completed and removed from your active calendar.', details, '#16a34a', '#0284c7'),
+    },
   },
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Private template helpers  (not exported – used only above)
-// ─────────────────────────────────────────────────────────────────────────────
 
 function sharedStyles(): string {
   return `
@@ -341,6 +404,110 @@ function ctaButton(label: string, bg: string): string {
   return `
   <div style="text-align:center;margin:18px 0 22px;">
     <a href="#" class="cta-btn" style="background:${bg};color:#fff;">${label}</a>
+  </div>`;
+}
+
+function requestNotificationEmail(
+  title: string,
+  lead: string,
+  message: string,
+  details: any,
+  accent1: string,
+  accent2: string,
+  ctaLabel?: string,
+): string {
+  return `
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  ${sharedStyles()}
+</head>
+<body>
+  ${wrapper(`
+    ${header('SR', title, accent1, accent2)}
+    <tr><td class="eb">
+      <p class="lead">${lead}</p>
+      <p class="txt">${message}</p>
+      ${requestSummary(details)}
+      ${details?.completionCode ? completionCodeBox(details.completionCode) : ''}
+      ${ctaLabel ? ctaButton(ctaLabel, accent1) : ''}
+    </td></tr>
+    ${footer()}
+  `)}
+</body>
+</html>`;
+}
+
+function requestSummary(details: any): string {
+  const rows = [
+    detailRow('Service', details?.serviceNeeded),
+    detailRow('Date', formatRequestDate(details?.dateNeeded)),
+    detailRow('Start time', details?.startTime),
+    detailRow('End time', details?.offeredEndTime ?? details?.endTime),
+    detailRow('Location', formatLocation(details)),
+    detailRow('Payment mode', details?.paymentMode),
+    detailRow('Preferred price', formatMoney(details?.preferredPrice)),
+    detailRow('Offered price', formatMoney(details?.offeredPrice)),
+    detailRow('Final price', formatMoney(details?.price)),
+  ].filter(Boolean).join('');
+
+  return `
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    margin:18px 0;
+    overflow:hidden;
+  ">
+    ${rows}
+  </table>`;
+}
+
+function detailRow(label: string, value: unknown): string {
+  if (value === undefined || value === null || value === '') return '';
+
+  return `
+    <tr>
+      <td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;font-size:13px;color:#64748b;width:38%;">${label}</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;font-size:14px;color:#0f172a;font-weight:600;">${value}</td>
+    </tr>`;
+}
+
+function formatRequestDate(value: unknown): string | null {
+  if (!value) return null;
+
+  const date = new Date(value as string);
+  if (Number.isNaN(date.getTime())) return String(value);
+
+  return date.toLocaleDateString('en', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+function formatLocation(details: any): string | null {
+  const parts = [
+    details?.governorate,
+    details?.city,
+    details?.street,
+    details?.exactLocation,
+  ].filter(Boolean);
+
+  return parts.length ? parts.join(', ') : null;
+}
+
+function formatMoney(value: unknown): string | null {
+  if (value === undefined || value === null || value === '') return null;
+  return `${value} EGP`;
+}
+
+function completionCodeBox(code: string): string {
+  return `
+  <div class="info-strip green">
+    <strong>Completion code:</strong> ${code}
   </div>`;
 }
 
