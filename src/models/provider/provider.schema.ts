@@ -15,6 +15,7 @@ import {
   toObject: { virtuals: true },
   discriminatorKey: 'role',
 })
+
 export class Provider {
   readonly _id: Types.ObjectId;
 
