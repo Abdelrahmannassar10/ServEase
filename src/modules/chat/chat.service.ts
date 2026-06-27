@@ -113,7 +113,8 @@ export class ChatService {
     let bookingResult: { confirmation?: string; data?: any } | null = null;
 
     if (responseType === 'specific_action' || responseType === 'broadcast_action') {
-      bookingResult = await this.handleBookingAction(body.data, userId).catch((err: any) => ({
+      const messages = session.messages ?? [];
+      bookingResult = await this.handleBookingAction(body.data, userId, message, messages).catch((err: any) => ({
         confirmation: `I couldn't process your booking: ${err.message ?? 'Something went wrong'}`,
       }));
     }
@@ -139,9 +140,23 @@ export class ChatService {
     };
   }
 
-  private async handleBookingAction(data: any, userId: string) {
+  private extractProviderName(messages: any[], currentMessage: string): string | null {
+    const allTexts = [...messages.map((m: any) => m.text as string), currentMessage];
+
+    for (const text of allTexts.reverse()) {
+      const match = text.match(/\b(?:with|by|provider)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\b/);
+      if (match) return match[1];
+    }
+
+    return null;
+  }
+
+  private async handleBookingAction(data: any, userId: string, currentMessage: string, messages: any[]) {
     if (data.response_type === 'specific_action') {
-      const providerName: string = data.providerName;
+      let providerName: string | undefined = data.providerName;
+      if (!providerName) {
+        providerName = this.extractProviderName(messages, currentMessage) ?? undefined;
+      }
       if (!providerName) {
         return { confirmation: 'No provider name was specified for this booking.' };
       }
