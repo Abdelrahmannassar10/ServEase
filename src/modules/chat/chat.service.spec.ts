@@ -7,6 +7,10 @@ describe('ChatService', () => {
   let configService: ConfigService;
   let chatSessionRepository: any;
 
+  let serviceRequestService: any;
+  let providerRepository: any;
+  let serviceRepository: any;
+
   beforeEach(() => {
     configService = { get: jest.fn().mockReturnValue('https://chatbot.test/api') } as any;
     chatSessionRepository = {
@@ -14,8 +18,18 @@ describe('ChatService', () => {
       create: jest.fn(),
       findOneAndUpdate: jest.fn(),
     };
+    serviceRequestService = {
+      create: jest.fn(),
+      createBroadcastRequest: jest.fn(),
+    };
+    providerRepository = {
+      findOne: jest.fn(),
+    };
+    serviceRepository = {
+      findOne: jest.fn(),
+    };
 
-    service = new ChatService(configService, chatSessionRepository);
+    service = new ChatService(configService, chatSessionRepository, serviceRequestService, providerRepository, serviceRepository);
   });
 
   afterEach(() => {

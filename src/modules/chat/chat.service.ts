@@ -1,7 +1,10 @@
 import { BadGatewayException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
-import { ChatSessionRepository, ChatRole } from '@models/index';
+import { Types } from 'mongoose';
+import { ChatSessionRepository, ChatRole, ProviderRepository, ServiceRepository } from '@models/index';
+import { ServiceRequestService } from '@modules/service-request/service-request.service';
+import { City, state, PaymentMode, LocationScope } from '../../common/types/enum';
 
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 500;
@@ -19,6 +22,9 @@ export class ChatService {
   constructor(
     private readonly configService: ConfigService,
     private readonly chatSessionRepository: ChatSessionRepository,
+    private readonly serviceRequestService: ServiceRequestService,
+    private readonly providerRepository: ProviderRepository,
+    private readonly serviceRepository: ServiceRepository,
   ) {
     this.chatbotUrl = this.configService.get<string>('CHATBOT_API_URL')!;
   }
@@ -102,11 +108,22 @@ export class ChatService {
     });
 
     const answer: string = body?.data?.answer ?? '';
+    const responseType: string | undefined = body?.data?.response_type;
+
+    let bookingResult: { confirmation?: string; data?: any } | null = null;
+
+    if (responseType === 'specific_action' || responseType === 'broadcast_action') {
+      bookingResult = await this.handleBookingAction(body.data, userId).catch((err: any) => ({
+        confirmation: `I couldn't process your booking: ${err.message ?? 'Something went wrong'}`,
+      }));
+    }
+
+    const finalAnswer = bookingResult?.confirmation ?? answer;
 
     const now = new Date();
 
     const userMsg = { text: message, role: ChatRole.USER, timestamp: now } as any;
-    const assistantMsg = { text: answer, role: ChatRole.ASSISTANT, timestamp: new Date() } as any;
+    const assistantMsg = { text: finalAnswer, role: ChatRole.ASSISTANT, timestamp: new Date() } as any;
 
     // atomic push with cap
     const updated = await this.chatSessionRepository.findOneAndUpdate(
@@ -114,7 +131,99 @@ export class ChatService {
       { $push: { messages: { $each: [userMsg, assistantMsg], $slice: -MESSAGE_CAP } } },
     );
 
-    return { sessionId: session.sessionId, answer, saved: !!updated };
+    return {
+      sessionId: session.sessionId,
+      answer: finalAnswer,
+      saved: !!updated,
+      ...(bookingResult?.data ? { booking: bookingResult.data } : {}),
+    };
+  }
+
+  private async handleBookingAction(data: any, userId: string) {
+    if (data.response_type === 'specific_action') {
+      const providerName: string = data.providerName;
+      if (!providerName) {
+        return { confirmation: 'No provider name was specified for this booking.' };
+      }
+
+      const provider = await this.providerRepository.findOne({
+        $or: [
+          { userName: { $regex: new RegExp(`^${providerName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
+          {
+            $expr: {
+              $eq: [
+                { $trim: { $toLower: { $concat: ['$firstName', ' ', '$lastName'] } } },
+                providerName.trim().toLowerCase(),
+              ],
+            },
+          },
+        ],
+        isDeleted: { $ne: true },
+      });
+
+      if (!provider) {
+        return { confirmation: `Sorry, I couldn't find a provider named "${providerName}". Please check the name and try again.` };
+      }
+
+      const dto = {
+        providerId: provider._id.toString(),
+        serviceNeeded: data.serviceNeeded,
+        governorate: data.governorate as City,
+        city: data.city as state,
+        street: data.street,
+        exactLocation: data.exactLocation,
+        dateNeeded: new Date(data.dateNeeded),
+        startTime: data.startTime,
+        paymentMode: data.paymentMode?.toUpperCase() as PaymentMode | undefined,
+        preferredPrice: data.preferredPrice != null ? Number(data.preferredPrice) : undefined,
+      };
+
+      const created = await this.serviceRequestService.create(dto as any, new Types.ObjectId(userId));
+
+      return {
+        confirmation: `Your service request has been sent to ${providerName}. They will review it and respond shortly.`,
+        data: created,
+      };
+    }
+
+    if (data.response_type === 'broadcast_action') {
+      const serviceName: string = data.serviceNeeded;
+      if (!serviceName) {
+        return { confirmation: 'No service was specified for this broadcast request.' };
+      }
+
+      const service = await this.serviceRepository.findOne({
+        name: { $regex: new RegExp(`^${serviceName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
+      });
+
+      if (!service) {
+        return { confirmation: `Sorry, I couldn't find a service matching "${serviceName}". Please try again.` };
+      }
+
+      const broadcastDto = {
+        serviceId: service._id.toString(),
+        governorate: data.governorate as City,
+        city: data.city as state,
+        street: data.street,
+        exactLocation: data.exactLocation,
+        serviceNeeded: data.serviceNeeded,
+        dateNeeded: new Date(data.dateNeeded),
+        startTime: data.startTime,
+        locationScope: (data.locationScope ?? 'DISTRICT') as LocationScope,
+        matchByTopRated: data.matchByTopRated ?? false,
+        paymentMode: (data.paymentMode ?? 'FIXED').toUpperCase() as PaymentMode,
+        preferredPrice: data.preferredPrice != null ? Number(data.preferredPrice) : undefined,
+      };
+
+      const result = await this.serviceRequestService.createBroadcastRequest(broadcastDto as any, new Types.ObjectId(userId));
+
+      return {
+        confirmation: `Your service request has been broadcast to ${result.notifiedProviders} provider(s). You will receive offers soon.`,
+        data: result.request,
+      };
+    }
+
+    return null;
   }
 
   async getHistory(userId: string) {
