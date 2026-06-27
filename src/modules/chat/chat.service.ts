@@ -167,7 +167,7 @@ export class ChatService {
           {
             $expr: {
               $eq: [
-                { $trim: { $toLower: { $concat: ['$firstName', ' ', '$lastName'] } } },
+                { $trim: { input: { $toLower: { $concat: ['$firstName', ' ', '$lastName'] } } } },
                 providerName.trim().toLowerCase(),
               ],
             },
