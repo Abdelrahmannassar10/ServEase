@@ -47,6 +47,10 @@ services:
       - key: GOOGLE_CALLBACK_URL
         value: https://be_project.onrender.com/auth/google/callback
 
+      # Chatbot API
+      - key: CHATBOT_API_URL
+        value: https://menaabdelbasset-chatbot-2.hf.space/chat
+
       # Email (Nodemailer / Resend)
       - key: RESEND_API_KEY
         sync: false
