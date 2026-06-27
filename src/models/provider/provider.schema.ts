@@ -125,5 +125,6 @@ export class Provider {
   @Prop({ type: Number, required: true, min: 0 })
   hourPrice: number;
 }
+
 export const providerSchema = SchemaFactory.createForClass(Provider);
 export type HProviderDocument = HydratedDocument<Provider>;
