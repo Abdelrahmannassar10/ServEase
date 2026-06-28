@@ -151,9 +151,29 @@ export class ChatService {
     return null;
   }
 
+  private normalizeChatbotData(raw: any) {
+    return {
+      response_type: raw.response_type,
+      providerName: raw.provider_name ?? raw.providerName,
+      serviceNeeded: raw.service_type ?? raw.serviceNeeded,
+      governorate: raw.governorate,
+      city: raw.city,
+      street: raw.street,
+      exactLocation: raw.exact_location ?? raw.exactLocation,
+      dateNeeded: raw.preferred_date ?? raw.dateNeeded,
+      startTime: raw.preferred_time ?? raw.startTime,
+      paymentMode: raw.payment_mode ?? raw.paymentMode,
+      preferredPrice: raw.preferred_price ?? raw.preferredPrice,
+      locationScope: raw.search_scope ?? raw.locationScope,
+      matchByTopRated: raw.matchByTopRated ?? false,
+    };
+  }
+
   private async handleBookingAction(data: any, userId: string, currentMessage: string, messages: any[]) {
-    if (data.response_type === 'specific_action') {
-      let providerName: string | undefined = data.providerName;
+    const d = this.normalizeChatbotData(data);
+
+    if (d.response_type === 'specific_action') {
+      let providerName: string | undefined = d.providerName;
       if (!providerName) {
         providerName = this.extractProviderName(messages, currentMessage) ?? undefined;
       }
@@ -182,15 +202,15 @@ export class ChatService {
 
       const dto = {
         providerId: provider._id.toString(),
-        serviceNeeded: data.serviceNeeded,
-        governorate: data.governorate as City,
-        city: data.city as state,
-        street: data.street,
-        exactLocation: data.exactLocation,
-        dateNeeded: new Date(data.dateNeeded),
-        startTime: data.startTime,
-        paymentMode: data.paymentMode?.toUpperCase() as PaymentMode | undefined,
-        preferredPrice: data.preferredPrice != null ? Number(data.preferredPrice) : undefined,
+        serviceNeeded: d.serviceNeeded,
+        governorate: d.governorate as City,
+        city: d.city as state,
+        street: d.street,
+        exactLocation: d.exactLocation,
+        dateNeeded: new Date(d.dateNeeded),
+        startTime: d.startTime,
+        paymentMode: d.paymentMode?.toUpperCase() as PaymentMode | undefined,
+        preferredPrice: d.preferredPrice != null ? Number(d.preferredPrice) : undefined,
       };
 
       const created = await this.serviceRequestService.create(dto as any, new Types.ObjectId(userId));
@@ -201,8 +221,8 @@ export class ChatService {
       };
     }
 
-    if (data.response_type === 'broadcast_action') {
-      const serviceName: string = data.serviceNeeded;
+    if (d.response_type === 'broadcast_action') {
+      const serviceName: string = d.serviceNeeded;
       if (!serviceName) {
         return { confirmation: 'No service was specified for this broadcast request.' };
       }
@@ -217,17 +237,17 @@ export class ChatService {
 
       const broadcastDto = {
         serviceId: service._id.toString(),
-        governorate: data.governorate as City,
-        city: data.city as state,
-        street: data.street,
-        exactLocation: data.exactLocation,
-        serviceNeeded: data.serviceNeeded,
-        dateNeeded: new Date(data.dateNeeded),
-        startTime: data.startTime,
-        locationScope: (data.locationScope ?? 'DISTRICT') as LocationScope,
-        matchByTopRated: data.matchByTopRated ?? false,
-        paymentMode: (data.paymentMode ?? 'FIXED').toUpperCase() as PaymentMode,
-        preferredPrice: data.preferredPrice != null ? Number(data.preferredPrice) : undefined,
+        governorate: d.governorate as City,
+        city: d.city as state,
+        street: d.street,
+        exactLocation: d.exactLocation,
+        serviceNeeded: d.serviceNeeded,
+        dateNeeded: new Date(d.dateNeeded),
+        startTime: d.startTime,
+        locationScope: (d.locationScope ?? 'DISTRICT') as LocationScope,
+        matchByTopRated: d.matchByTopRated,
+        paymentMode: (d.paymentMode ?? 'FIXED').toUpperCase() as PaymentMode,
+        preferredPrice: d.preferredPrice != null ? Number(d.preferredPrice) : undefined,
       };
 
       const result = await this.serviceRequestService.createBroadcastRequest(broadcastDto as any, new Types.ObjectId(userId));
