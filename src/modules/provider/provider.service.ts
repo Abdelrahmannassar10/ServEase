@@ -104,18 +104,12 @@ export class ProviderService {
 
   
   const completedRequests = await this.serviceRequestRepository.find({
-   providerId: new Types.ObjectId(userid),   // ✅ matches schema
-   status: ServiceStatus.COMPLETED,
+  providerId: { $in: [new Types.ObjectId(userid), userid] },
+  status: ServiceStatus.COMPLETED,
 });
 const allRequests = await this.serviceRequestRepository.find({
   providerId: new Types.ObjectId(userid),
 });
-console.log('ALL REQUESTS FOR PROVIDER:', allRequests.length, allRequests.map(r => r.status));
-
-console.log(
- 'COMPLETED REQUESTS:',
- completedRequests.length
-);
 
   const totalEarnings = completedRequests.reduce(
     (sum, request) => sum + (request.price || 0),
@@ -124,10 +118,6 @@ console.log(
 
   const completedServices =
     completedRequests.length;
-    console.log(
-  'COMPLETED REQUESTS:',
-  completedRequests.length,
-);
 
   const monthlyMap =
     new Map<string, number>();
