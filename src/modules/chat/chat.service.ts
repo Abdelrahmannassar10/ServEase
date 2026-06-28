@@ -181,18 +181,20 @@ export class ChatService {
         return { confirmation: 'No provider name was specified for this booking.' };
       }
 
+      const escaped = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const nameParts = providerName.trim().split(/\s+/);
+      const conditions: Record<string, any>[] = [
+        { userName: { $regex: new RegExp(`^${escaped(providerName)}$`, 'i') } },
+      ];
+      if (nameParts.length >= 2) {
+        conditions.push({
+          firstName: { $regex: new RegExp(`^${escaped(nameParts[0])}$`, 'i') },
+          lastName: { $regex: new RegExp(`^${escaped(nameParts.slice(1).join(' '))}$`, 'i') },
+        });
+      }
+
       const provider = await this.providerRepository.findOne({
-        $or: [
-          { userName: { $regex: new RegExp(`^${providerName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
-          {
-            $expr: {
-              $eq: [
-                { $trim: { input: { $toLower: { $concat: ['$firstName', ' ', '$lastName'] } } } },
-                providerName.trim().toLowerCase(),
-              ],
-            },
-          },
-        ],
+        $or: conditions,
         isDeleted: { $ne: true },
       });
 
